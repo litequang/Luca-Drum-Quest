@@ -33,7 +33,7 @@ function navigate(page, updateHash = true) {
   }
   window.scrollTo({top:0,behavior:'auto'});
   document.title = (next === 'home' ? 'Luca Drum Quest' :
-    {learning:'Giáo trình',journal:'Nhật ký',funding:'Quỹ âm nhạc'}[next] + ' · Luca Drum Quest');
+    {learning:'Giáo trình',journal:'Nhật ký',funding:'Quỹ Luca'}[next] + ' · Luca Drum Quest');
 }
 $$('[data-route]').forEach(button => button.addEventListener('click', event => {
   event.preventDefault();
@@ -185,13 +185,30 @@ $('#journal-grid').addEventListener('click', event => {
 });
 
 const formatter = new Intl.NumberFormat('vi-VN');
+const moneyMillions = amount => (amount / 1_000_000).toLocaleString('vi-VN', {maximumFractionDigits: 2}) + ' triệu';
 function renderBudget() {
   const unitCost = Number($('#lesson-cost').value) * 1000;
-  const total = 104 * unitCost;
+  const tuitionTotal = 104 * unitCost;
+  const equipmentInput = $('#equipment-budget');
+  const rawEquipment = equipmentInput.value.trim();
+  // The campaign has one full two-year target; never show a seemingly final
+  // funding goal until the household can estimate the drum + accessory costs.
+  const equipment = rawEquipment === '' ? null : Number(rawEquipment);
+  const hasEquipment = equipment !== null && Number.isFinite(equipment) && equipment > 0 && equipment <= 1_000_000_000;
+  const invalidEquipment = rawEquipment !== '' && !hasEquipment;
+  equipmentInput.setAttribute('aria-invalid', String(invalidEquipment));
+
   $('#lesson-cost-label').textContent = formatter.format(unitCost) + 'đ';
-  $('#budget-total').textContent = (total / 1_000_000).toLocaleString('vi-VN', {maximumFractionDigits: 1}) + ' triệu';
+  $('#budget-total').textContent = moneyMillions(tuitionTotal);
+  $('#equipment-total').textContent = hasEquipment ? moneyMillions(equipment) + ' (tính thử)' : 'Chờ báo giá';
+  $('#funding-goal').textContent = hasEquipment ? moneyMillions(tuitionTotal + equipment) : 'Chưa chốt';
+  $('#budget-full-total').textContent = hasEquipment ? moneyMillions(tuitionTotal + equipment) + ' (tính thử)' : 'Chờ báo giá thiết bị';
+  $('#funding-goal-detail').textContent = hasEquipment
+    ? 'Học phí ' + moneyMillions(tuitionTotal) + ' + thiết bị ' + moneyMillions(equipment) + ' · chỉ là phép tính thử'
+    : 'Học phí dự tính ' + moneyMillions(tuitionTotal) + ' + bộ trống/phụ kiện chưa có báo giá';
 }
 $('#lesson-cost').addEventListener('input', renderBudget);
+$('#equipment-budget').addEventListener('input', renderBudget);
 
 renderHomeStages();
 renderStages();
