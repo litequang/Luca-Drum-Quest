@@ -8,7 +8,7 @@
 
 ## 1. Tóm tắt 30 giây
 
-Luca Drum Quest là website dự án gia đình (vui, ấm áp, có chút hài hước kiểu gọi vốn startup) theo dõi hành trình Luca, con trai 4 tuổi, **học trống bài bản để chơi nhạc thờ phượng Chúa**. **Vòng 1 là một vòng duy nhất kéo dài 24 tháng**. Huy động hỗ trợ mua trống + học phí chủ yếu từ ông bà/người thân, cập nhật video tập và tiến bộ cho những người được phép xem. Đồng thời tạo hệ thống học tập để bố mẹ không phó mặc toàn bộ cho thầy: có kỹ năng, tiền đề, bài tập ở nhà, đánh giá HOME READY và giáo viên xác nhận TEACHER PASS.
+Luca Drum Quest là website dự án gia đình (vui, ấm áp, có chút hài hước kiểu gọi vốn startup) theo dõi hành trình Luca, con trai 4 tuổi, **học trống bài bản để chơi nhạc thờ phượng Chúa**. **Dự án có thể gồm nhiều vòng nối tiếp nhau; Vòng 1 kéo dài trọn 24 tháng**. Huy động hỗ trợ mua trống + học phí chủ yếu từ ông bà/người thân, cập nhật video tập và tiến bộ cho những người được phép xem. Đồng thời tạo hệ thống học tập để bố mẹ không phó mặc toàn bộ cho thầy: có kỹ năng, tiền đề, bài tập ở nhà, đánh giá HOME READY và giáo viên xác nhận TEACHER PASS.
 
 **Mục tiêu đã xác nhận:** học 2 năm cần **chất lượng đào tạo và kỹ thuật nghiêm túc** để phục vụ việc chơi/đệm **nhạc thờ phượng Chúa**, không phải học cho vui một cách sơ sài. Không đặt mục tiêu nghề nghiệp thương mại hoặc cam kết trình độ nhạc công người lớn sau đúng 2 năm. Luca quen nghe/gõ theo **Nissi United**; đây là chất liệu học, không buộc con đánh giống bản thu.
 
@@ -16,7 +16,7 @@ Luca Drum Quest là website dự án gia đình (vui, ấm áp, có chút hài h
 
 | ID | Quyết định |
 |---|---|
-| C01 | Season/Vòng 1 = **2 năm = 24 tháng**, không chia hai vòng một năm |
+| C01 | Luca Drum Quest là hành trình **nhiều vòng / nhiều season**; **Vòng 1 = 2 năm = 24 tháng**, không chia thành các vòng nhỏ theo quý/năm. Vòng 2+ được xác định sau, chưa chốt thời gian hoặc ngân sách |
 | C02 | Luca bắt đầu ở **4 tuổi**; giáo trình hướng tới giai đoạn **4–6 tuổi** |
 | C03 | Dự kiến **1 buổi với thầy/tuần** là mức phù hợp chi phí gia đình, không mặc định 2 buổi |
 | C04 | Giá buổi học do gia đình tham khảo: **500.000–700.000 VND/buổi** |
@@ -35,7 +35,7 @@ Luca Drum Quest là website dự án gia đình (vui, ấm áp, có chút hài h
 - Sáu trục: (A) cảm âm/nhịp, (B) tư thế/tay, (C) phối hợp vận động, (D) bộ trống/groove, (E) ngôn ngữ âm nhạc, (F) sáng tạo/biểu diễn.
 - Các trạng thái: **LEARNING → PRACTICING → HOME READY → TEACHER PASS**. Không áp PASS/FAIL cứng khiến trẻ mất vui.
 - Luyện ngắn khoảng 5–10 phút/lần, 4–5 ngày/tuần **chỉ là mức thử ban đầu**; thay đổi theo phản ứng của Luca.
-- Chia 24 tháng thành 8 chặng, 3 tháng/chặng; **12 buổi đầu là pilot phương pháp**, không phải vòng gọi vốn khác.
+- Chia 24 tháng của **Vòng 1** thành 8 chặng, 3 tháng/chặng; **12 buổi đầu là pilot phương pháp**, không phải vòng gây quỹ khác.
 - Giáo viên đưa nhiệm vụ và hướng dẫn bố mẹ cách luyện; bố mẹ ghi video; giáo viên xác nhận kỹ thuật/đề xuất bước tiếp.
 - Video và dữ liệu của trẻ **private by default**; repository công khai chỉ chứa tài liệu/mẫu/dữ liệu giả.
 
@@ -56,7 +56,7 @@ Luca Drum Quest là website dự án gia đình (vui, ấm áp, có chút hài h
 | `styles.css` | Design tokens, responsive, tương phản, reduced-motion |
 | `data.js` | Chỉ dữ liệu giả: 8 chặng, Skill Cards, ví dụ nhật ký |
 | `app.js` | JS render, lọc, dialog, mô phỏng chi phí; chưa có API |
-| `docs/BACKEND_HANDOFF.md` | Kế hoạch API, bảo mật, dữ liệu và ranh giới công việc Codex |
+| `docs/BACKEND_HANDOFF.md` | Kế hoạch API, bảo mật, dữ liệu và ranh giới công việc Codex; dữ liệu phải hỗ trợ nhiều vòng |
 | `docs/FRONTEND_RESPONSIVE_2026_11_16.md` | Layout phone/iPad (thiết kế v0.2), checklist kiểm thử thiết bị thật |
 
 **Chạy frontend:** `python -m http.server 5173` ở root, vào `http://localhost:5173` (không mở `file://` vì ES modules). Chưa có bước production deploy.
