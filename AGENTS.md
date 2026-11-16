@@ -10,8 +10,8 @@
 
 ## Product principles
 
-- Season 1 = 24 tháng. Luca khởi đầu ở tuổi 4. Giáo viên 1 buổi/tuần dự kiến, học phí 500–700k VND/buổi.
-- Mục đích: hành trình âm nhạc **vui**, gọi vốn nhẹ nhàng cho ông bà/người thân, quản lý kinh phí, nhật ký video và tiến độ học thực chất.
+- **Dự án nhiều vòng (Season 1, 2, 3...)**; Vòng 1 = 24 tháng, không chia thành các vòng nhỏ. Vòng 2+ chưa chốt thời gian/phạm vi/ngân sách. Luca khởi đầu ở tuổi 4. Giáo viên 1 buổi/tuần dự kiến, học phí 500–700k VND/buổi.
+- Mục đích: hành trình học trống thờ phượng **bài bản** và **gây quỹ hỗ trợ học tập tự nguyện** từ ông bà/người thân. **Không phải đầu tư hoặc hoàn vốn**. Vòng 1 đặt mục tiêu huy động **đủ trọn 24 tháng học phí + mua bộ trống/phụ kiện**, nhằm hạn chế việc học bị gián đoạn; cập nhật thu chi, nhật ký video và tiến độ học thực chất.
 - Giáo trình kết hợp nghe/nhạc/thử nghiệm + kỹ thuật trống; nhà luyện, lớp hướng dẫn/sửa lỗi. Không ép PASS máy móc, không chặn buổi học khi cần giáo viên giúp.
 - Tích hợp những ca khúc thờ phượng Nissi United mà Luca quen nghe ở mức độ phù hợp khả năng. **Không chép lời, tải/đăng lại audio/video thương mại hoặc sử dụng bản ghi không có quyền**; ưu tiên lưu tên/link nguồn hợp pháp và video biểu diễn gia đình theo quyền cho phép.
 - Giáo viên chịu trách nhiệm hướng dẫn/sửa tư thế, kiểm tra an toàn; AI/phụ huynh không tự chẩn đoán tư thế kỹ thuật từ video rồi coi như thay thế thầy.
