@@ -21,7 +21,7 @@
 
 ## Các điểm đã chốt
 
-- Vòng 1 = **2 năm / 24 tháng**, KHÔNG phải một năm.
+- Dự án được định hướng theo **nhiều vòng (Season)**. **Vòng 1 = 2 năm / 24 tháng**, KHÔNG phải một năm; Vòng 2+ có thể tiếp tục nhưng **chưa chốt thời gian, giáo trình hay ngân sách**. Mỗi vòng có mục tiêu, quỹ và tiến độ riêng.
 - Dự kiến **1 buổi học với giáo viên mỗi tuần**, chi phí tham khảo **500.000–700.000 VND/buổi**.
 - Học ở nhà là phần cốt lõi; mỗi kỹ năng có nhiệm vụ cụ thể và đánh giá tiến bộ, giáo viên kiểm tra kỹ thuật.
 - **Mục tiêu chính của 24 tháng:** học trống **bài bản, nghiêm túc, phù hợp lứa tuổi để chơi và đệm nhạc thờ phượng Chúa**. Không hứa hai năm đạt trình độ nhạc công chuyên nghiệp người lớn; không phải định hướng thi chứng chỉ hoặc biểu diễn thương mại.
@@ -36,7 +36,7 @@ Công nghệ website, domain, thời điểm bắt đầu chính xác, mua bộ 
 
 - Mở qua local HTTP server (ES module không được đảm bảo chạy bằng `file://`): `python -m http.server 5173`, sau đó vào `http://localhost:5173`.
 - Không cần `npm install` hay build; giao diện dùng HTML/CSS/JavaScript ES modules và dữ liệu demo trong `data.js`.
-- 4 khu vực: Hành trình, Giáo trình (8 chặng + Skill Cards), Nhật ký video minh họa và Quỹ âm nhạc tính thử học phí.
+- 4 khu vực: Hành trình, Giáo trình (8 chặng + Skill Cards), Nhật ký video minh họa và Quỹ Luca tính thử học phí **Vòng 1**.
 - `app.js`: điều hướng, bộ lọc, dialog chi tiết kỹ năng, máy tính học phí. `styles.css`: hệ thống giao diện responsive; `index.html`: bố cục.
 - **Chưa có video thật, khoản tài trợ thật, đăng nhập hay chức năng nhận tiền.** Các số liệu chỉ là giả định để lập ngân sách. Không thu thập dữ liệu trẻ trong repo công khai.
 - Codex làm phần API/backend sau theo [`docs/BACKEND_HANDOFF.md`](docs/BACKEND_HANDOFF.md); **giữ nguyên giao diện hiện có**, chỉ thay lớp dữ liệu và thêm luồng an toàn được duyệt.
