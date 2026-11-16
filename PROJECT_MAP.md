@@ -53,7 +53,7 @@ Luca Drum Quest là website dự án gia đình (vui, ấm áp, có chút hài h
 | File | Vai trò |
 |---|---|
 | `index.html` | Bố cục 4 trang, minh họa bộ trống SVG và mobile nav |
-| `styles.css` | Design tokens, responsive, tương phản, reduced-motion |
+| `styles.css` | Design tokens, **responsive v0.3 phone/iPad (single breakpoint system)**, SVG bottom dock, reduced-motion |
 | `data.js` | Chỉ dữ liệu giả: 8 chặng, Skill Cards, ví dụ nhật ký |
 | `app.js` | JS render, lọc, dialog, mô phỏng chi phí; chưa có API |
 | `docs/BACKEND_HANDOFF.md` | Kế hoạch API, bảo mật, dữ liệu và ranh giới công việc Codex; dữ liệu phải hỗ trợ nhiều vòng |
