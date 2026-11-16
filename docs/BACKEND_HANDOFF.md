@@ -4,7 +4,7 @@
 
 ## Tóm tắt bối cảnh (đọc trước khi code)
 
-Đọc AGENTS.md, PROJECT_MAP.md, docs/01_VISION.md, docs/03_SKILL_SYSTEM.md, docs/04_WEBSITE_AND_PRIVACY.md. Vòng 1 kéo dài **24 tháng**, Luca khởi đầu ở tuổi 4. Mục tiêu là học **bài bản để chơi/đệm nhạc thờ phượng Chúa**; Nissi United là nhạc quen, không có quyền sao chép bản ghi.
+Đọc AGENTS.md, PROJECT_MAP.md, docs/01_VISION.md, docs/03_SKILL_SYSTEM.md, docs/04_WEBSITE_AND_PRIVACY.md. **Luca Drum Quest có thể có nhiều vòng theo thời gian; Vòng 1 kéo dài trọn 24 tháng** (gồm học phí và bộ trống/phụ kiện), Luca khởi đầu ở tuổi 4. **Vòng 2+ chưa được định nghĩa**. Mục tiêu là học **bài bản để chơi/đệm nhạc thờ phượng Chúa**; Nissi United là nhạc quen, không có quyền sao chép bản ghi.
 
 - **Frontend đã được làm trực tiếp**: index.html, styles.css, app.js, data.js. Không yêu cầu Codex thiết kế lại typography, màu sắc, bố cục hoặc animation.
 - Frontend là **prototype JS modules không phụ thuộc build**, có data demo và tương tác client-side; chưa có backend.
@@ -22,16 +22,17 @@
 
 ## Model dữ liệu tham khảo (không phải migration đã chốt)
 
-- **project:** id, name, months_total=24, start_date nullable, owner_id
-- **stage:** id, project_id, label, planned_month_range, goals, sort_order
+- **project:** id, name, owner_id — một dự án, có nhiều vòng (seasons/rounds)
+- **round/season:** id, project_id, ordinal (1, 2, ...), title, duration_months, start_date nullable, status (draft/fundraising/active/completed/archived), approved_target_amount nullable, objective; dữ liệu Vòng 2+ không tự khởi tạo
+- **stage:** id, round_id, label, planned_month_range, goals, sort_order — Vòng 1 gồm 8 chặng đề xuất
 - **skill:** id, axis, title, prerequisites, teacher_approved, home_practice, pass_rubric, safety_notes, revision
 - **skill_progress:** skill_id, status (LEARNING/PRACTICING/HOME_READY/TEACHER_PASS), reviewed_by, reviewed_at, private_notes
 - **lesson:** scheduled_at, actual_at, fee, attended, teacher_notes, next_practice
 - **practice:** date, skill_ids, duration_seconds nullable, child_engagement nullable, notes (private)
 - **media:** owner_id, storage_key, privacy, mime_type, size, duration, retention, metadata_removed
 - **update:** title, body, stage_id, media_ids, visibility, created_at
-- **support:** amount, type (gift/funding/in-kind), date, source_private, visibility, created_by
-- **budget_item:** category, planned_amount, actual_amount, note, private
+- **support:** round_id, amount, type (gift/funding/in-kind), date, source_private, visibility, created_by — đóng góp vào vòng cụ thể; có thể nhiều lượt trong cùng vòng
+- **budget_item:** round_id, category, planned_amount, actual_amount, note, private — thu/chi tách theo vòng, không cộng nhầm Vòng 1 với Vòng 2+
 - **invitation:** recipient identifier (minimize PII), role, expires_at, revoked_at, scope
 - **audit_log:** actor, action, target, timestamp; không log raw private video URLs hoặc tokens
 
