@@ -30,7 +30,7 @@ function navigate(page, updateHash = true) {
   if (updateHash && window.location.hash !== '#' + next) {
     history.replaceState(null, '', '#' + next);
   }
-  window.scrollTo({top:0,behavior:'instant'});
+  window.scrollTo({top:0,behavior:'auto'});
   document.title = (next === 'home' ? 'Luca Drum Quest' :
     {learning:'Giáo trình',journal:'Nhật ký',funding:'Quỹ âm nhạc'}[next] + ' · Luca Drum Quest');
 }
