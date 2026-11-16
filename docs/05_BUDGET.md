@@ -4,7 +4,7 @@
 
 ## Các thông số đã trao đổi (CONFIRMED)
 
-- **Vòng 1 = 24 tháng.**
+- **Vòng 1 = 24 tháng**, là vòng gây quỹ đầu tiên của dự án **có thể có nhiều vòng kế tiếp**. Mỗi vòng có mục tiêu và quỹ riêng, chưa tự đặt thời hạn hoặc số tiền của Vòng 2+.
 - **Dự kiến học với giáo viên 1 buổi/tuần.**
 - Chi phí gia đình được tư vấn: **500.000–700.000 VND/buổi**.
 - Cần ngân sách **học phí + mua trống/phụ kiện**.
@@ -38,10 +38,10 @@ Bình quân số học trong 24 tháng: ~2,17–3,03 triệu VND/tháng **chỉ 
 
 **Không tự điền giá mua trống** khi chưa xác định thiết bị.
 
-## Gọi vốn gia đình: nên hiển thị gì?
+## Gây quỹ gia đình: nên hiển thị gì?
 
 **Public/family-facing (sau khi được phép):**
-- Mục tiêu Vòng 1: học phí dự kiến và thiết bị khi đã có báo giá.
+- **Mục tiêu Vòng 1: gây quỹ đủ toàn bộ 24 tháng học phí + bộ trống/phụ kiện trước khi cam kết lộ trình dài hạn**; chốt con số sau khi có báo giá và lịch/phí được xác nhận.
 - Tiến độ tiền đã nhận và đã chi theo nhóm hạng mục.
 - Mốc gần nhất (“đủ kinh phí cho 3 tháng đầu”, “đủ mua practice pad”...).
 - Các cột mốc học tập và lời cảm ơn không gây áp lực.
@@ -60,6 +60,6 @@ Bình quân số học trong 24 tháng: ~2,17–3,03 triệu VND/tháng **chỉ 
 
 ## Mốc vận hành (PROPOSED)
 
-Theo dõi dòng tiền theo 3 tháng, nhưng giữ **một Vòng 1 24 tháng** duy nhất. Phần “kỳ 3 tháng” là mốc kiểm soát và cập nhật, không phải vòng gọi vốn mới.
+Theo dõi dòng tiền theo 3 tháng **bên trong Vòng 1 kéo dài 24 tháng**. Mỗi kỳ 3 tháng là mốc kiểm soát và cập nhật, **không phải vòng gây quỹ mới**. Tương lai có thể có **Vòng 2, Vòng 3...** với mục tiêu mới, nhưng chưa có thông số chính thức. Người thân có thể đóng góp một hoặc nhiều lần vào **cùng một Vòng 1**; không yêu cầu từng người phải đóng toàn bộ một lần.
 
 Các KPI tài chính dành cho phụ huynh: số buổi đã thanh toán, chi phí thực tế, số tiền đã hỗ trợ, phần còn thiếu, và số tháng có thể tiếp tục học với mức chi hiện tại. Không tính “giá trên một PASS” để gây áp lực lên Luca.
