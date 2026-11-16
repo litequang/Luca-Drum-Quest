@@ -517,3 +517,57 @@ button{touch-action:manipulation}
  .mobile-link>span{font-size:18px}
  .mobile-link small{font-size:9px}
 }
+
+
+/* Fundraising-first copy — Vòng 1 is a single 24-month family campaign.
+   A thin editorial divider avoids adding another loud card to the homepage. */
+.fundraiser-summary{
+  display:grid;grid-template-columns:1fr .87fr;gap:65px;
+  padding-top:52px;padding-bottom:52px;border-bottom:1px solid var(--stroke);
+  align-items:center
+}
+.fundraiser-summary h2{
+  font-size:clamp(23px,2.5vw,34px);line-height:1.48;letter-spacing:-.047em;
+  margin:0
+}
+.fundraiser-summary p:not(.eyebrow){
+  margin:0 0 8px;max-width:470px;font-size:12.5px;
+  line-height:2;color:#5e7076
+}
+.fundraiser-summary strong{color:var(--deep)}
+.finance-title h2{overflow-wrap:anywhere}
+.finance-title p{max-width:430px;line-height:1.8}
+.equipment-input{
+  margin:0 0 18px;padding:0 0 22px;
+  border-bottom:1px solid var(--stroke)
+}
+.equipment-input label{display:block;font-size:12px;font-weight:700;margin-bottom:12px}
+.equipment-input label small{display:block;font-size:10px;font-weight:400;color:var(--muted)}
+.equipment-field{
+  display:flex;align-items:center;border:1px solid #d3d8d4;background:var(--cream);
+  border-radius:13px;min-height:49px;padding:0 14px;gap:8px
+}
+.equipment-field:focus-within{border-color:#c7785a;box-shadow:0 0 0 2px rgba(220,121,81,.12)}
+.equipment-field input{
+  min-width:0;width:100%;font-size:14px;color:var(--ink);
+  background:transparent;border:0;outline:0;padding:11px 0;
+  font-weight:600
+}
+.equipment-field input:focus-visible{outline:0}
+.equipment-field input[aria-invalid="true"]{color:#a7392c}
+.equipment-field>span{font-size:10px;font-weight:700;color:#66767a}
+.equipment-input>p{font-size:10px;color:#718085;margin:7px 0 0;line-height:1.8}
+.fundraiser-summary .text-link{min-height:44px}
+@media (max-width:900px){
+ .fundraiser-summary{grid-template-columns:1fr;gap:16px;padding-top:39px;padding-bottom:39px}
+ .fundraiser-summary h2{font-size:clamp(25px,3.5vw,31px)}
+}
+@media (max-width:600px){
+ .fundraiser-summary{padding-top:31px;padding-bottom:31px;gap:14px}
+ .fundraiser-summary h2{font-size:clamp(23px,6vw,29px)}
+ .fundraiser-summary p:not(.eyebrow){font-size:12px;line-height:1.85}
+ .finance-title h2{font-size:clamp(26px,7.2vw,35px)}
+ .finance-title p{font-size:11px}
+ .equipment-input label{font-size:12px}
+ .equipment-field{min-height:46px}
+}
