@@ -57,6 +57,7 @@ Luca Drum Quest là website dự án gia đình (vui, ấm áp, có chút hài h
 | `data.js` | Chỉ dữ liệu giả: 8 chặng, Skill Cards, ví dụ nhật ký |
 | `app.js` | JS render, lọc, dialog, mô phỏng chi phí; chưa có API |
 | `docs/BACKEND_HANDOFF.md` | Kế hoạch API, bảo mật, dữ liệu và ranh giới công việc Codex |
+| `docs/FRONTEND_RESPONSIVE_2026_11_16.md` | Layout phone/iPad (thiết kế v0.2), checklist kiểm thử thiết bị thật |
 
 **Chạy frontend:** `python -m http.server 5173` ở root, vào `http://localhost:5173` (không mở `file://` vì ES modules). Chưa có bước production deploy.
 
