@@ -17,6 +17,7 @@
 - [Ngân sách & gọi vốn gia đình](docs/05_BUDGET.md)
 - [Roadmap, quyết định và các câu hỏi còn mở](docs/06_ROADMAP_AND_DECISIONS.md)
 - [Đặc tả bàn giao backend cho Codex](docs/BACKEND_HANDOFF.md)
+- [Tối ưu giao diện điện thoại/iPad và checklist kiểm thử](docs/FRONTEND_RESPONSIVE_2026_11_16.md)
 
 ## Các điểm đã chốt
 
