@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { youtubeVideoId } from "../youtube.js";
 const text = z.string().max(10000),
   short = z.string().max(200),
   id = z.uuid();
@@ -41,6 +42,18 @@ export const seasonSchema = z
     )
       c.addIssue({ code: "custom", message: "Lesson range is reversed" });
   });
+const youtubeUrl = z
+  .string()
+  .max(300)
+  .refine(
+    (value) => youtubeVideoId(value) !== null,
+    "Enter a direct HTTPS YouTube video link",
+  )
+  .transform(
+    (value) => "https://www.youtube.com/watch?v=" + youtubeVideoId(value),
+  )
+  .nullable()
+  .default(null);
 const base = { seasonId: id };
 export const schemas = {
   stages: z
@@ -96,6 +109,7 @@ export const schemas = {
       skillIds: z.array(id).max(50),
       minutes: z.number().int().min(0).max(120).nullable(),
       notes: text,
+      youtubeUrl,
     })
     .strict(),
   journal: z
@@ -109,6 +123,7 @@ export const schemas = {
       kind: z.enum(["Video luyện tập", "Bài học", "Cột mốc"]),
       visibility: z.enum(["PARENT", "FAMILY", "PUBLIC"]),
       published: z.boolean(),
+      youtubeUrl,
     })
     .strict(),
   contributions: z

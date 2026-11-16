@@ -57,6 +57,14 @@ Use a unique local test email/password; no password is provided or seeded. Initi
 
 Open `http://localhost:3000`, and `http://localhost:3000/admin`. Sign in with the account you initialized. Project → edit → save, then reload the public website to see persisted text. Use only generated images/fictional entries in this pilot. Parent → Family → create a one-time code; share it privately, and let the family tester accept it at `/admin/login`. Family content is at `/family`.
 
+### YouTube and teacher access
+
+For video, use a direct HTTPS YouTube link (watch, youtu.be, Shorts or direct embed URL), not iframe HTML. Journal and Practice editors have an optional YouTube field. Save/preview the entry; players connect to `www.youtube-nocookie.com` only when the viewer clicks **Xem video YouTube**. Published PUBLIC journal links appear publicly; FAMILY/PARENT and practice links stay within the corresponding site permissions. YouTube itself controls playback privacy: an unlisted video link can be copied outside the site; a private video may require the viewer's authorized YouTube/Google account. Confirm rights and YouTube settings before using real material. The app does not upload/download or transcode video.
+
+In **Gia đình & giáo viên**, choose TEACHER when creating an invitation. After the tester accepts, select **Chọn quyền xem** for that account and check individual skills/practices across the available seasons. Sharing a practice includes its notes, images and YouTube link. Nothing is assigned automatically. Teachers sign in at the same login page and are directed to `/teacher`; they can save status/comments only for assigned skills. Removing a record grant immediately blocks its protected API/media access. Revoking the account or its redeemed invitation also clears all teacher record grants and sessions; after regrant, select the desired records again.
+
+Existing checkouts need only `npm run db:migrate` before restarting to apply migration `002_teacher_and_practice_media.sql`; do not reinitialize credentials or delete existing data. Existing journal image associations are preserved by renaming their ownership column.
+
 For a compiled server:
 
 ```powershell
@@ -84,7 +92,7 @@ try { npm test } finally {
 }
 ```
 
-Wait for test-db to be healthy before running. Tests use DB_USER/DB_PASSWORD from `.env` and override DB_NAME with TEST_DB_NAME. For native MariaDB, create a distinct `_test` database and grant the test account the corresponding permissions; use its port. The test suite checks APIs against actual MariaDB and UI interactions in JSDOM. It does not render browsers or emulate actual iPad/mobile layout.
+Wait for test-db to be healthy before running. Tests use DB_USER/DB_PASSWORD from `.env` and override DB_NAME with TEST_DB_NAME. For native MariaDB, create a distinct `_test` database and grant the test account the corresponding permissions; use its port. The test suite checks APIs against actual MariaDB and UI interactions in JSDOM. It does not render browsers or emulate actual iPad/mobile layout, and it does not prove that a real YouTube video plays on the target devices.
 
 ## 5. Local physical-device testing
 

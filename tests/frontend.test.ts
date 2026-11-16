@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { JSDOM } from "jsdom";
+import { youtubeMarkup, installYouTubeEmbeds } from "../youtube.js";
 const { stages, skills, skillGroups } = await import("../data.js" as string);
 const publicSeason = {
   id: "season",
@@ -22,6 +23,8 @@ async function bootPublic(fail = false) {
       runScripts: "outside-only",
     }),
     w = dom.window;
+  (w as any).__youtubeMarkup = youtubeMarkup;
+  (w as any).__installYouTubeEmbeds = installYouTubeEmbeds;
   w.scrollTo = () => {};
   w.matchMedia = () => ({ matches: false }) as any;
   (w.document.querySelector("dialog") as any).showModal = function () {
@@ -38,6 +41,7 @@ async function bootPublic(fail = false) {
     date: "2026-11-16",
     tags: [],
     kind: "Bài học",
+    youtubeUrl: "https://youtu.be/AbC_123-xYz",
   };
   (w as any).__api = async (path: string) => {
     if (fail) throw new Error("Offline");
@@ -78,6 +82,10 @@ async function bootPublic(fail = false) {
         .replace(
           "import { api } from './apiClient.js';",
           "const api=window.__api;",
+        )
+        .replace(
+          "import { youtubeMarkup, installYouTubeEmbeds } from './youtube.js';",
+          "const youtubeMarkup=window.__youtubeMarkup,installYouTubeEmbeds=window.__installYouTubeEmbeds;",
         ) +
       "})()",
   );
@@ -123,6 +131,14 @@ test("public DOM interactions: stored copy, four routes, filters, dialogs and bu
     await new Promise((r) => setTimeout(r, 0));
     assert.match(d.querySelector("#dialog-body")!.textContent!, /<img src=x/);
     assert.equal(d.querySelector("#dialog-body img"), null);
+    assert.equal(d.querySelector("#dialog-body iframe"), null);
+    (
+      d.querySelector("#dialog-body [data-youtube-load]") as HTMLButtonElement
+    ).click();
+    assert.equal(
+      (d.querySelector("#dialog-body iframe") as HTMLIFrameElement).src,
+      "https://www.youtube-nocookie.com/embed/AbC_123-xYz",
+    );
     const goal = d.querySelector("#funding-goal")!.textContent;
     const equipment = d.querySelector("#equipment-budget") as HTMLInputElement;
     equipment.value = "20000000";
@@ -209,11 +225,18 @@ test("admin DOM form submits stored project edits and renders persisted state sa
   };
   const { escapeHtml } = await import("../apiClient.js" as string);
   (w as any).__escape = escapeHtml;
+  (w as any).__youtubeMarkup = youtubeMarkup;
+  (w as any).__installYouTubeEmbeds = installYouTubeEmbeds;
   try {
-    const js = (await readFile("admin/admin.js", "utf8")).replace(
-      'import { api, escapeHtml as e } from "/apiClient.js";',
-      "const api=window.__api,e=window.__escape;",
-    );
+    const js = (await readFile("admin/admin.js", "utf8"))
+      .replace(
+        'import { api, escapeHtml as e } from "/apiClient.js";',
+        "const api=window.__api,e=window.__escape;",
+      )
+      .replace(
+        'import { youtubeMarkup, installYouTubeEmbeds } from "/youtube.js";',
+        "const youtubeMarkup=window.__youtubeMarkup,installYouTubeEmbeds=window.__installYouTubeEmbeds;",
+      );
     await w.eval("(async()=>{" + js + "})()");
     (d.querySelector('[data-tab="project"]') as any).click();
     (d.querySelector("[data-edit-project]") as any).click();
@@ -227,5 +250,92 @@ test("admin DOM form submits stored project edits and renders persisted state sa
     assert.match(d.querySelector("#content")!.textContent!, /Changed in admin/);
   } finally {
     dom.window.close();
+  }
+});
+
+test("teacher DOM submits explicit feedback and renders only assigned practice evidence", async () => {
+  const dom = new JSDOM(await readFile("admin/teacher.html", "utf8"), {
+      url: "http://localhost:3000/teacher",
+      runScripts: "outside-only",
+    }),
+    w = dom.window,
+    d = w.document;
+  const skill = {
+    id: "assigned-skill",
+    entity: "skills",
+    code: "A-01",
+    title: "Fictional",
+    goal: "Listen",
+    practice: "Short play",
+    pass: "Teacher assessment",
+    status: null,
+    teacherFeedback: "",
+    teacherApproved: false,
+  };
+  let saved: any;
+  (w as any).__api = async (path: string, options: any) => {
+    if (path === "/me") return { role: "TEACHER", csrf: "fixture" };
+    if (path === "/teacher/state")
+      return {
+        records: [
+          skill,
+          {
+            id: "practice",
+            entity: "practices",
+            date: "2026-11-16",
+            minutes: null,
+            notes: "<script>private fixture</script>",
+            youtubeUrl: "https://youtu.be/AbC_123-xYz",
+          },
+        ],
+      };
+    if (path === "/practices/practice/media") return [];
+    if (path === "/teacher/skills/assigned-skill") {
+      assert.equal(options.method, "PATCH");
+      saved = options.body;
+      Object.assign(skill, saved);
+      return { ok: true };
+    }
+    throw new Error(path);
+  };
+  const { escapeHtml } = await import("../apiClient.js" as string);
+  (w as any).__escape = escapeHtml;
+  (w as any).__youtubeMarkup = youtubeMarkup;
+  (w as any).__installYouTubeEmbeds = installYouTubeEmbeds;
+  try {
+    const js = (await readFile("admin/teacher.js", "utf8"))
+      .replace(
+        /^import .*?from ["']\/apiClient\.js["'];$/m,
+        "const api=window.__api,e=window.__escape;",
+      )
+      .replace(
+        /^import .*?from ["']\/youtube\.js["'];$/m,
+        "const youtubeMarkup=window.__youtubeMarkup,installYouTubeEmbeds=window.__installYouTubeEmbeds;",
+      );
+    await w.eval("(async()=>{" + js + "})()");
+    assert.equal(d.querySelectorAll("form[data-skill]").length, 1);
+    assert.equal(d.querySelector("#teacher-practices script"), null);
+    assert.match(
+      d.querySelector("#teacher-practices")!.textContent!,
+      /private fixture/,
+    );
+    assert.equal(d.querySelector("iframe"), null);
+    (d.querySelector("[name=status]") as HTMLSelectElement).value =
+      "TEACHER_PASS";
+    (d.querySelector("[name=teacherFeedback]") as HTMLTextAreaElement).value =
+      "Fictional explicit assessment";
+    (d.querySelector("[name=teacherApproved]") as HTMLInputElement).checked =
+      true;
+    d.querySelector("form")!.dispatchEvent(
+      new w.Event("submit", { bubbles: true, cancelable: true }),
+    );
+    await new Promise((r) => setTimeout(r, 5));
+    assert.deepEqual(structuredClone(saved), {
+      status: "TEACHER_PASS",
+      teacherFeedback: "Fictional explicit assessment",
+      teacherApproved: true,
+    });
+  } finally {
+    w.close();
   }
 });

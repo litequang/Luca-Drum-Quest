@@ -8,7 +8,8 @@ The owner explicitly authorized Node 24/TypeScript/Fastify/MariaDB local backend
 - Serve only explicit public asset routes. Never expose the repository, `.env`, source, backup files or MEDIA_DIR through a static web server.
 - Tests require an explicitly configured disposable `_test` MariaDB database and erase its application rows. Never run them on the pilot or production database.
 - Run `npm run typecheck`, `npm run build` and the relevant `npm test` checks after functional changes. Report actual exit codes and distinguish DOM tests from rendered/physical-device checks.
-- Local images only (generated fixtures); video upload and independent teacher accounts remain deferred. Do not remove server permissions or media limits to work around these blockers.
+- Generated images only during development. The owner specified **YouTube embeds for video** in the follow-up; never add video file uploads. Only accept direct HTTPS YouTube video links, render click-to-load fixed-origin `youtube-nocookie` iframes, and keep link disclosure within journal/practice permissions. Website sessions cannot protect a YouTube unlisted link once copied.
+- Invited TEACHER accounts now have explicit per-record grants for skills/practices. Never widen this to whole-season, financial, supporter or family-journal access. Revoke sessions and grants when access is removed; regrant starts without restored record grants.
 - Keep audit/reference checks inside transactions when extending JSON record contracts. Keep unknown budgets/progress null. Never create future seasons automatically or mark skills passed automatically.
 
 ## Đọc trước khi làm bất kỳ việc gì

@@ -49,7 +49,8 @@ export async function auth(app: FastifyInstance) {
     if (
       req.url.startsWith("/api/") ||
       req.url.startsWith("/admin") ||
-      req.url.startsWith("/family")
+      req.url.startsWith("/family") ||
+      req.url.startsWith("/teacher")
     )
       reply.header("Cache-Control", "no-store");
     const token = req.cookies[cookieName];

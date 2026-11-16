@@ -3,15 +3,17 @@ import cookie from "@fastify/cookie";
 import rateLimit from "@fastify/rate-limit";
 import multipart from "@fastify/multipart";
 import helmet from "@fastify/helmet";
-import { readFile, mkdir, writeFile, unlink } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { randomUUID } from "node:crypto";
-import sharp from "sharp";
-import argon2 from "argon2";
 import { z } from "zod";
 import { pool, transaction, audit, decode } from "./db.js";
 import { config } from "./config.js";
-import { auth, parent, fail, secret, digest, session } from "./auth.js";
+import { auth, parent, fail } from "./auth.js";
+import { canViewJournal } from "./permissions.js";
+import { accessRoutes } from "./access.js";
+import { mediaRoutes } from "./media.js";
+import { teacherRoutes, teacher } from "./teacher.js";
 import {
   schemas,
   seasonSchema,
@@ -20,11 +22,6 @@ import {
   type Kind,
 } from "./model.js";
 const uuid = z.uuid();
-const canView = (user: any, post: any) =>
-  user?.role === "PARENT_ADMIN" ||
-  (post.published &&
-    (post.visibility === "PUBLIC" ||
-      (user?.role === "FAMILY_VIEWER" && post.visibility === "FAMILY")));
 export async function buildApp() {
   const app = Fastify({ logger: false, bodyLimit: 200_000, trustProxy: false });
   await app.register(cookie);
@@ -44,6 +41,7 @@ export async function buildApp() {
         connectSrc: ["'self'"],
         objectSrc: ["'none'"],
         frameAncestors: ["'none'"],
+        frameSrc: ["https://www.youtube-nocookie.com"],
       },
     },
     strictTransportSecurity: config.secure ? undefined : false,
@@ -72,11 +70,13 @@ export async function buildApp() {
     "/styles.css": ["styles.css", "text/css"],
     "/app.js": ["app.js", "text/javascript"],
     "/apiClient.js": ["apiClient.js", "text/javascript"],
+    "/youtube.js": ["youtube.js", "text/javascript"],
     "/data.js": ["data.js", "text/javascript"],
     "/admin/login": ["admin/login.html", "text/html"],
     "/admin/admin.css": ["admin/admin.css", "text/css"],
     "/admin/login.js": ["admin/login.js", "text/javascript"],
     "/admin/admin.js": ["admin/admin.js", "text/javascript"],
+    "/admin/teacher.js": ["admin/teacher.js", "text/javascript"],
   };
   for (const [url, [file, type]] of Object.entries(assets))
     app.get(url, async (_req, reply) =>
@@ -90,6 +90,11 @@ export async function buildApp() {
   app.get("/family", async (req, reply) => {
     if (!req.user) return reply.redirect("/admin/login");
     return reply.type("text/html").send(await readFile("admin/family.html"));
+  });
+  app.get("/teacher", async (req, reply) => {
+    if (!req.user) return reply.redirect("/admin/login");
+    await teacher(req);
+    return reply.type("text/html").send(await readFile("admin/teacher.html"));
   });
   app.get("/api/v1/public/project", async () => {
     const p = (await pool.query("SELECT * FROM project WHERE id=1"))[0];
@@ -164,7 +169,7 @@ export async function buildApp() {
   const journal = async (user: any) =>
     (await pool.query("SELECT * FROM records WHERE kind='journal'"))
       .map(decode)
-      .filter((p: any) => canView(user, p))
+      .filter((p: any) => canViewJournal(user, p))
       .sort((a: any, b: any) => b.date.localeCompare(a.date));
   app.get("/api/v1/public/journal", () => journal(null));
   app.get("/api/v1/family/journal", async (req) => {
@@ -216,10 +221,13 @@ export async function buildApp() {
           ),
         ),
       })),
-      media: await pool.query("SELECT id,journal_id,mime,size FROM media"),
+      media: await pool.query("SELECT id,record_id,mime,size FROM media"),
+      teacherGrants: await pool.query(
+        "SELECT user_id,record_id FROM teacher_grants",
+      ),
       users: await pool.query("SELECT id,email,role,active FROM users"),
       invitations: await pool.query(
-        "SELECT id,label,expires_at,revoked,used_by FROM invitations",
+        "SELECT id,label,role,expires_at,revoked,used_by FROM invitations",
       ),
       audit: await pool.query(
         "SELECT id,actor_id,action,target_id,created_at FROM audit_log ORDER BY id DESC LIMIT 100",
@@ -437,310 +445,8 @@ export async function buildApp() {
       return { id };
     },
   });
-  app.delete(
-    "/api/v1/admin/journal/:id",
-    {
-      preHandler: parent,
-      config: { rateLimit: { max: 20, timeWindow: "1 minute" } },
-    },
-    async (req) => {
-      const id = uuid.parse((req.params as any).id);
-      let files: any[] = [];
-      await transaction(async (c) => {
-        await c.query("SELECT id FROM project WHERE id=1 FOR UPDATE");
-        const row = (
-          await c.query(
-            "SELECT * FROM records WHERE id=? AND kind='journal' FOR UPDATE",
-            [id],
-          )
-        )[0];
-        if (!row) fail(404, "Post not found");
-        files = await c.query(
-          "SELECT storage_key FROM media WHERE journal_id=?",
-          [id],
-        );
-        await c.query("DELETE FROM records WHERE id=?", [id]);
-        await audit(c, req.user!.id, "journal.delete", id, decode(row), null);
-      });
-      for (const f of files)
-        await unlink(resolve(config.mediaDir, f.storage_key)).catch(() => {});
-      return { ok: true };
-    },
-  );
-  app.post("/api/v1/admin/invitations", { preHandler: parent }, async (req) => {
-    const { label } = z
-        .object({ label: z.string().min(1).max(100) })
-        .strict()
-        .parse(req.body),
-      token = secret(),
-      id = randomUUID();
-    await transaction(async (c) => {
-      await c.query(
-        "INSERT INTO invitations (id,token_hash,label,expires_at) VALUES (?,?,?,DATE_ADD(UTC_TIMESTAMP(),INTERVAL 7 DAY))",
-        [id, digest(token), label],
-      );
-      await audit(c, req.user!.id, "invitation.create", id, null, { label });
-    });
-    return { id, token };
-  });
-  app.post(
-    "/api/v1/auth/accept-invitation",
-    { config: { rateLimit: { max: 5, timeWindow: "1 minute" } } },
-    async (req, reply) => {
-      const data = z
-        .object({
-          token: z.string().regex(/^[a-f0-9]{64}$/),
-          email: z.email().max(254),
-          password: z.string().min(14).max(128),
-        })
-        .strict()
-        .parse(req.body);
-      const hash = await argon2.hash(data.password, {
-          type: argon2.argon2id,
-          memoryCost: 65536,
-          timeCost: 3,
-        }),
-        id = randomUUID();
-      await transaction(async (c) => {
-        const invite = (
-          await c.query(
-            "SELECT * FROM invitations WHERE token_hash=? AND revoked=FALSE AND used_by IS NULL AND expires_at>UTC_TIMESTAMP() FOR UPDATE",
-            [digest(data.token)],
-          )
-        )[0];
-        if (!invite) fail(400, "Invitation unavailable");
-        if (
-          (
-            await c.query("SELECT id FROM users WHERE email=?", [
-              data.email.toLowerCase(),
-            ])
-          ).length
-        )
-          fail(400, "Invitation unavailable or account already exists");
-        await c.query(
-          "INSERT INTO users (id,email,password_hash,role) VALUES (?,?,?,?)",
-          [id, data.email.toLowerCase(), hash, "FAMILY_VIEWER"],
-        );
-        await c.query("UPDATE invitations SET used_by=? WHERE id=?", [
-          id,
-          invite.id,
-        ]);
-        await audit(c, id, "invitation.accept", invite.id, null, {
-          role: "FAMILY_VIEWER",
-        });
-      });
-      return { csrf: await session(reply, id), role: "FAMILY_VIEWER" };
-    },
-  );
-  app.delete(
-    "/api/v1/admin/invitations/:id",
-    { preHandler: parent },
-    async (req) => {
-      const id = uuid.parse((req.params as any).id);
-      await transaction(async (c) => {
-        const r = (
-          await c.query("SELECT * FROM invitations WHERE id=? FOR UPDATE", [id])
-        )[0];
-        if (!r) fail(404, "Invitation not found");
-        await c.query("UPDATE invitations SET revoked=TRUE WHERE id=?", [id]);
-        if (r.used_by) {
-          await c.query("UPDATE users SET active=FALSE WHERE id=?", [
-            r.used_by,
-          ]);
-          await c.query("DELETE FROM sessions WHERE user_id=?", [r.used_by]);
-        }
-        await audit(c, req.user!.id, "invitation.revoke", id, null, null);
-      });
-      return { ok: true };
-    },
-  );
-  app.put(
-    "/api/v1/admin/users/:id/access",
-    { preHandler: parent },
-    async (req) => {
-      const id = uuid.parse((req.params as any).id);
-      await transaction(async (c) => {
-        const row = (
-          await c.query("SELECT * FROM users WHERE id=? FOR UPDATE", [id])
-        )[0];
-        if (!row || row.role !== "FAMILY_VIEWER")
-          fail(400, "Only family access can be granted");
-        await c.query("UPDATE users SET active=TRUE WHERE id=?", [id]);
-        await c.query("DELETE FROM sessions WHERE user_id=?", [id]);
-        await audit(
-          c,
-          req.user!.id,
-          "family.grant",
-          id,
-          { active: !!row.active },
-          { active: true },
-        );
-      });
-      return { ok: true };
-    },
-  );
-  app.delete("/api/v1/admin/users/:id", { preHandler: parent }, async (req) => {
-    const id = uuid.parse((req.params as any).id);
-    await transaction(async (c) => {
-      const r = (
-        await c.query("SELECT * FROM users WHERE id=? FOR UPDATE", [id])
-      )[0];
-      if (!r || r.role !== "FAMILY_VIEWER")
-        fail(400, "Only family access can be revoked");
-      await c.query("UPDATE users SET active=FALSE WHERE id=?", [id]);
-      await c.query("DELETE FROM sessions WHERE user_id=?", [id]);
-      await audit(c, req.user!.id, "family.revoke", id, null, null);
-    });
-    return { ok: true };
-  });
-  app.get("/api/v1/journal/:id/media", async (req) => {
-    const id = uuid.parse((req.params as any).id),
-      r = (
-        await pool.query(
-          "SELECT * FROM records WHERE id=? AND kind='journal'",
-          [id],
-        )
-      )[0];
-    if (!r || !canView(req.user, decode(r))) fail(404, "Post not found");
-    return pool.query("SELECT id,mime,size FROM media WHERE journal_id=?", [
-      id,
-    ]);
-  });
-  app.post(
-    "/api/v1/admin/journal/:id/media",
-    {
-      preHandler: parent,
-      config: { rateLimit: { max: 10, timeWindow: "1 minute" } },
-    },
-    async (req) => {
-      const journalId = uuid.parse((req.params as any).id);
-      const file = await req.file();
-      if (!file) fail(400, "One image required");
-      if (!["image/jpeg", "image/png", "image/webp"].includes(file.mimetype))
-        fail(
-          415,
-          "Local pilot accepts JPEG, PNG and WebP images only; video processing is pending",
-        );
-      const buffer = await file.toBuffer();
-      let output: Buffer;
-      try {
-        const input = sharp(buffer, {
-          limitInputPixels: 20_000_000,
-          animated: false,
-        });
-        const metadata = await input.metadata();
-        if (!["jpeg", "png", "webp"].includes(metadata.format ?? ""))
-          fail(415, "Unsupported image");
-        output = await input
-          .rotate()
-          .resize({
-            width: 2400,
-            height: 2400,
-            fit: "inside",
-            withoutEnlargement: true,
-          })
-          .webp()
-          .toBuffer();
-      } catch {
-        fail(415, "Invalid image");
-      }
-      const id = randomUUID(),
-        key = secret().slice(0, 40);
-      await mkdir(config.mediaDir, { recursive: true, mode: 0o700 });
-      try {
-        await transaction(async (c) => {
-          await c.query("SELECT id FROM project WHERE id=1 FOR UPDATE");
-          if (
-            !(
-              await c.query(
-                "SELECT id FROM records WHERE id=? AND kind='journal'",
-                [journalId],
-              )
-            ).length
-          )
-            fail(404, "Post not found");
-          const quota = (
-            await c.query(
-              "SELECT COALESCE(SUM(size),0) total,COUNT(*) count FROM media",
-            )
-          )[0];
-          const count = (
-            await c.query("SELECT COUNT(*) n FROM media WHERE journal_id=?", [
-              journalId,
-            ])
-          )[0].n;
-          if (
-            quota.total + output.length > 200 * 1024 * 1024 ||
-            quota.count >= 200 ||
-            count >= 10
-          )
-            fail(413, "Local storage quota reached");
-          await writeFile(resolve(config.mediaDir, key), output, {
-            flag: "wx",
-            mode: 0o600,
-          });
-          await c.query("INSERT INTO media VALUES (?,?,?,?,?)", [
-            id,
-            journalId,
-            key,
-            "image/webp",
-            output.length,
-          ]);
-          await audit(c, req.user!.id, "media.upload", id, null, {
-            journalId,
-            size: output.length,
-          });
-        });
-      } catch (e) {
-        await unlink(resolve(config.mediaDir, key)).catch(() => {});
-        throw e;
-      }
-      return { id };
-    },
-  );
-  app.get("/api/v1/media/:id", async (req, reply) => {
-    const id = uuid.parse((req.params as any).id),
-      r = (
-        await pool.query(
-          "SELECT m.*,r.data FROM media m JOIN records r ON r.id=m.journal_id WHERE m.id=?",
-          [id],
-        )
-      )[0];
-    if (!r || !canView(req.user, JSON.parse(r.data)))
-      fail(404, "Media not found");
-    reply
-      .header("Cache-Control", "no-store")
-      .header("Content-Disposition", "inline")
-      .type(r.mime);
-    return reply.send(await readFile(resolve(config.mediaDir, r.storage_key)));
-  });
-  app.delete(
-    "/api/v1/admin/media/:id",
-    {
-      preHandler: parent,
-      config: { rateLimit: { max: 20, timeWindow: "1 minute" } },
-    },
-    async (req) => {
-      const id = uuid.parse((req.params as any).id);
-      let key = "";
-      await transaction(async (c) => {
-        await c.query("SELECT id FROM project WHERE id=1 FOR UPDATE");
-        const r = (await c.query("SELECT * FROM media WHERE id=?", [id]))[0];
-        if (!r) fail(404, "Media not found");
-        key = r.storage_key;
-        await c.query("DELETE FROM media WHERE id=?", [id]);
-        await audit(
-          c,
-          req.user!.id,
-          "media.delete",
-          id,
-          { journalId: r.journal_id },
-          null,
-        );
-      });
-      await unlink(resolve(config.mediaDir, key)).catch(() => {});
-      return { ok: true };
-    },
-  );
+  await accessRoutes(app);
+  await teacherRoutes(app);
+  await mediaRoutes(app);
   return app;
 }

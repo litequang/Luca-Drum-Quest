@@ -6,7 +6,9 @@
 |---|---|---|---|
 | 2026-11-16 | D-015 | CONFIRMED | Owner explicitly authorized Node 24/TypeScript/Fastify/MariaDB local backend, secure Admin Dashboard, API integration, audited manual finance and a branch/commit/push/PR; no production deployment, real child data or payments |
 | 2026-11-16 | D-016 | IMPLEMENTED LOCAL | Parent sessions/CSRF/rate limits; season/project/finance/lesson/skill/practice/journal forms; published public projections; single-use invited family access and revocation; sanitized private images |
-| 2026-11-16 | D-017 | OPEN / PRODUCTION BLOCKER | Video transcoding/storage, teacher-scoped accounts, private-media security review, backup/restore, account recovery, real-device checks, hosting and full budget/schedule approval |
+| 2026-11-16 | D-017 | OPEN / PRODUCTION BLOCKER | Target-host private-media/security review, production backups, account recovery, real-device/YouTube playback checks, hosting and full budget/schedule approval |
+| 2026-11-16 | D-018 | CONFIRMED | Owner requested continuation and specified YouTube embedding only for video; no video file storage/transcoding implementation |
+| 2026-11-16 | D-019 | IMPLEMENTED LOCAL | YouTube link validation/click-to-load player; explicit TEACHER invitations and skill/practice grants; authenticated feedback history; private practice images and scoped revocation; synthetic encrypted local backup/restore drill passed |
 
 ## Local pilot implementation checklist (current)
 
@@ -16,7 +18,10 @@
 - [x] Existing public frontend reads live approved data; finance totals separated from spending; public HTML/CSS retained.
 - [x] Protected generated-image upload, metadata stripping, quotas/deletion, no unrestricted media folder.
 - [x] Single-use family invitations, expiry/revocation/regrant and read-only shared journal.
-- [ ] Independent teacher workflow, video upload/transcoding and practice-evidence links.
+- [x] Invited teacher workspace with explicit skill/practice grants, feedback/status history and private practice images.
+- [x] YouTube-only video links in journal/practice; protected disclosure and click-to-load player. Video uploads excluded by owner choice.
+- [x] Synthetic encrypted database/image backup and restore into isolated local MariaDB; token purge, image hash, private access and revoked-account checks.
+- [ ] Real-browser/real-device YouTube playback, target-host backup rotation/restore, teacher lesson feedback and per-member family ACLs.
 - [ ] Windows/native builds, browser visual regression and physical PC/iPad/mobile verification.
 - [ ] Encrypted backup/restore drill, retention/privacy review, production hosting and deployment approval.
 

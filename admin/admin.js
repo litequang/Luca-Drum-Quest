@@ -1,4 +1,6 @@
 import { api, escapeHtml as e } from "/apiClient.js";
+import { youtubeMarkup, installYouTubeEmbeds } from "/youtube.js";
+installYouTubeEmbeds(document);
 const $ = (s) => document.querySelector(s),
   money = (n) =>
     n == null ? "Chờ xác nhận" : new Intl.NumberFormat("vi-VN").format(n) + "đ";
@@ -16,7 +18,7 @@ const labels = {
   skills: "Kỹ năng",
   lessons: "Buổi học",
   practices: "Luyện tập",
-  family: "Gia đình",
+  family: "Gia đình & giáo viên",
   audit: "Lịch sử",
 };
 const today = () => new Date().toLocaleDateString("en-CA");
@@ -62,6 +64,7 @@ const defaults = {
     kind: "Bài học",
     visibility: "PARENT",
     published: false,
+    youtubeUrl: null,
   }),
   stages: () => ({
     title: "",
@@ -98,9 +101,17 @@ const defaults = {
     teacherComments: "",
     nextLesson: null,
   }),
-  practices: () => ({ date: today(), skillIds: [], minutes: null, notes: "" }),
+  practices: () => ({
+    date: today(),
+    skillIds: [],
+    minutes: null,
+    notes: "",
+    youtubeUrl: null,
+  }),
 };
 const fieldLabels = {
+  youtubeUrl:
+    "Link video YouTube (tùy chọn; quyền riêng tư do YouTube quyết định)",
   currentStageId: "Chặng học hiện tại",
   description: "Mô tả",
   intro: "Giới thiệu công khai",
@@ -157,6 +168,7 @@ const fieldLabels = {
   notes: "Ghi chú riêng",
 };
 const nullable = new Set([
+  "youtubeUrl",
   "durationMonths",
   "plannedLessons",
   "lessonLow",
@@ -305,16 +317,18 @@ function render() {
       "</p>";
   } else if (tab === "family") {
     body =
-      '<h2>Quyền gia đình</h2><p class="help">Mã mời dùng một lần, hết hạn sau 7 ngày. Gửi riêng cho người được phép; không đặt mã trong URL. Thu hồi mời cũng thu hồi tài khoản đã nhận.</p><form id="invite" class="admin-form"><label>Nhãn riêng<input name="label" required maxlength="100"></label><button>Tạo mã mời</button></form>' +
+      '<h2>Quyền gia đình & giáo viên</h2><p class="help">Mã mời dùng một lần, hết hạn sau 7 ngày. Gửi riêng cho người được phép; không đặt mã trong URL. Thu hồi mời cũng thu hồi tài khoản đã nhận.</p><form id="invite" class="admin-form"><label>Nhãn riêng<input name="label" required maxlength="100"></label><label>Vai trò<select name="role"><option value="FAMILY_VIEWER">Gia đình (chỉ nội dung đã chia sẻ)</option><option value="TEACHER">Giáo viên (phân quyền từng mục)</option></select></label><button>Tạo mã mời</button></form>' +
       list(
         state.invitations,
         (r) =>
-          `<li><span>${e(r.label)} · hết hạn ${e(r.expires_at)} · ${r.revoked ? "đã thu hồi" : r.used_by ? "đã nhận" : "chưa nhận"}</span><button data-revoke-invite="${r.id}">Thu hồi</button></li>`,
+          `<li><span>${e(r.label)} · ${e(r.role)} · hết hạn ${e(r.expires_at)} · ${r.revoked ? "đã thu hồi" : r.used_by ? "đã nhận" : "chưa nhận"}</span><button data-revoke-invite="${r.id}">Thu hồi</button></li>`,
       ) +
       list(
-        state.users.filter((u) => u.role === "FAMILY_VIEWER"),
+        state.users.filter((u) =>
+          ["FAMILY_VIEWER", "TEACHER"].includes(u.role),
+        ),
         (r) =>
-          `<li><span>${e(r.email)} · ${r.active ? "có quyền" : "đã thu hồi"}</span>${r.active ? `<button data-revoke-user="${r.id}">Thu hồi quyền</button>` : `<button data-grant-user="${r.id}">Cấp lại quyền</button>`}</li>`,
+          `<li><span>${e(r.email)} · ${e(r.role)} · ${r.active ? "có quyền" : "đã thu hồi"}</span>${r.active ? `<button data-revoke-user="${r.id}">Thu hồi quyền</button>` : `<button data-grant-user="${r.id}">Cấp lại quyền</button>`}${r.role === "TEACHER" && r.active ? `<button data-teacher-scope="${r.id}">Chọn quyền xem</button>` : ""}</li>`,
       );
   } else if (tab === "audit") {
     body =
@@ -337,7 +351,7 @@ function render() {
       list(
         items,
         (r) =>
-          `<li><span>${e(r.title || r.code || r.date)} ${e(r.description?.slice(0, 100) || "")} · ${e(r.status || r.attendance || r.visibility || "")}</span><button data-edit="${r.id}">Chỉnh sửa</button>${tab === "journal" ? `<button data-preview="${r.id}">Xem trước</button><button data-delete="${r.id}">Xóa bài + media</button>` : ""}</li>`,
+          `<li><span>${e(r.title || r.code || r.date)} ${e(r.description?.slice(0, 100) || "")} · ${e(r.status || r.attendance || r.visibility || "")}</span><button data-edit="${r.id}">Chỉnh sửa</button>${tab === "journal" ? `<button data-preview="${r.id}">Xem trước</button><button data-delete="${r.id}">Xóa bài + media</button>` : tab === "practices" ? `<button data-preview="${r.id}">Xem bằng chứng</button><button data-delete-practice="${r.id}">Xóa buổi luyện + ảnh</button>` : ""}</li>`,
       );
   }
   $("#content").innerHTML = '<div class="admin-card">' + body + "</div>";
@@ -372,7 +386,7 @@ function edit(kind, row) {
     })
     .join("");
   $("#editor").innerHTML =
-    `<div class="admin-card"><h2>${row ? "Chỉnh sửa" : "Thêm"} · ${labels[kind]}</h2><form id="edit-form" class="admin-form">${fields}<div class="wide admin-actions"><button class="primary">Lưu</button><button type="button" id="cancel-edit">Hủy</button></div></form>${kind === "journal" && row ? `<h3>Ảnh minh họa</h3><p class="help">JPEG/PNG/WebP ≤5MB, tối đa 10 ảnh/bài. Video chưa được hỗ trợ trong pilot. Chỉ dùng ảnh giả.</p><form id="upload"><input name="file" type="file" accept="image/jpeg,image/png,image/webp" required><button>Tải ảnh</button></form><div id="media-list"></div>` : ""}</div>`;
+    `<div class="admin-card"><h2>${row ? "Chỉnh sửa" : "Thêm"} · ${labels[kind]}</h2><form id="edit-form" class="admin-form">${fields}<div class="wide admin-actions"><button class="primary">Lưu</button><button type="button" id="cancel-edit">Hủy</button></div></form>${["journal", "practices"].includes(kind) && row ? `<h3>Ảnh đính kèm</h3><p class="help">JPEG/PNG/WebP ≤5MB, tối đa 10 ảnh/bài. Video dùng link YouTube ở form trên; không tải file video. Chỉ dùng ảnh giả trong pilot.</p><form id="upload"><input name="file" type="file" accept="image/jpeg,image/png,image/webp" required><button>Tải ảnh</button></form><div id="media-list"></div>` : ""}</div>`;
   $("#editor").scrollIntoView({ block: "start" });
   $("#cancel-edit").onclick = () => ($("#editor").innerHTML = "");
   $("#edit-form").onsubmit = async (event) => {
@@ -424,8 +438,8 @@ function edit(kind, row) {
       button.disabled = false;
     }
   };
-  if (kind === "journal" && row) {
-    const media = state.media.filter((m) => m.journal_id === row.id);
+  if (["journal", "practices"].includes(kind) && row) {
+    const media = state.media.filter((m) => m.record_id === row.id);
     $("#media-list").innerHTML = list(
       media,
       (m) =>
@@ -434,10 +448,17 @@ function edit(kind, row) {
     $("#upload").onsubmit = async (event) => {
       event.preventDefault();
       try {
-        await api("/admin/journal/" + row.id + "/media", {
-          method: "POST",
-          body: new FormData(event.currentTarget),
-        });
+        await api(
+          "/admin/" +
+            (kind === "journal" ? "journal" : "practices") +
+            "/" +
+            row.id +
+            "/media",
+          {
+            method: "POST",
+            body: new FormData(event.currentTarget),
+          },
+        );
         await reload();
         edit(
           kind,
@@ -450,9 +471,39 @@ function edit(kind, row) {
     };
   }
 }
+function editTeacherScope(userId) {
+  const user = state.users.find((u) => u.id === userId);
+  const assigned = new Set(
+    (state.teacherGrants ?? [])
+      .filter((g) => g.user_id === userId)
+      .map((g) => g.record_id),
+  );
+  const available = state.records.filter((r) =>
+    ["skills", "practices"].includes(r.entity),
+  );
+  $("#editor").innerHTML =
+    `<div class="admin-card"><h2>Chia sẻ với ${e(user.email)}</h2><p class="help">Chọn từng kỹ năng hoặc buổi luyện trong tất cả các vòng. Chia sẻ buổi luyện bao gồm ghi chú và ảnh đính kèm. Bỏ chọn để thu hồi ngay; giáo viên không nhận quyền xem các mục khác cùng vòng.</p><form id="teacher-scope" class="admin-form">${available.map((r) => `<label><input type="checkbox" name="recordIds" value="${r.id}" ${assigned.has(r.id) ? "checked" : ""}>${e(state.seasons.find((s) => s.id === r.seasonId)?.title)} · ${r.entity === "skills" ? "Kỹ năng" : "Buổi luyện"} · ${e(r.code || r.date)} ${e(r.title || "")}</label>`).join("")}<button class="primary wide">Lưu phạm vi chia sẻ</button></form></div>`;
+  $("#editor").scrollIntoView({ block: "start" });
+  $("#teacher-scope").onsubmit = async (event) => {
+    event.preventDefault();
+    try {
+      await api("/admin/users/" + userId + "/grants", {
+        method: "PUT",
+        body: {
+          recordIds: new FormData(event.currentTarget).getAll("recordIds"),
+        },
+      });
+      await reload();
+      note("Đã cập nhật quyền giáo viên. Mục bỏ chọn bị thu hồi ngay.");
+    } catch (error) {
+      note(error.message);
+    }
+  };
+}
 async function preview(post, target) {
-  const media = await api("/journal/" + post.id + "/media");
-  target.innerHTML = `<article class="admin-card"><h2>${e(post.title)}</h2><p>${e(post.date)} · ${e(post.visibility)}</p><p>${e(post.description).replaceAll("\n", "<br>")}</p>${media.map((m) => `<img class="media-image" src="/api/v1/media/${m.id}" alt="Ảnh đính kèm">`).join("")}</article>`;
+  const resource = post.entity === "practices" ? "practices" : "journal";
+  const media = await api("/" + resource + "/" + post.id + "/media");
+  target.innerHTML = `<article class="admin-card"><h2>${e(post.title || "Bằng chứng luyện tập")}</h2><p>${e(post.date)} · ${e(post.visibility || "Riêng tư; chia sẻ giáo viên theo quyền")}</p><p>${e(post.description ?? post.notes).replaceAll("\n", "<br>")}</p>${youtubeMarkup(post.youtubeUrl)}${media.map((m) => `<img class="media-image" src="/api/v1/media/${m.id}" alt="Ảnh đính kèm">`).join("")}</article>`;
 }
 document.addEventListener("click", async (event) => {
   const b = event.target.closest("button");
@@ -465,7 +516,9 @@ document.addEventListener("click", async (event) => {
     }
     if (
       b.dataset.grantUser &&
-      confirm("Cấp lại quyền gia đình? Người này phải đăng nhập lại.")
+      confirm(
+        "Cấp lại quyền? Người này phải đăng nhập lại. Với giáo viên, cần chọn lại từng mục chia sẻ.",
+      )
     ) {
       await api("/admin/users/" + b.dataset.grantUser + "/access", {
         method: "PUT",
@@ -473,6 +526,7 @@ document.addEventListener("click", async (event) => {
       await reload();
       note("Đã cấp lại quyền. Cần đăng nhập mới.");
     }
+    if (b.dataset.teacherScope) editTeacherScope(b.dataset.teacherScope);
     if (b.dataset.audit) {
       const log = await api("/admin/audit/" + b.dataset.audit);
       $("#editor").innerHTML =
@@ -500,13 +554,22 @@ document.addEventListener("click", async (event) => {
       );
     const actions = [
       ["delete", "/admin/journal/", "Xóa bài và tất cả ảnh?"],
+      [
+        "deletePractice",
+        "/admin/practices/",
+        "Xóa buổi luyện và tất cả ảnh bằng chứng?",
+      ],
       ["deleteMedia", "/admin/media/", "Xóa ảnh?"],
       [
         "revokeInvite",
         "/admin/invitations/",
         "Thu hồi lời mời và quyền đã cấp?",
       ],
-      ["revokeUser", "/admin/users/", "Thu hồi ngay quyền gia đình?"],
+      [
+        "revokeUser",
+        "/admin/users/",
+        "Thu hồi ngay quyền và toàn bộ phạm vi chia sẻ của tài khoản này?",
+      ],
     ];
     for (const [key, path, question] of actions)
       if (b.dataset[key] && confirm(question)) {
@@ -559,3 +622,7 @@ try {
   note(error.message);
   if (error.message === "Sign in required") location.href = "/admin/login";
 }
+
+window.addEventListener("pageshow", (event) => {
+  if (event.persisted) location.reload();
+});

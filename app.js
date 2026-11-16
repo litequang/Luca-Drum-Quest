@@ -1,5 +1,7 @@
 import { skillGroups } from './data.js';
 import { api } from './apiClient.js';
+import { youtubeMarkup, installYouTubeEmbeds } from './youtube.js';
+installYouTubeEmbeds(document);
 let stages = [], skills = [], entries = [], publicProject = null, publicBudget = null;
 let apiUnavailable = false;
 try {
@@ -202,7 +204,7 @@ $('#journal-grid').addEventListener('click', async event => {
   let media = [];
   try { media = await api('/journal/' + entry.id + '/media'); } catch { /* Post may have been unpublished. */ }
   showDialog('<span class="aside-kicker">NHẬT KÝ · ' + escapeHtml(entry.date) + '</span>' +
-    '<h2 id="dialog-title">' + escapeHtml(entry.title) + '</h2><p>' + escapeHtml(entry.caption) + '</p>' +
+    '<h2 id="dialog-title">' + escapeHtml(entry.title) + '</h2><p>' + escapeHtml(entry.caption) + '</p>' + youtubeMarkup(entry.youtubeUrl) +
     media.map(m => '<img src="/api/v1/media/' + escapeHtml(m.id) + '" alt="Ảnh đính kèm" style="max-width:100%">').join(''));
 
 });

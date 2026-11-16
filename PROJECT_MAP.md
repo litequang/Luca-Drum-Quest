@@ -2,9 +2,12 @@
 
 **Ngày cập nhật:** 2026-11-16  
 **Repository:** https://github.com/litequang/Luca-Drum-Quest  
-**Trạng thái:** LOCAL BACKEND + ADMIN PILOT implemented on `codex/local-backend-admin-pilot`; no production deployment. Node 24/TypeScript/Fastify/MariaDB, authenticated parent admin, audited manual finance, curriculum/lesson/practice/journal forms, invited family viewing and protected sanitized images. Video uploads, teacher accounts, backup/restore drill and real-device verification remain incomplete. Original public HTML/CSS is preserved; no real child/supporter data is seeded.
+**Trạng thái:** LOCAL BACKEND + ADMIN PILOT implemented on `codex/local-backend-admin-pilot`; no production deployment. Node 24/TypeScript/Fastify/MariaDB, authenticated parent admin, audited manual finance, curriculum/lesson/practice/journal forms, invited family viewing and protected sanitized images. YouTube video links/embeds, record-scoped teacher feedback and private practice images are implemented. A synthetic local encrypted backup/restore drill passed; target-host backups, real-device/browser playback and Windows verification remain incomplete. Video file uploads are excluded by owner choice. Original public HTML/CSS is preserved; no real child/supporter data is seeded.
 
 **CONFIRMED C12 (2026-11-16):** Owner authorized local implementation beyond historical B0, plus branch/commit/push/PR. Production/media/payment restrictions remain. Current setup: [LOCAL_PILOT_WINDOWS.md](docs/LOCAL_PILOT_WINDOWS.md); design/API/security: [LOCAL_PILOT_ARCHITECTURE.md](docs/LOCAL_PILOT_ARCHITECTURE.md); validation and device checklist: [LOCAL_PILOT_REPORT.md](docs/LOCAL_PILOT_REPORT.md). Historical sections below retain earlier planning context and are superseded by C12 for the local pilot.
+
+
+**Follow-up (2026-11-16, owner CONFIRMED C13):** Continue the local pilot; video uses **YouTube embeds only**, not uploaded files. Implemented direct-link validation/canonicalization, click-to-load privacy-enhanced embeds in journal/practice evidence, explicit teacher invitations/grants/feedback and private practice images. See the updated handoff report for actual verification and platform privacy limits. `002_teacher_and_practice_media.sql` upgrades existing data without reseeding or changing credentials.
 
 > **Dành cho AI mới tiếp quản:** Đọc trang này trước. Không suy đoán rằng một đề xuất trong tài liệu đã được người dùng đồng ý triển khai.
 
@@ -29,6 +32,8 @@ Luca Drum Quest là website dự án gia đình (vui, ấm áp, có chút hài h
 | C09 | Website frontend được yêu cầu **làm trực tiếp**, backend giao Codex triển khai sau |
 | C10 | **Mục tiêu cuối là chơi/đệm nhạc thờ phượng Chúa**; học bài bản, kỹ thuật chuẩn, 24 tháng có đánh giá; không hướng chứng chỉ/biểu diễn thương mại |
 | C11 | Giao diện đã được tác giả hóa trên `main`; Codex **không được tự thiết kế lại hoặc ghi đè UI**, chỉ nối API sau khi chốt backend |
+| C12 | Owner authorized Node/TypeScript/Fastify/MariaDB local backend + Admin pilot, branch/commit/push/PR; no production or payment processing |
+| C13 | Owner requested continued local work and selected YouTube embedding only for video; no server video file uploads |
 
 ## 3. Đề xuất đang THẢO LUẬN (PROPOSED, chưa chốt)
 
@@ -66,8 +71,9 @@ Luca Drum Quest là website dự án gia đình (vui, ấm áp, có chút hài h
 | New path | Responsibility |
 |---|---|
 | `server/` | REST API, Zod contracts, MariaDB access, sessions, initialization and cleanup |
-| `migrations/001_initial.sql` | Initial relational IDs, JSON records, auth, audit, invitations and media schema |
-| `admin/` | Responsive vanilla-JS parent forms, login/invite acceptance and read-only family view |
+| `migrations/` | Initial schema plus `002` teacher roles/grants and shared journal/practice media ownership |
+| `admin/` | Parent forms, role-aware login, invited-family journal and scoped teacher workspace |
+| `youtube.js` | Shared YouTube URL parser and click-to-load player; no arbitrary iframe HTML |
 | `.env.example`, `compose.yaml`, `package.json` | Secret-free environment template, optional local DB containers, run/test commands |
 | `tests/` | Real MariaDB integration/security tests plus JSDOM interaction tests |
 

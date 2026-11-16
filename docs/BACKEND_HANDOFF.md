@@ -1,6 +1,6 @@
 # Backend Handoff — Luca Drum Quest (dành cho Codex)
 
-**Trạng thái:** Historical B0/spec reference, superseded for local implementation by owner authorization on 2026-11-16. The local backend/admin pilot now exists; see [LOCAL_PILOT_ARCHITECTURE.md](LOCAL_PILOT_ARCHITECTURE.md) for the implemented API/security contract and [LOCAL_PILOT_WINDOWS.md](LOCAL_PILOT_WINDOWS.md) for setup. No production deployment, payment handling or real child media is authorized. Unimplemented video/teacher/hosting requirements remain OPEN. The older B0 prompt below is retained as history, not an active prohibition against the authorized local pilot.
+**Trạng thái:** Historical B0/spec reference, superseded for local implementation by owner authorization on 2026-11-16. The local backend/admin pilot now exists; see [LOCAL_PILOT_ARCHITECTURE.md](LOCAL_PILOT_ARCHITECTURE.md) for the implemented API/security contract and [LOCAL_PILOT_WINDOWS.md](LOCAL_PILOT_WINDOWS.md) for setup. No production deployment, payment handling or real child media is authorized. Owner follow-up selected YouTube embeds for video; scoped teacher accounts and practice evidence are now implemented locally. Hosting, target-host backup/security and physical-device/playback verification remain OPEN. The older B0 prompt below is retained as history, not an active prohibition against the authorized local pilot.
 
 ## Tóm tắt bối cảnh (đọc trước khi code)
 

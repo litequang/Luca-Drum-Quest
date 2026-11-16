@@ -46,5 +46,8 @@ export async function audit(
   );
 }
 export function decode(row: any) {
-  return { id: row.id, seasonId: row.season_id, ...JSON.parse(row.data) };
+  const data = JSON.parse(row.data);
+  // Older records predate optional YouTube links; normalize them for the editor.
+  if (["journal", "practices"].includes(row.kind)) data.youtubeUrl ??= null;
+  return { id: row.id, seasonId: row.season_id, ...data };
 }

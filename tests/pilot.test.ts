@@ -59,6 +59,7 @@ await test("MariaDB local pilot acceptance and security", async (t) => {
     // Ordered deletes only within explicitly named test DB; preserve migration tracking.
     for (const table of [
       "media",
+      "teacher_grants",
       "invitations",
       "sessions",
       "skill_history",
@@ -463,6 +464,17 @@ await test("MariaDB local pilot acceptance and security", async (t) => {
         const meta = await sharp(own.rawPayload).metadata();
         assert.equal(meta.format, "webp");
         assert.equal(meta.exif, undefined);
+        // MariaDB SUM() is a DECIMAL string: adding output bytes must be numeric.
+        await pool.query("UPDATE media SET size=? WHERE id=?", [
+          10000000,
+          imageId,
+        ]);
+        assert.equal((await upload(parentPost, image)).statusCode, 200);
+        await pool.query("UPDATE media SET size=? WHERE id=?", [
+          own.rawPayload.length,
+          imageId,
+        ]);
+
         await pool.query("UPDATE media SET size=? WHERE id=?", [
           200 * 1024 * 1024,
           imageId,
@@ -649,6 +661,350 @@ await test("MariaDB local pilot acceptance and security", async (t) => {
             )
           ).statusCode,
           400,
+        );
+      },
+    );
+    await t.test(
+      "YouTube links normalize safely and respect journal publication/visibility",
+      async () => {
+        const data = {
+          seasonId,
+          title: "Fictional YouTube entry",
+          description: "Placeholder only",
+          stageId: null,
+          date: "2026-11-16",
+          tags: [],
+          kind: "Video luyện tập",
+          visibility: "FAMILY",
+          published: true,
+          youtubeUrl: "https://youtu.be/AbC_123-xYz?t=10",
+        };
+        const id = await create("journal", data);
+        let current = await json("GET", "/admin/state");
+        assert.equal(
+          current.records.find((r: any) => r.id === id).youtubeUrl,
+          "https://www.youtube.com/watch?v=AbC_123-xYz",
+        );
+        assert.equal(
+          JSON.stringify(await json("GET", "/public/journal")).includes(
+            "AbC_123-xYz",
+          ),
+          false,
+        );
+        await json("PUT", "/admin/records/journal/" + id, {
+          ...data,
+          visibility: "PUBLIC",
+        });
+        assert.equal(
+          (await json("GET", "/public/journal")).find((r: any) => r.id === id)
+            .youtubeUrl,
+          "https://www.youtube.com/watch?v=AbC_123-xYz",
+        );
+        await json("PUT", "/admin/records/journal/" + id, {
+          ...data,
+          visibility: "PUBLIC",
+          published: false,
+        });
+        assert.equal(
+          JSON.stringify(await json("GET", "/public/journal")).includes(
+            "AbC_123-xYz",
+          ),
+          false,
+        );
+        for (const url of [
+          "javascript:alert(1)",
+          "http://youtu.be/AbC_123-xYz",
+          "https://youtube.com.evil.invalid/watch?v=AbC_123-xYz",
+          "https://www.youtube.com/playlist?list=anything",
+          "https://user@youtube.com/watch?v=AbC_123-xYz",
+        ])
+          assert.equal(
+            (
+              await request("POST", "/admin/records/journal", {
+                ...data,
+                youtubeUrl: url,
+              })
+            ).statusCode,
+            400,
+          );
+        const headers = (await app.inject("/")).headers;
+        assert.match(
+          String(headers["content-security-policy"]),
+          /frame-src https:\/\/www\.youtube-nocookie\.com/,
+        );
+        await json("DELETE", "/admin/journal/" + id);
+      },
+    );
+    await t.test(
+      "teacher invitations, per-record assignments, feedback, private practice evidence and revocation",
+      async () => {
+        assert.equal((await app.inject("/teacher")).statusCode, 302);
+        assert.equal(
+          (await request("GET", "/teacher/state", undefined, false)).statusCode,
+          401,
+        );
+        assert.equal((await request("GET", "/teacher/state")).statusCode, 403);
+        assert.equal(
+          (
+            await request("POST", "/admin/invitations", {
+              label: "Invalid elevation",
+              role: "PARENT_ADMIN",
+            })
+          ).statusCode,
+          400,
+        );
+        const invite = await json("POST", "/admin/invitations", {
+          label: "Fictional teacher",
+          role: "TEACHER",
+        });
+        const invite2 = await json("POST", "/admin/invitations", {
+          label: "Second fictional teacher",
+          role: "TEACHER",
+        });
+        async function accept(token: string, email: string) {
+          const r = await request(
+            "POST",
+            "/auth/accept-invitation",
+            { token, email, password },
+            false,
+          );
+          assert.equal(r.statusCode, 200, r.body);
+          assert.equal(r.json().role, "TEACHER");
+          return {
+            cookie: String(r.headers["set-cookie"]).split(";")[0],
+            "x-csrf-token": r.json().csrf,
+          };
+        }
+        const th = await accept(invite.token, "teacher@example.invalid"),
+          other = await accept(invite2.token, "other-teacher@example.invalid");
+        const user = (
+          await pool.query("SELECT id FROM users WHERE email=?", [
+            "teacher@example.invalid",
+          ])
+        )[0];
+        const current = await json("GET", "/admin/state"),
+          skill = current.records.find((r: any) => r.entity === "skills");
+        const practice = await create("practices", {
+          seasonId,
+          date: "2026-11-16",
+          skillIds: [skill.id],
+          minutes: 5,
+          notes: "Fictional assigned evidence",
+          youtubeUrl: "https://www.youtube.com/watch?v=ZyX-987_CbA",
+        });
+        const hidden = await create("practices", {
+          seasonId,
+          date: "2026-11-16",
+          skillIds: [],
+          minutes: null,
+          notes: "Unshared parent-only evidence",
+        });
+        const image = await sharp({
+          create: { width: 4, height: 4, channels: 3, background: "#78aabb" },
+        })
+          .png()
+          .toBuffer();
+        const uploadPractice = async (id: string) => {
+          const r = await request(
+            "POST",
+            "/admin/practices/" + id + "/media",
+            multipartBody(image, "image/png"),
+            true,
+            { "content-type": "multipart/form-data; boundary=luca-boundary" },
+          );
+          assert.equal(r.statusCode, 200, r.body);
+          return r.json().id;
+        };
+        const evidence = await uploadPractice(practice),
+          hiddenEvidence = await uploadPractice(hidden);
+        assert.deepEqual(
+          (await request("GET", "/teacher/state", undefined, false, th)).json(),
+          { records: [] },
+        );
+        await json("PUT", "/admin/users/" + user.id + "/grants", {
+          recordIds: [skill.id, practice],
+        });
+        const records = (
+          await request("GET", "/teacher/state", undefined, false, th)
+        ).json().records;
+        assert.equal(records.length, 2);
+        assert.ok(
+          records.some(
+            (r: any) =>
+              r.id === practice &&
+              r.youtubeUrl === "https://www.youtube.com/watch?v=ZyX-987_CbA",
+          ),
+        );
+        assert.equal(
+          JSON.stringify(records).includes("supporterPrivate"),
+          false,
+        );
+        assert.equal(
+          (
+            await request(
+              "GET",
+              "/practices/" + practice + "/media",
+              undefined,
+              false,
+              th,
+            )
+          ).statusCode,
+          200,
+        );
+        assert.equal(
+          (await request("GET", "/media/" + evidence, undefined, false, th))
+            .statusCode,
+          200,
+        );
+        for (const hdr of [other, {}])
+          assert.equal(
+            (await request("GET", "/media/" + evidence, undefined, false, hdr))
+              .statusCode,
+            404,
+          );
+        assert.equal(
+          (
+            await request(
+              "GET",
+              "/media/" + hiddenEvidence,
+              undefined,
+              false,
+              th,
+            )
+          ).statusCode,
+          404,
+        );
+        assert.equal(
+          (
+            await request(
+              "GET",
+              "/practices/" + hidden + "/media",
+              undefined,
+              false,
+              th,
+            )
+          ).statusCode,
+          404,
+        );
+        assert.equal(
+          (await request("GET", "/journal/" + practice + "/media")).statusCode,
+          404,
+        );
+        assert.equal(
+          (await request("GET", "/admin/state", undefined, false, th))
+            .statusCode,
+          403,
+        );
+        const feedback = {
+          status: "TEACHER_PASS",
+          teacherFeedback: "Fictional explicit teacher assessment",
+          teacherApproved: true,
+        };
+        assert.equal(
+          (
+            await request(
+              "PATCH",
+              "/teacher/skills/" + skill.id,
+              feedback,
+              false,
+              other,
+            )
+          ).statusCode,
+          404,
+        );
+        assert.equal(
+          (
+            await request(
+              "PATCH",
+              "/teacher/skills/" + skill.id,
+              { ...feedback, title: "Cannot change catalogue" },
+              false,
+              th,
+            )
+          ).statusCode,
+          400,
+        );
+        const saved = await request(
+          "PATCH",
+          "/teacher/skills/" + skill.id,
+          feedback,
+          false,
+          th,
+        );
+        assert.equal(saved.statusCode, 200, saved.body);
+        const history = (await json("GET", "/admin/state")).skillHistory.find(
+          (r: any) => r.skill_id === skill.id && r.actor_id === user.id,
+        );
+        assert.equal(history.feedback, feedback.teacherFeedback);
+        assert.equal(
+          (
+            await request(
+              "PUT",
+              "/admin/users/" + user.id + "/grants",
+              { recordIds: [] },
+              false,
+              th,
+            )
+          ).statusCode,
+          403,
+        );
+        const finance = current.records.find(
+          (r: any) => r.entity === "contributions",
+        );
+        assert.equal(
+          (
+            await request("PUT", "/admin/users/" + user.id + "/grants", {
+              recordIds: [finance.id],
+            })
+          ).statusCode,
+          400,
+        );
+        assert.equal(
+          (await request("GET", "/teacher/state", undefined, false, th)).json()
+            .records.length,
+          2,
+        );
+        await json("PUT", "/admin/users/" + user.id + "/grants", {
+          recordIds: [skill.id],
+        });
+        assert.equal(
+          (await request("GET", "/media/" + evidence, undefined, false, th))
+            .statusCode,
+          404,
+        );
+        await json("PUT", "/admin/users/" + user.id + "/grants", {
+          recordIds: [skill.id, practice],
+        });
+        await json("DELETE", "/admin/invitations/" + invite.id);
+        assert.equal(
+          (await request("GET", "/teacher/state", undefined, false, th))
+            .statusCode,
+          401,
+        );
+        assert.equal(
+          (await request("GET", "/media/" + evidence, undefined, false, th))
+            .statusCode,
+          404,
+        );
+        await json("PUT", "/admin/users/" + user.id + "/access");
+        assert.equal(
+          (await request("GET", "/teacher/state", undefined, false, th))
+            .statusCode,
+          401,
+        );
+        assert.equal(
+          (
+            await pool.query("SELECT * FROM teacher_grants WHERE user_id=?", [
+              user.id,
+            ])
+          ).length,
+          0,
+        );
+        await json("DELETE", "/admin/practices/" + practice);
+        await json("DELETE", "/admin/practices/" + hidden);
+        assert.equal(
+          (await request("GET", "/media/" + evidence)).statusCode,
+          404,
         );
       },
     );

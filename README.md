@@ -1,4 +1,4 @@
-> **Local backend + Admin pilot (2026-11-16):** [Windows setup](docs/LOCAL_PILOT_WINDOWS.md) · [Architecture/API/security](docs/LOCAL_PILOT_ARCHITECTURE.md) · [Implementation report and device checklist](docs/LOCAL_PILOT_REPORT.md). Run the Fastify server, not a generic static file server. No production deployment; no payments or real child data. Historical frontend setup notes below predate this pilot.
+> **Local backend + Admin pilot (2026-11-16):** [Windows setup](docs/LOCAL_PILOT_WINDOWS.md) · [Architecture/API/security](docs/LOCAL_PILOT_ARCHITECTURE.md) · [Implementation report and device checklist](docs/LOCAL_PILOT_REPORT.md). Run the Fastify server, not a generic static file server. YouTube-only video embeds, scoped teacher feedback and private practice images are included. No production deployment; no payments or real child data. Historical frontend setup notes below predate this pilot.
 
 # 🥁 Luca Drum Quest
 

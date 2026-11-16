@@ -15,7 +15,12 @@ for (const [id, endpoint] of [
         method: "POST",
         body: Object.fromEntries(new FormData(form)),
       });
-      location.href = result.role === "PARENT_ADMIN" ? "/admin" : "/family";
+      location.href =
+        result.role === "PARENT_ADMIN"
+          ? "/admin"
+          : result.role === "TEACHER"
+            ? "/teacher"
+            : "/family";
     } catch (error) {
       document.getElementById("message").textContent = error.message;
     } finally {
