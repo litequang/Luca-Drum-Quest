@@ -6,20 +6,20 @@
 
 **CONFIRMED:** Một website hành trình học trống của Luca, khởi đầu ở tuổi 4, Vòng 1 là **24 tháng**. Gia đình huy động tài chính mua trống và học phí từ ông bà, người thân; cập nhật tiến độ và video. Bố mẹ muốn có chương trình và tiêu chí luyện tập cụ thể, không giao hoàn toàn cho giáo viên.
 
-**CONFIRMED:** Luca đang được nghe nhạc thờ phượng của **Nissi United** và chủ động gõ theo. Giáo trình cần dùng những trải nghiệm âm nhạc quen thuộc này làm động lực.
+**CONFIRMED:** Mục tiêu học trống là **chơi/đệm nhạc thờ phượng Chúa**. Hai năm học cần **nghiêm túc, bài bản, có kỹ năng và tiêu chí đánh giá**, không học qua loa. Luca đang được nghe nhạc thờ phượng của **Nissi United** và chủ động gõ theo. Giáo trình dùng nhạc quen làm động lực.
 
 **PROPOSED:** Kể câu chuyện kiểu startup gia đình: ông bà là “nhà đầu tư thiên thần”, Luca là “CEO tiếng trống”, giai đoạn đầu mang tên “Season 1 / Vòng 1”. Đây chỉ là ngôn ngữ vui, không phải hứa lợi nhuận hoặc gọi vốn đầu tư pháp lý.
 
 ## Điều gì được xem là thành công?
 
 1. **Luca vẫn yêu thích âm nhạc** và sẵn sàng tự khám phá tiếng trống.
-2. Luca tiến bộ trong nghe, giữ và bắt chước nhịp; phát triển điều khiển tay/chân ở mức phù hợp.
+2. Luca tiến bộ trong nghe, giữ và bắt chước nhịp; phát triển kỹ thuật và điều khiển tay/chân phù hợp để **đệm các bài thờ phượng**, biết nghe người hát/người dẫn và tiết chế âm lượng.
 3. Có thói quen luyện ngắn ở nhà, được hỗ trợ tích cực thay vì bị ép.
 4. Bố mẹ hiểu rõ bài tập, quan sát được tiến bộ bằng mẫu ghi và video.
 5. Giáo viên có cơ chế kiểm tra kỹ thuật, sửa sai, điều chỉnh mục tiêu và mở bài mới khi phù hợp.
 6. Các thành viên gia đình được cập nhật tiến trình và ngân sách minh bạch trong phạm vi đồng ý.
 
-**Không phải KPI:** bắt buộc học hết 104 kỹ năng, buổi nào cũng có bài mới, chơi như bản thu Nissi United, thi chứng chỉ vào đúng 6 tuổi, hoặc số tiền tài trợ là thước đo khả năng của trẻ.
+**Không phải KPI:** bắt buộc học hết 104 kỹ năng, buổi nào cũng có bài mới, chơi như bản thu Nissi United, thi chứng chỉ vào đúng 6 tuổi, hoặc số tiền tài trợ là thước đo khả năng của trẻ. 24 tháng không mặc định tạo ra trình độ session drummer chuyên nghiệp của người lớn.
 
 ## Triết lý dạy và học (PROPOSED)
 
@@ -43,6 +43,10 @@
 | Xác nhận chuyên môn | Chính | Ghi nhận bằng chứng |
 | Cảm xúc, hứng thú, nghỉ ngơi | Cùng chia sẻ | Cùng chia sẻ |
 | Ngân sách & nhật ký dự án | Tham khảo | Quản lý |
+
+## Trọng tâm chuyên biệt: nhạc thờ phượng
+
+Dạy kỹ thuật đúng để phục vụ âm nhạc, không chạy theo các màn solo hoặc độ khó không cần thiết. Năng lực quan trọng bao gồm **timing**, groove ổn định, **dynamics** (mạnh/nhẹ), nghe giai điệu và người hát, vào/dừng đúng lúc, nhận biết đoạn bài, fill ngắn không lấn át bài hát và phối hợp với người khác ở mức phù hợp tuổi. Mục tiêu dài hạn là có thể đệm một bài thờ phượng đơn giản với hướng dẫn khi cần, chứ không có lời hứa đạt trình độ chuyên nghiệp theo nghĩa nghề nghiệp sau hai năm.
 
 ## Âm nhạc Nissi United trong giáo trình
 
