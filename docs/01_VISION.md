@@ -4,11 +4,11 @@
 
 ## Dự án này là gì?
 
-**CONFIRMED:** Một website hành trình học trống của Luca, khởi đầu ở tuổi 4, Vòng 1 là **24 tháng**. Gia đình huy động tài chính mua trống và học phí từ ông bà, người thân; cập nhật tiến độ và video. Bố mẹ muốn có chương trình và tiêu chí luyện tập cụ thể, không giao hoàn toàn cho giáo viên.
+**CONFIRMED:** Một website hành trình học trống của Luca, khởi đầu ở tuổi 4, **gồm nhiều vòng nối tiếp nếu gia đình tiếp tục**. **Vòng 1 là 24 tháng**; mục tiêu gây quỹ đủ học phí và mua trống/phụ kiện cho toàn bộ Vòng 1, không chia ra các vòng nhỏ. Vòng 2+ chưa chốt thông số. Gia đình huy động tài chính mua trống và học phí từ ông bà, người thân; cập nhật tiến độ và video. Bố mẹ muốn có chương trình và tiêu chí luyện tập cụ thể, không giao hoàn toàn cho giáo viên.
 
 **CONFIRMED:** Mục tiêu học trống là **chơi/đệm nhạc thờ phượng Chúa**. Hai năm học cần **nghiêm túc, bài bản, có kỹ năng và tiêu chí đánh giá**, không học qua loa. Luca đang được nghe nhạc thờ phượng của **Nissi United** và chủ động gõ theo. Giáo trình dùng nhạc quen làm động lực.
 
-**PROPOSED:** Kể câu chuyện kiểu startup gia đình: ông bà là “nhà đầu tư thiên thần”, Luca là “CEO tiếng trống”, giai đoạn đầu mang tên “Season 1 / Vòng 1”. Đây chỉ là ngôn ngữ vui, không phải hứa lợi nhuận hoặc gọi vốn đầu tư pháp lý.
+**CONFIRMED:** Gọi đúng là **gây quỹ/ủng hộ tự nguyện**, không phải đầu tư, không chia cổ phần hoặc hoàn vốn. **PROPOSED:** Dùng ngôn ngữ vui kiểu “người đồng hành”, “quỹ nhịp trống”, “Season 1 / Vòng 1”, không gây áp lực cho gia đình.
 
 ## Điều gì được xem là thành công?
 
