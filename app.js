@@ -22,7 +22,8 @@ function navigate(page, updateHash = true) {
   $$('[data-route]').forEach(control => {
     const active = control.dataset.route === next;
     control.classList.toggle('is-active', active);
-    if (control.closest('.desktop-nav')) {
+    // Both desktop and bottom touch navigation expose the selected page.
+    if (control.closest('nav')) {
       if (active) control.setAttribute('aria-current', 'page');
       else control.removeAttribute('aria-current');
     }
