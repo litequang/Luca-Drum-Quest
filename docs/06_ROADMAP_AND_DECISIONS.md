@@ -15,6 +15,7 @@
 |---|---|---|---|
 | 2026-11-16 | D-001 | CONFIRMED | Website vui về hành trình Luca 4 tuổi học trống, cập nhật video và kêu gọi hỗ trợ người thân |
 | 2026-11-16 | D-002 | CONFIRMED | **Season/Vòng 1 kéo dài trọn 2 năm**, thay cho ý tưởng một năm ban đầu |
+| 2026-11-16 | D-014 | CONFIRMED | **Luca Drum Quest là dự án gồm nhiều vòng**; Vòng 1 gồm 24 tháng và quỹ trọn gói học phí + bộ trống. Không chia Vòng 1 thành nhiều vòng nhỏ; Vòng 2+ chưa chốt nội dung/kinh phí/thời hạn |
 | 2026-11-16 | D-003 | CONFIRMED | Dự kiến 1 buổi với giáo viên/tuần; ngân sách tham khảo 500–700 nghìn VND/buổi |
 | 2026-11-16 | D-004 | CONFIRMED | Có bài học/kỹ năng chi tiết, luyện ở nhà trước khi tăng độ khó; giáo viên dạy kỹ năng mới và sửa lỗi |
 | 2026-11-16 | D-005 | CONFIRMED | Luca thường nghe nhạc thờ phượng Nissi United và gõ theo |
@@ -51,7 +52,7 @@
 - [ ] Chốt domain, hosting, stack, backend storage; Codex lập đề xuất kiến trúc trước khi code.
 - [ ] Tạo Practice Log, Teacher Notes, quản lý buổi học với quyền riêng tư và API; không tự sửa lại UI.
 - [ ] Backend riêng tư: video phân quyền, chia sẻ mời, xóa dữ liệu và bảo vệ trẻ (xem BACKEND_HANDOFF.md).
-- [x] Frontend máy tính học phí demo 500–700k/buổi, 104 buổi lập ngân sách.
+- [x] Frontend máy tính học phí demo 500–700k/buổi, 104 buổi lập ngân sách Vòng 1. Hướng dữ liệu tương lai phải hỗ trợ nhiều vòng.
 - [ ] Backend sổ thu chi thực và mục tiêu hỗ trợ được gia đình duyệt, không có thanh toán tự động.
 - [ ] Test thực tế mobile, bảo mật media và thao tác của bố mẹ.
 
@@ -61,7 +62,7 @@
 - [ ] Gamification nhẹ: huy hiệu, các cột mốc.
 - [ ] Tích hợp nhận xét giáo viên trực tiếp nếu thầy đồng ý.
 - [ ] Chọn tính năng thông báo nhắc luyện tập theo hướng không gây áp lực.
-- [ ] Báo cáo cuối Season 1; bàn xem có Season 2 hay không.
+- [ ] Báo cáo cuối Vòng 1; nếu gia đình quyết định tiếp tục, xác định mục tiêu/chương trình/ngân sách của Vòng 2 và tạo vòng mới độc lập. Không tự giả định ngày mở hoặc số tiền.
 
 ## Giao việc tiếp theo cho Codex
 
