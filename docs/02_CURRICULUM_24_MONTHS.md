@@ -1,10 +1,11 @@
 # 02 — Giáo trình học trống 24 tháng / độ tuổi dự kiến 4–6
 
-**Status: PROPOSED v0.1.** Để cùng giáo viên kiểm tra; không phải giáo án đã được giáo viên phê duyệt. Không áp lịch như deadline với trẻ.
+**Status: PROPOSED v0.2.** Mục tiêu đã chốt: học trống **bài bản để chơi/đệm nhạc thờ phượng Chúa**. 8 chặng/kỹ năng cụ thể vẫn cần giáo viên duyệt. Không áp lịch như deadline với trẻ.
 
 ## Thiết lập
 
 - **CONFIRMED:** Vòng 1 = một giai đoạn 24 tháng. Dự kiến 1 buổi/tuần; 500–700k VND/buổi.
+- **CONFIRMED:** định hướng học **có kỹ thuật và đánh giá nghiêm túc**, nhằm chơi nhạc thờ phượng Chúa; Nissi United là nguồn bài nghe quen. Không cam kết lên trình độ chuyên nghiệp người lớn sau 2 năm.
 - **PROPOSED:** 8 chặng, mỗi chặng 3 tháng; đánh giá sau từng 4 tuần, đánh giá sâu mỗi 3 tháng.
 - 12 tuần đầu là thử nghiệm **phương pháp học**, không phải “vòng gọi vốn phụ”.
 - Khoảng 104 buổi là mô hình tính tiền nếu 52 tuần/năm, không phải lịch cố định/đã thanh toán; nghỉ lễ, ốm, dời lịch tùy thực tế.
@@ -50,7 +51,7 @@ Các nhóm trên có thể chạy song song ngay từ tháng 1.
 | | 23 | Chuẩn bị 1–2 tiết mục đơn giản | Ghép các đoạn ngắn |
 | | 24 | Tổng kết Vòng 1 | Một tiết mục vui có mở/kết, hỗ trợ nếu cần |
 
-**Mục tiêu dài hạn:** có thể đánh một đoạn nhạc đơn giản tương đối đều, tư thế an toàn và tiếp tục yêu âm nhạc. Không áp kỳ thi hay bài diễn cố định cho mọi trẻ 6 tuổi.
+**Mục tiêu dài hạn:** có thể đệm các bài/đoạn **nhạc thờ phượng đơn giản** với groove ổn định, biết nghe và theo tín hiệu, chọn lực đánh vừa phải, tư thế an toàn và vẫn yêu âm nhạc. Không áp kỳ thi hay bài diễn cố định cho mọi trẻ 6 tuổi.
 
 ## 12 tuần đầu — giáo án sơ bộ để xin ý kiến thầy
 
