@@ -1,6 +1,6 @@
 # 06 — Roadmap, nhật ký quyết định và câu hỏi cần chốt
 
-**Trạng thái:** DISCOVERY. Repo được khởi tạo ngày 16/11/2026 để AI/Codex nắm bối cảnh. **Chưa có code hoặc website chạy.**
+**Trạng thái:** FRONTEND DEMO. Repo khởi tạo ngày 16/11/2026; hiện đã có index.html, styles.css, app.js, data.js cho website tương tác tĩnh. Chưa có backend/auth/video/private media, thanh toán hay deploy production.
 
 ## Quy ước trạng thái
 
@@ -22,7 +22,10 @@
 | 2026-11-16 | D-007 | PROPOSED | Dùng 6 trục kỹ năng, 8 chặng ba tháng, 12 tuần đầu là pilot phương pháp |
 | 2026-11-16 | D-008 | PROPOSED | Hệ thống LEARNING/PRACTICING/HOME READY/TEACHER PASS |
 | 2026-11-16 | D-009 | PROPOSED | Website chia Family View và Parent Learning Dashboard, video mặc định riêng tư |
-| 2026-11-16 | D-010 | OPEN | Giáo trình thiên về kết hợp âm nhạc + kỹ thuật, kỹ thuật thuần hay khám phá cảm âm? Chưa có câu trả lời cuối cùng |
+| 2026-11-16 | D-010 | CONFIRMED | Học **bài bản 24 tháng để chơi/đệm nhạc thờ phượng Chúa**; không phải chương trình đào tạo chuyên nghiệp để hành nghề |
+| 2026-11-16 | D-011 | CONFIRMED | ChatGPT tự làm frontend trên main; Codex phụ trách backend theo đề bài riêng, không redesign UI |
+| 2026-11-16 | D-012 | PROPOSED | Nội dung giáo trình ưu tiên kỹ thuật căn bản + timing/groove/dynamics + theo người dẫn, qua bài nhạc thờ phượng |
+| 2026-11-16 | D-013 | OPEN | Chi tiết bài nhạc và giáo trình A–Z, lưu trữ, auth/hosting cho backend chưa chốt |
 
 ## Lộ trình ưu tiên
 
@@ -42,13 +45,14 @@
 - [ ] Thu thập ý kiến sau 4 tuần; đánh giá sau 12 tuần.
 - [ ] Điều chỉnh trục kỹ năng / mốc 24 tháng theo phản ứng thực tế.
 
-### P2 — MVP website (WAITING FOR APPROVAL)
+### P2 — Website MVP (FRONTEND DEMO COMPLETED; BACKEND WAITING FOR APPROVAL)
 
-- [ ] Chốt thiết kế giao diện, domain, hosting, stack; chỉ sau đó mới code.
-- [ ] Tạo landing page Season 1, timeline và bài cập nhật.
-- [ ] Tạo Skill Map, Practice Log, Teacher Notes, quản lý buổi học.
-- [ ] Video có phân quyền, chia sẻ mời, xóa và bảo vệ dữ liệu trẻ.
-- [ ] Ngân sách học phí/thiết bị, mục tiêu tài trợ và thống kê thu chi.
+- [x] Tạo frontend tĩnh responsive, landing Season 1, timeline 8 chặng, Skill Cards, journal demo và ngân sách minh họa.
+- [ ] Chốt domain, hosting, stack, backend storage; Codex lập đề xuất kiến trúc trước khi code.
+- [ ] Tạo Practice Log, Teacher Notes, quản lý buổi học với quyền riêng tư và API; không tự sửa lại UI.
+- [ ] Backend riêng tư: video phân quyền, chia sẻ mời, xóa dữ liệu và bảo vệ trẻ (xem BACKEND_HANDOFF.md).
+- [x] Frontend máy tính học phí demo 500–700k/buổi, 104 buổi lập ngân sách.
+- [ ] Backend sổ thu chi thực và mục tiêu hỗ trợ được gia đình duyệt, không có thanh toán tự động.
 - [ ] Test thực tế mobile, bảo mật media và thao tác của bố mẹ.
 
 ### P3 — Nâng cấp sau pilot (FUTURE)
@@ -58,6 +62,10 @@
 - [ ] Tích hợp nhận xét giáo viên trực tiếp nếu thầy đồng ý.
 - [ ] Chọn tính năng thông báo nhắc luyện tập theo hướng không gây áp lực.
 - [ ] Báo cáo cuối Season 1; bàn xem có Season 2 hay không.
+
+## Giao việc tiếp theo cho Codex
+
+Đọc docs/BACKEND_HANDOFF.md. Đầu tiên làm B0 tài liệu kiến trúc và threat model, chưa viết backend hay thay UI. Sau khi owner duyệt mới sang B1/B2.
 
 ## Các câu hỏi chưa giải quyết
 
@@ -75,6 +83,6 @@
 
 - Luôn đọc `PROJECT_MAP.md` và `AGENTS.md` trước.
 - Không tự tuyên bố đã làm phần chưa làm.
-- Khi được giao một phase, triển khai đúng phase; đừng tự thêm payment integration hay đăng video trẻ em công khai.
+- Khi được giao một phase, triển khai đúng phase; **không thay giao diện frontend đã làm**, đừng tự thêm payment integration hay đăng video trẻ em công khai.
 - Nếu phát hiện mâu thuẫn, ưu tiên quyết định **CONFIRMED mới nhất** và báo cáo rõ.
 - Sau khi chốt vấn đề mới, cập nhật docs và map trong cùng PR/commit.
