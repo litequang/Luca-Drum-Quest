@@ -76,8 +76,20 @@ function renderStages() {
 $('#stage-grid').addEventListener('click', event => {
   const card = event.target.closest('[data-stage]');
   if (!card) return;
+  const grid = $('#stage-grid');
+  const previousScroll = grid.scrollLeft;
   currentStage = Number(card.dataset.stage);
   renderStages();
+  // On phones the 8 stages are a horizontally scrollable rail.
+  // Preserve its position when the selected card list is re-rendered.
+  grid.scrollLeft = previousScroll;
+  if (window.matchMedia('(max-width: 680px)').matches) {
+    const detail = $('#stage-detail');
+    detail.scrollIntoView({
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+      block: 'nearest'
+    });
+  }
 });
 
 function renderSkillFilters() {
