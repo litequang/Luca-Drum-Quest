@@ -36,9 +36,9 @@ svg{max-width:100%}
 .brand-type .brand-dot{position:absolute;left:50px;color:var(--coral)}
 .brand-type small{font-size:9px;letter-spacing:.21em;margin-top:3px;font-weight:700}
 .desktop-nav{display:flex;align-items:center;gap:31px}
-.nav-link{border:0;background:transparent;color:#52636a;font-size:12px;font-weight:600;padding:12px 0;white-space:nowrap}
+.nav-link{position:relative;border:0;background:transparent;color:#52636a;font-size:12px;font-weight:600;padding:12px 0;white-space:nowrap}
 .nav-link:hover,.nav-link.is-active{color:var(--deep)}
-.nav-link.is-active::after{content:"";display:block;margin:auto;background:var(--coral);width:6px;height:6px;border-radius:50%;position:absolute;transform:translate(calc(50% + 21px),2px)}
+.nav-link.is-active::after{content:"";display:block;background:var(--coral);width:5px;height:5px;border-radius:50%;position:absolute;bottom:2px;left:calc(50% - 2.5px)}
 .header-tools{display:flex;align-items:center;gap:22px}
 .preview-chip{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#56666d;display:flex;gap:9px;align-items:center;white-space:nowrap}
 .preview-pulse{width:7px;height:7px;border-radius:50%;background:#d58a58}
@@ -61,7 +61,7 @@ svg{max-width:100%}
 .eyebrow{font-size:10px;letter-spacing:.23em;line-height:1.5;color:#ca7555;font-weight:800;margin:0 0 19px;text-transform:uppercase}
 .eyebrow.on-dark{color:#ffb98b;display:flex;align-items:center;gap:12px}
 .eyebrow-line{display:inline-block;height:1px;width:24px;background:currentColor}
-.hero h1{font-size:clamp(49px,4.8vw,76px);font-weight:700;letter-spacing:-.072em;margin:0 0 26px;max-width:690px;white-space:nowrap}
+.hero h1{font-size:clamp(49px,4.8vw,76px);font-weight:700;letter-spacing:-.072em;margin:0 0 26px;max-width:690px;white-space:normal}
 .hero h1 em{color:#ffb98b;font-style:normal}
 .hero-description{max-width:505px;font-size:15px;line-height:2;opacity:.86;margin:0 0 26px}
 .hero-description strong{color:white;font-weight:700}
