@@ -4,7 +4,7 @@
 
 ## Giọng điệu và định vị
 
-**Luca Drum Quest — Season 1**: giọng vui, ấm áp, một chút châm biếm startup (“gọi vốn”, “nhà đầu tư thiên thần”, “CEO 4 tuổi”) nhưng không biến con thành nghĩa vụ tạo thành tích, cũng không làm người thân cảm thấy phải quyên góp.
+**Luca Drum Quest — hành trình nhiều Vòng (Season)**: giọng vui, ấm áp, nhưng dùng đúng khái niệm **gây quỹ hỗ trợ tự nguyện** thay vì gọi vốn/đầu tư. **Vòng 1 = 24 tháng và huy động đủ học phí + mua trống/phụ kiện trong cùng một chiến dịch**, không chia thành các vòng nhỏ để xin lặp lại. **Vòng 2+** có thể được khởi động sau, chưa có ngân sách hoặc lịch cụ thể. Không biến con thành nghĩa vụ tạo thành tích hay làm người thân cảm thấy bắt buộc đóng góp.
 
 **Người xem:** ông bà, cô chú, bạn bè thân được mời. **Quản trị:** bố mẹ. **Người đồng hành chuyên môn:** giáo viên (quyền tùy chọn, chưa chốt).
 
@@ -12,7 +12,7 @@
 
 ### A. Family View / Nhật ký gia đình
 
-- **Hero**: giới thiệu Luca Drum Quest, Vòng 1 = 24 tháng, mục tiêu học vì niềm vui.
+- **Hero**: giới thiệu Luca Drum Quest, dự án có nhiều vòng; **Vòng 1 = 24 tháng**, mục tiêu chơi trống thờ phượng Chúa bài bản, gây quỹ đủ cho vòng đầu tiên.
 - **Progress Timeline**: các chặng 3 tháng, milestone, ảnh/clip *có quyền chia sẻ*, huy hiệu minh họa.
 - **Video Diary**: video tập ngắn theo ngày/chặng/kỹ năng. Tùy chọn đặt video “chỉ bố mẹ”, “gia đình được mời”, hoặc “có thể chia sẻ bằng link”.
 - **Support the Quest**: giải thích kinh phí học trống + dụng cụ; hỗ trợ tùy tâm; có thể ủng hộ tiền hoặc tặng thiết bị.
@@ -36,9 +36,10 @@ Có thể chỉ dùng form nhận xét 1 phút hoặc link phản hồi an toàn
 ## Nội dung có cấu trúc (conceptual data model)
 
 ```text
-Project (Season 1, 24 months)
-  ├─ FundingGoals / BudgetEntries
-  ├─ Stages (8 stages, proposed)
+Project (multi-round / multi-season)
+  ├─ Rounds (Season 1: 24 months; Season 2+ not yet planned)
+  │    ├─ FundingGoals / BudgetEntries (per round)
+  │    └─ Stages (Season 1: 8 stages, proposed)
   │    ├─ Milestones
   │    └─ Updates
   ├─ Skills (axis, prerequisites, rubric)
