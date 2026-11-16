@@ -40,3 +40,27 @@ Code responsive đã được cập nhật và kiểm tra cấu trúc, **chưa c
 ## Giao Codex
 
 Codex backend **không được tự ý thay đổi** thiết kế, CSS, hệ thống navigation hoặc breakpoints. Nếu backend cần chỉnh DOM, trao đổi rõ và giao phần UI về luồng frontend thay vì viết đè.
+---
+
+## v0.3 — sửa UX điện thoại theo phản hồi mới (16/11/2026)
+
+**Tình trạng:** đã cập nhật CSS/JS/HTML trên main; cần xác nhận lại trên thiết bị thật.
+
+- Rút gọn 3 lớp media query cũ chồng chéo và phần patch v0.2, thay bằng **một hệ breakpoint chính** 1100 / 920 / 680 / 390px. Không đổi màu thương hiệu hoặc cấu trúc trang.
+- Điện thoại: giảm chiều cao hero/minh họa, thu gọn khoảng trắng, tăng cỡ chữ nội dung quan trọng, tránh chữ nhỏ 10–11px trên thẻ chính.
+- Phần giáo trình: 8 chặng chuyển thành **dải cuộn ngang** trên điện thoại, giữ vị trí cuộn sau khi chọn; chi tiết chặng được đưa vào vùng nhìn thấy (với reduced motion vẫn hoạt động).
+- Nhật ký: trên điện thoại chuyển **card ảnh lớn** sang danh sách ảnh nhỏ bên trái + nội dung bên phải, giúp xem nhiều cập nhật hơn.
+- Bottom dock trên phone và iPad: đổi ký tự trang trí thành **SVG icons nhất quán**, active highlight nhẹ, 4 nút dễ chạm; chú ý Safe Area.
+- iPad vẫn dùng bố cục riêng; card kỹ năng, bảng ngân sách, filter, dialog giữ đầy đủ.
+- Không thêm backend, thanh toán, nhận quỹ thực hay nội dung cá nhân.
+
+### Kiểm tra thực tế (ưu tiên)
+
+1. iPhone/Android 360px, 375px, 390px, 414px; test cả màn hình dài và thiết bị thấp.
+2. Safari iPhone: kiểm tra dock và nút bấm với thanh địa chỉ hiện/ẩn, Safe Area trên máy tai thỏ.
+3. Giáo trình: vuốt hết 8 chặng, chọn chặng cuối, kiểm tra vẫn thấy đúng chi tiết; thử lọc nhóm kỹ năng và mở/đóng chi tiết kỹ năng.
+4. Nhật ký: 3 bài demo đều hiển thị, không bị chữ cắt hoặc tràn ngang.
+5. Quỹ Luca: nhập số tiền thiết bị ước tính, kéo học phí 500–700k; xác minh mục tiêu chỉ là ước tính, không hiển thị số tiền nhận giả.
+6. Xoay màn hình điện thoại và iPad; không có nội dung bị dock che hay nút chạm quá sát mép.
+
+**Giới hạn:** chưa có ảnh chụp hoặc báo cáo từ thiết bị thật; nếu còn lỗi theo model máy, cần ảnh + kích thước màn hình để sửa chính xác.
