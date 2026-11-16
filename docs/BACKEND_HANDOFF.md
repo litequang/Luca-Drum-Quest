@@ -1,6 +1,6 @@
 # Backend Handoff — Luca Drum Quest (dành cho Codex)
 
-**Trạng thái:** SPEC / CHƯA TRIỂN KHAI. Ngày 2026-11-16.
+**Trạng thái:** Historical B0/spec reference, superseded for local implementation by owner authorization on 2026-11-16. The local backend/admin pilot now exists; see [LOCAL_PILOT_ARCHITECTURE.md](LOCAL_PILOT_ARCHITECTURE.md) for the implemented API/security contract and [LOCAL_PILOT_WINDOWS.md](LOCAL_PILOT_WINDOWS.md) for setup. No production deployment, payment handling or real child media is authorized. Unimplemented video/teacher/hosting requirements remain OPEN. The older B0 prompt below is retained as history, not an active prohibition against the authorized local pilot.
 
 ## Tóm tắt bối cảnh (đọc trước khi code)
 

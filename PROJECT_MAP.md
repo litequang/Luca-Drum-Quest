@@ -2,7 +2,9 @@
 
 **Ngày cập nhật:** 2026-11-16  
 **Repository:** https://github.com/litequang/Luca-Drum-Quest  
-**Trạng thái:** FRONTEND DEMO trên `main` (HTML/CSS/JS modules); backend, lưu trữ, xác thực, tài trợ thật và deployment chưa có. Các trang frontend là prototype được chủ dự án yêu cầu làm trực tiếp, không phải sản phẩm production.
+**Trạng thái:** LOCAL BACKEND + ADMIN PILOT implemented on `codex/local-backend-admin-pilot`; no production deployment. Node 24/TypeScript/Fastify/MariaDB, authenticated parent admin, audited manual finance, curriculum/lesson/practice/journal forms, invited family viewing and protected sanitized images. Video uploads, teacher accounts, backup/restore drill and real-device verification remain incomplete. Original public HTML/CSS is preserved; no real child/supporter data is seeded.
+
+**CONFIRMED C12 (2026-11-16):** Owner authorized local implementation beyond historical B0, plus branch/commit/push/PR. Production/media/payment restrictions remain. Current setup: [LOCAL_PILOT_WINDOWS.md](docs/LOCAL_PILOT_WINDOWS.md); design/API/security: [LOCAL_PILOT_ARCHITECTURE.md](docs/LOCAL_PILOT_ARCHITECTURE.md); validation and device checklist: [LOCAL_PILOT_REPORT.md](docs/LOCAL_PILOT_REPORT.md). Historical sections below retain earlier planning context and are superseded by C12 for the local pilot.
 
 > **Dành cho AI mới tiếp quản:** Đọc trang này trước. Không suy đoán rằng một đề xuất trong tài liệu đã được người dùng đồng ý triển khai.
 
@@ -55,11 +57,19 @@ Luca Drum Quest là website dự án gia đình (vui, ấm áp, có chút hài h
 | `index.html` | Bố cục 4 trang, minh họa bộ trống SVG và mobile nav |
 | `styles.css` | Design tokens, **responsive v0.3 phone/iPad (single breakpoint system)**, SVG bottom dock, reduced-motion |
 | `data.js` | Chỉ dữ liệu giả: 8 chặng, Skill Cards, ví dụ nhật ký |
-| `app.js` | JS render, lọc, dialog, mô phỏng chi phí; chưa có API |
+| `app.js` / `apiClient.js` | Existing render/navigation plus same-origin public API; no demo fallback |
 | `docs/BACKEND_HANDOFF.md` | Kế hoạch API, bảo mật, dữ liệu và ranh giới công việc Codex; dữ liệu phải hỗ trợ nhiều vòng |
 | `docs/FRONTEND_RESPONSIVE_2026_11_16.md` | Layout phone/iPad (thiết kế v0.2), checklist kiểm thử thiết bị thật |
 
-**Chạy frontend:** `python -m http.server 5173` ở root, vào `http://localhost:5173` (không mở `file://` vì ES modules). Chưa có bước production deploy.
+**Chạy local pilot:** Follow `docs/LOCAL_PILOT_WINDOWS.md`: migrate → seed → one-time admin:init → `npm run dev`; open `http://localhost:3000` and `/admin`. **Do not serve the checkout using a generic static server**, which could expose private local files. No production deployment.
+
+| New path | Responsibility |
+|---|---|
+| `server/` | REST API, Zod contracts, MariaDB access, sessions, initialization and cleanup |
+| `migrations/001_initial.sql` | Initial relational IDs, JSON records, auth, audit, invitations and media schema |
+| `admin/` | Responsive vanilla-JS parent forms, login/invite acceptance and read-only family view |
+| `.env.example`, `compose.yaml`, `package.json` | Secret-free environment template, optional local DB containers, run/test commands |
+| `tests/` | Real MariaDB integration/security tests plus JSDOM interaction tests |
 
 ## 5b. Tài liệu nền
 

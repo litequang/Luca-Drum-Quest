@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Admin · Luca Drum Quest</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/admin/admin.css" />
+  </head>
+  <body>
+    <main class="admin-shell">
+      <header class="admin-top">
+        <h1>Luca Drum Quest · Admin</h1>
+        <a href="/">Website</a><a href="/family">Family View</a
+        ><button id="logout">Đăng xuất</button>
+      </header>
+      <p class="help">
+        Local pilot · Không tải media thật của trẻ. Tiêu chí kỹ năng cần giáo
+        viên xác nhận; không tự động PASS.
+      </p>
+      <div id="message" role="status" aria-live="polite"></div>
+      <label
+        >Vòng đang quản lý
+        <select id="season" class="season-select"></select
+      ></label>
+      <nav id="tabs" class="admin-nav" aria-label="Quản trị"></nav>
+      <section id="content"></section>
+      <section id="editor"></section>
+    </main>
+    <script type="module" src="/admin/admin.js"></script>
+  </body>
+</html>

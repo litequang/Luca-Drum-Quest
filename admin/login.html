@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Đăng nhập · Luca Drum Quest</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/admin/admin.css" />
+  </head>
+  <body>
+    <main class="login-shell">
+      <a href="/">← Luca Drum Quest</a>
+      <section class="admin-card">
+        <h1>Đăng nhập</h1>
+        <p class="help">
+          Local pilot · Chỉ tài khoản đã được phụ huynh cho phép. Không đăng ký
+          công khai.
+        </p>
+        <p id="message" role="status"></p>
+        <form id="login" class="admin-form">
+          <label
+            >Email<input
+              name="email"
+              type="email"
+              autocomplete="username"
+              required
+              maxlength="254" /></label
+          ><label
+            >Mật khẩu<input
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              required
+              maxlength="128" /></label
+          ><button class="primary">Đăng nhập</button>
+        </form>
+      </section>
+      <details class="admin-card">
+        <summary>Nhận lời mời gia đình</summary>
+        <form id="accept" class="admin-form">
+          <label>Mã mời<input name="token" required autocomplete="off" /></label
+          ><label
+            >Email<input
+              name="email"
+              type="email"
+              required
+              autocomplete="username" /></label
+          ><label
+            >Mật khẩu mới (ít nhất 14 ký tự)<input
+              name="password"
+              type="password"
+              minlength="14"
+              maxlength="128"
+              required
+              autocomplete="new-password" /></label
+          ><button>Nhận lời mời</button>
+        </form>
+      </details>
+    </main>
+    <script type="module" src="/admin/login.js"></script>
+  </body>
+</html>

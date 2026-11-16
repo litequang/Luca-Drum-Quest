@@ -1,6 +1,26 @@
 # 06 — Roadmap, nhật ký quyết định và câu hỏi cần chốt
 
-**Trạng thái:** FRONTEND DEMO. Repo khởi tạo ngày 16/11/2026; hiện đã có index.html, styles.css, app.js, data.js cho website tương tác tĩnh. Chưa có backend/auth/video/private media, thanh toán hay deploy production.
+**Trạng thái:** LOCAL BACKEND + ADMIN PILOT implemented; no production deployment or payment integration. See [LOCAL_PILOT_REPORT.md](LOCAL_PILOT_REPORT.md) for implementation scope, actual test results and remaining gates. Earlier B0-only instructions below are historical and superseded for local development by D-015.
+
+| Ngày | Mã | Trạng thái | Nội dung |
+|---|---|---|---|
+| 2026-11-16 | D-015 | CONFIRMED | Owner explicitly authorized Node 24/TypeScript/Fastify/MariaDB local backend, secure Admin Dashboard, API integration, audited manual finance and a branch/commit/push/PR; no production deployment, real child data or payments |
+| 2026-11-16 | D-016 | IMPLEMENTED LOCAL | Parent sessions/CSRF/rate limits; season/project/finance/lesson/skill/practice/journal forms; published public projections; single-use invited family access and revocation; sanitized private images |
+| 2026-11-16 | D-017 | OPEN / PRODUCTION BLOCKER | Video transcoding/storage, teacher-scoped accounts, private-media security review, backup/restore, account recovery, real-device checks, hosting and full budget/schedule approval |
+
+## Local pilot implementation checklist (current)
+
+- [x] Persistent MariaDB migrations and idempotent draft-curriculum seed, no fabricated events or future seasons.
+- [x] Secure one-time admin initialization, login/logout, absolute session expiry, server role checks and CSRF/origin protection.
+- [x] Parent management of project, explicit seasons, targets/budgets, gifts/expenses with transactional audit, stages, skills/history, lessons, practice and journal visibility.
+- [x] Existing public frontend reads live approved data; finance totals separated from spending; public HTML/CSS retained.
+- [x] Protected generated-image upload, metadata stripping, quotas/deletion, no unrestricted media folder.
+- [x] Single-use family invitations, expiry/revocation/regrant and read-only shared journal.
+- [ ] Independent teacher workflow, video upload/transcoding and practice-evidence links.
+- [ ] Windows/native builds, browser visual regression and physical PC/iPad/mobile verification.
+- [ ] Encrypted backup/restore drill, retention/privacy review, production hosting and deployment approval.
+
+The original roadmap below remains as historical product/education planning; it does not revoke D-015.
 
 ## Quy ước trạng thái
 
@@ -46,7 +66,7 @@
 - [ ] Thu thập ý kiến sau 4 tuần; đánh giá sau 12 tuần.
 - [ ] Điều chỉnh trục kỹ năng / mốc 24 tháng theo phản ứng thực tế.
 
-### P2 — Website MVP (FRONTEND DEMO COMPLETED; BACKEND WAITING FOR APPROVAL)
+### P2 — Website MVP (local implementation above; historical planning checklist below)
 
 - [x] Tạo frontend tĩnh responsive, landing Season 1, timeline 8 chặng, Skill Cards, journal demo và ngân sách minh họa.
 - [ ] Chốt domain, hosting, stack, backend storage; Codex lập đề xuất kiến trúc trước khi code.

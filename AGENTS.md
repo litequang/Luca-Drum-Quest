@@ -1,5 +1,16 @@
 # AI / Codex instructions — Luca Drum Quest
 
+## Local pilot authorization — 2026-11-16 (CONFIRMED)
+
+The owner explicitly authorized Node 24/TypeScript/Fastify/MariaDB local backend and Admin Dashboard implementation, a dedicated branch, commit/push and PR. This supersedes historical B0-only limits for **local development**. No production deployment, payment processing or real child/supporter data is authorized. See [docs/LOCAL_PILOT_WINDOWS.md](docs/LOCAL_PILOT_WINDOWS.md), [docs/LOCAL_PILOT_ARCHITECTURE.md](docs/LOCAL_PILOT_ARCHITECTURE.md) and [docs/LOCAL_PILOT_REPORT.md](docs/LOCAL_PILOT_REPORT.md).
+
+- Preserve `index.html`, `styles.css`, navigation and the public visual design. New admin assets live in `admin/`; public `app.js` uses a live API adapter with no fictional fallback.
+- Serve only explicit public asset routes. Never expose the repository, `.env`, source, backup files or MEDIA_DIR through a static web server.
+- Tests require an explicitly configured disposable `_test` MariaDB database and erase its application rows. Never run them on the pilot or production database.
+- Run `npm run typecheck`, `npm run build` and the relevant `npm test` checks after functional changes. Report actual exit codes and distinguish DOM tests from rendered/physical-device checks.
+- Local images only (generated fixtures); video upload and independent teacher accounts remain deferred. Do not remove server permissions or media limits to work around these blockers.
+- Keep audit/reference checks inside transactions when extending JSON record contracts. Keep unknown budgets/progress null. Never create future seasons automatically or mark skills passed automatically.
+
 ## Đọc trước khi làm bất kỳ việc gì
 
 1. Đọc [PROJECT_MAP.md](PROJECT_MAP.md) để nắm trạng thái và các quyết định hiện hành.
@@ -33,7 +44,7 @@
 ## Engineering guardrails
 
 - **Frontend demo đã có trên main:** index.html, styles.css, app.js, data.js, do ChatGPT thiết kế trực tiếp. Codex không được tự đổi lại visual identity, layout, typography, CSS/mobile nav khi chỉ được giao backend. Xem docs/BACKEND_HANDOFF.md.
-- **Backend chưa triển khai.** Không tự quyết định stack, DB, nơi lưu video riêng tư, đăng nhập, kết nối thanh toán hoặc production deploy khi chủ dự án chưa duyệt.
+- **Local backend pilot đã được owner duyệt và triển khai** theo ghi chú ở đầu file. Stack local: Node 24/TypeScript/Fastify/MariaDB. Production hosting, video storage, payment integration và production deploy vẫn chưa được duyệt.
 - Khi triển khai: ưu tiên MVP nhỏ, mobile-first, dữ liệu có cấu trúc, đơn giản để gia đình cập nhật; không xây hệ thống thu tiền công khai phức tạp.
 - Mọi thay đổi nên có tóm tắt rõ: điều đã làm, điều chưa làm, rủi ro, cách kiểm tra thực tế.
 - Khi lập giáo trình, ghi rõ kỹ năng/tiêu chí PASS là dự thảo cần giáo viên xác nhận và điều chỉnh theo Luca.

@@ -1,3 +1,5 @@
+> **Local backend + Admin pilot (2026-11-16):** [Windows setup](docs/LOCAL_PILOT_WINDOWS.md) · [Architecture/API/security](docs/LOCAL_PILOT_ARCHITECTURE.md) · [Implementation report and device checklist](docs/LOCAL_PILOT_REPORT.md). Run the Fastify server, not a generic static file server. No production deployment; no payments or real child data. Historical frontend setup notes below predate this pilot.
+
 # 🥁 Luca Drum Quest
 
 **Season 1 / Vòng 1: 24 tháng học trống bài bản để chơi nhạc thờ phượng Chúa (khởi đầu ở tuổi 4).**
