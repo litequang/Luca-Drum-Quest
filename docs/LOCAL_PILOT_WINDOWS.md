@@ -2,6 +2,8 @@
 
 Use PowerShell from the repository root. Install Git, **Node 24 LTS** and either MariaDB 10.11+/11.4 locally or Docker Desktop with Linux containers. Native Argon2/sharp packages need a supported Windows x64/ARM64 Node installation; unsupported hosts may need their normal native build toolchain. Windows commands below are a handoff and have not been executed on a Windows machine in this Cloud task.
 
+For **PC build → HawkHost runtime**, use [HAWKHOST_SETUP.md](HAWKHOST_SETUP.md). In that workflow the host owns its database/.env, Linux installs its dependencies, and `/setup` creates the first website Admin. The local-PC database steps below are only for running the entire pilot on your PC.
+
 ## 1. Checkout and environment
 
 ```powershell
@@ -37,7 +39,12 @@ GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, REFERENCES
 
 Set DB_HOST/DB_PORT/DB_USER/DB_PASSWORD/DB_NAME accordingly. Do not use the DB root account in the web application. For production, separate migration credentials from runtime DML permissions.
 
-## 3. Migrate, seed and initialize one admin
+## 3. Initialize one admin
+
+Browser alternative: after setting the local DB connection in .env, run `npm run setup:key` and `npm run dev`. Open http://localhost:3000/setup, enter the generated SETUP_TOKEN from your private .env plus the desired email/password. The private-key installer migrates/seeds the configured DB and creates the first Admin; then it locks permanently. Remove SETUP_TOKEN and restart afterward. Do not run the CLI alternative to create another parent.
+
+The CLI alternative remains:
+
 
 ```powershell
 npm run db:migrate
@@ -77,7 +84,7 @@ Run either dev or start, not both on the same port. `npm start` still uses the r
 
 ## 4. Automated tests (separate disposable database)
 
-**Tests erase application rows in TEST_DB_NAME, which must end `_test`. Never point it at real/pilot data.** The Docker test service uses an ephemeral database on port 3307:
+**Tests recreate application tables in TEST_DB_NAME, which must end `_test`. Never point it at real/pilot data.** The Docker test service uses an ephemeral database on port 3307:
 
 ```powershell
 docker compose --profile test up -d test-db

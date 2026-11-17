@@ -1,5 +1,7 @@
 import { readFile, readdir } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
+import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import argon2 from "argon2";
 import { z } from "zod";
 import { pool, transaction, audit } from "./db.js";
@@ -25,7 +27,9 @@ export async function migrate() {
 }
 export async function seed() {
   // Existing frontend contains curriculum proposals, not observations about the child.
-  const { stages, skills } = await import("../data.js" as string);
+  const { stages, skills } = await import(
+    pathToFileURL(resolve("data.js")).href
+  );
   await transaction(async (c) => {
     if ((await c.query("SELECT id FROM project WHERE id=1 FOR UPDATE")).length)
       return;
@@ -96,6 +100,17 @@ export async function initAdmin(email: string, password: string) {
     timeCost: 3,
   });
   await transaction(async (c) => {
+    const state = (
+      await c.query(
+        "SELECT initialized_at FROM installation_state WHERE id=1 FOR UPDATE",
+      )
+    )[0];
+    if (!state) throw new Error("Run migrations before initializing admin");
+    if (state.initialized_at !== null)
+      throw Object.assign(
+        new Error("Admin already initialized; refusing to replace credentials"),
+        { statusCode: 409 },
+      );
     if (!(await c.query("SELECT id FROM project WHERE id=1 FOR UPDATE")).length)
       throw new Error("Run migrations and seed before initializing admin");
     if (
@@ -108,6 +123,9 @@ export async function initAdmin(email: string, password: string) {
     await c.query(
       "INSERT INTO users (id,email,password_hash,role) VALUES (?,?,?,?)",
       [id, email, hash, "PARENT_ADMIN"],
+    );
+    await c.query(
+      "UPDATE installation_state SET initialized_at=UTC_TIMESTAMP() WHERE id=1",
     );
     await audit(c, id, "admin.initialize", id, null, { role: "PARENT_ADMIN" });
   });

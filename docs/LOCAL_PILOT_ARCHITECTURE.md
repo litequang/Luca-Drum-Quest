@@ -2,6 +2,8 @@
 
 Owner authorization: 2026-11-16. The local implementation supersedes the earlier B0-only limit. The follow-up requests continued implementation and **YouTube embeds only for video**. No deployment or production approval is implied.
 
+Owner follow-up on 2026-11-17 requested browser-based first-admin setup and PC-build/host-runtime packaging. The private-key installer and upload package are now implemented locally; actual HawkHost/Passenger operation is unverified. See [HAWKHOST_SETUP.md](HAWKHOST_SETUP.md).
+
 ## Short audit of the original main
 
 Baseline: `36156a64c55effb67ee8cfd8c82cf0b1f3a426a5`. `index.html`, `styles.css`, `app.js`, `data.js` were a buildless vanilla-JS prototype with four views, responsive navigation, a draft curriculum, illustrative journal cards and a budget calculator. There was no server, dependency manifest, database, session boundary, media storage or payment system. The Node/MariaDB stack introduces no frontend framework requirement. The public HTML/CSS and reference data are preserved byte for byte; only the JS data/render adapter changes.
@@ -18,7 +20,7 @@ Baseline: `36156a64c55effb67ee8cfd8c82cf0b1f3a426a5`. `index.html`, `styles.css`
 
 ## Schema and transactions
 
-`migrations/001_initial.sql` creates project, seasons, users, sessions, records, audit_log, skill_history, media and invitations; the runner adds migrations tracking. `002_teacher_and_practice_media.sql` adds the TEACHER role, invitation roles and per-record teacher_grants, then renames media ownership from journal_id to record_id, preserving existing attachments. Foreign keys bind records to seasons and media/grants to their owning records. Optional youtubeUrl values live in validated journal/practice JSON; older records normalize missing values to null without reseeding. Keep migrations immutable after release; add numbered migrations for future changes. Run one migrator at a time. MariaDB DDL implicitly commits: a partially failed migration requires inspection/recovery, not blindly marking it applied.
+`migrations/001_initial.sql` creates project, seasons, users, sessions, records, audit_log, skill_history, media and invitations; the runner adds migrations tracking. `002_teacher_and_practice_media.sql` adds the TEACHER role, invitation roles and per-record teacher_grants, then renames media ownership from journal_id to record_id, preserving existing attachments. Foreign keys bind records to seasons and media/grants to their owning records. Optional youtubeUrl values live in validated journal/practice JSON; older records normalize missing values to null without reseeding. `003_installation_state.sql` adds a durable one-time initialization marker, backfilled for existing parent accounts. Keep migrations immutable after release; add numbered migrations for future changes. Run one migrator at a time. MariaDB DDL implicitly commits: a partially failed migration requires inspection/recovery, not blindly marking it applied.
 
 Seasons and typed records use validated JSON text payloads with indexed relational IDs/kinds/season references. This deliberate small-pilot choice avoids a table per form while retaining MariaDB persistence and strict server contracts. References inside JSON are checked in transactions, not native foreign keys. All mutation paths must retain those checks; a future larger deployment should normalize frequently queried fields and introduce version checks/pagination. The driver disables automatic JSON mapping so decoding is consistent.
 
@@ -50,7 +52,7 @@ Logical links for skill history, project current season, current stage and actor
 | Private practices/images/YouTube links | Denied | Denied | Manage | Read only explicitly assigned records |
 | Personal skill status/feedback | Denied | Denied | Manage | Read/update feedback fields only on assigned skills |
 | Lessons, supporter details, ledger, audit, invitations | Denied | Denied | Manage | Denied |
-| Admin initialization | No HTTP endpoint | No HTTP endpoint | One-time CLI | Denied |
+| First Admin initialization | Private SETUP_TOKEN only, before initialization | Closed after initialization | One-time CLI alternative | Closed after initialization |
 
 VISITOR is an unauthenticated request, not a stored account. Only a valid unexpired single-use invitation creates a FAMILY_VIEWER or TEACHER account; no registration endpoint accepts an arbitrary role. Invites expire after seven days, are manually shared outside the app and are stored hashed. All family viewers see all posts deliberately marked FAMILY; per-family-member sharing lists remain deferred.
 
@@ -65,6 +67,7 @@ All paths below are under `/api/v1`. JSON errors use `{ "error": "message" }`. S
 | GET | `/public/project`, `/public/catalogue`, `/public/budget`, `/public/journal` | Explicit public projections; no personal progress or supporter detail |
 | POST | `/auth/login`, `/auth/logout` | Login is throttled; logout requires session and CSRF |
 | GET | `/me` | Current user ID, role, CSRF; no-store |
+| POST | `/setup` | Private-key first-admin bootstrap only; exact Origin, rate/body limits, database advisory lock; disabled after initialization |
 | POST | `/auth/accept-invitation` | Throttled, one-use token, email, password ≥14 characters |
 | GET | `/admin/state`, `/admin/audit/:id` | Parent-only state/financial summaries and audit snapshots |
 | PUT | `/admin/project` | Project text and current public season |
@@ -82,6 +85,16 @@ All paths below are under `/api/v1`. JSON errors use `{ "error": "message" }`. S
 | PATCH | `/teacher/skills/:id` | Assigned teacher writes only status, teacherFeedback, teacherApproved |
 
 Record field definitions are in `server/model.ts`. The admin frontend uses the same field names. Contributions use `kind: gift|in_kind`; admin state distinguishes entity tables with `entity: contributions|expenses|...`.
+
+## First-admin installation and runtime package
+
+Browser setup is disabled when SETUP_TOKEN is blank; otherwise it must be 64 lowercase hex characters (256 random bits). `npm run setup:key` writes a new key only into private .env, preserves an existing nonempty value and never prints the key. GET /setup serves the form only before initialization, then redirects to login. POST /api/v1/setup accepts the key in x-setup-token, never in a URL, and accepts only email/password/confirmation. Passwords are Argon2id-hashed; no session is automatically created by setup.
+
+Unauthenticated setup uses the out-of-band key and exact Origin rather than an existing login cookie, since a fresh database has no sessions table. Requests are limited to 2 KiB and five per IP per 15 minutes. Only after key/credential validation does setup acquire a database-scoped advisory lock and run the known migrations/draft seed against the configured database. It never creates a database/user, drops data, offers public registration or permits client-selected roles. Admin creation and installation_state initialized_at commit together; CLI initialization uses the same persistent guard. Legacy parents are recognized even before migration 003, and the migration backfills their marker. Deleting the original Admin or restarting cannot reopen setup while the marker remains intact. Password recovery is a separate unimplemented feature, not a reason to clear the marker.
+
+Keep only one installer/migrator active at a time; web requests are serialized, while normal CLI migration still follows the single-migrator operating rule. MariaDB DDL implicitly commits, so a partially failed migration requires private diagnostics/recovery. Setup errors do not expose database configuration or SQL in HTTP responses; keys/passwords are excluded from audit.
+
+`npm run package:host` builds server code without tests and generates release/ with runtime assets, migrations, the matching lockfile, a CommonJS app.cjs startup bridge and a secret-free host template. Private .env, media, backups, source tests and Windows node_modules are excluded; packaging refuses an installed release's .env/node_modules/private-media. Linux dependencies are installed on the host with npm ci --omit=dev (packaged .npmrc also omits dev tools). The bridge changes cwd to the application root, loads private .env with pre-existing process environment precedence, then imports the ESM server. Compiled migration/seed/admin commands use no tsx/TypeScript; the seed loads the explicitly bundled root data.js. Actual Passenger listener and Apache document-root behavior must be verified on the chosen plan before any deployment.
 
 ## Finance semantics
 

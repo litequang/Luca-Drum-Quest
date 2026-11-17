@@ -9,6 +9,7 @@ import sharp from "sharp";
 if (!process.env.TEST_DB_NAME?.endsWith("_test"))
   throw new Error("TEST_DB_NAME must name a disposable database ending _test");
 process.env.DB_NAME = process.env.TEST_DB_NAME;
+process.env.SETUP_TOKEN = randomBytes(32).toString("hex");
 process.env.MEDIA_DIR = resolve("work/test-media");
 const { pool } = await import("../server/db.js");
 const { migrate, seed, initAdmin } = await import("../server/cli.js");
@@ -55,8 +56,7 @@ async function login() {
 }
 await test("MariaDB local pilot acceptance and security", async (t) => {
   try {
-    await migrate();
-    // Ordered deletes only within explicitly named test DB; preserve migration tracking.
+    // Recreate only the explicitly configured disposable _test schema to exercise a truly empty install.
     for (const table of [
       "media",
       "teacher_grants",
@@ -68,11 +68,183 @@ await test("MariaDB local pilot acceptance and security", async (t) => {
       "users",
       "project",
       "seasons",
+      "installation_state",
+      "migrations",
     ])
-      await pool.query("DELETE FROM " + table);
-    await seed();
-    await seed();
+      await pool.query("DROP TABLE IF EXISTS " + table);
     app = await buildApp();
+    await t.test(
+      "browser setup stays disabled without a key and throttles invalid keys without creating tables",
+      async () => {
+        const key = config.SETUP_TOKEN;
+        config.SETUP_TOKEN = "";
+        assert.equal((await app.inject("/setup")).statusCode, 302);
+        assert.equal(
+          (
+            await request(
+              "POST",
+              "/setup",
+              { email, password, confirmPassword: password },
+              false,
+            )
+          ).statusCode,
+          404,
+        );
+        config.SETUP_TOKEN = key;
+        await app.close();
+        app = await buildApp();
+        assert.equal(
+          (
+            await app.inject({
+              url: "/setup",
+              headers: {
+                cookie: cookieName + "=" + randomBytes(32).toString("hex"),
+              },
+            })
+          ).statusCode,
+          200,
+        );
+        for (let i = 0; i < 6; i++)
+          assert.equal(
+            (
+              await request(
+                "POST",
+                "/setup",
+                { email, password, confirmPassword: password },
+                false,
+                { "x-setup-token": "0".repeat(64) },
+              )
+            ).statusCode,
+            i < 5 ? 403 : 429,
+          );
+        const tables = await pool.query(
+          "SELECT COUNT(*) n FROM information_schema.tables WHERE table_schema=?",
+          [config.DB_NAME],
+        );
+        assert.equal(tables[0].n, 0);
+        await app.close();
+        app = await buildApp();
+      },
+    );
+    await t.test(
+      "first browser setup validates origin/confirmation, migrates/seeds and creates exactly one admin under concurrency",
+      async () => {
+        const headers = { "x-setup-token": config.SETUP_TOKEN };
+        assert.equal(
+          (
+            await request(
+              "POST",
+              "/setup",
+              { email, password, confirmPassword: password },
+              false,
+              { ...headers, origin: "https://evil.invalid" },
+            )
+          ).statusCode,
+          403,
+        );
+        assert.equal(
+          (
+            await request(
+              "POST",
+              "/setup",
+              { email, password, confirmPassword: "different" },
+              false,
+              headers,
+            )
+          ).statusCode,
+          400,
+        );
+        const responses = await Promise.all([
+          request(
+            "POST",
+            "/setup",
+            { email, password, confirmPassword: password },
+            false,
+            headers,
+          ),
+          request(
+            "POST",
+            "/setup",
+            { email, password, confirmPassword: password },
+            false,
+            headers,
+          ),
+        ]);
+        assert.equal(
+          responses.filter((r) => r.statusCode === 200).length,
+          1,
+          JSON.stringify(
+            responses.map((r) => ({ status: r.statusCode, body: r.body })),
+          ),
+        );
+        assert.equal(
+          responses.filter((r) => [404, 409].includes(r.statusCode)).length,
+          1,
+        );
+        assert.equal(
+          (
+            await pool.query(
+              "SELECT COUNT(*) n FROM users WHERE role='PARENT_ADMIN'",
+            )
+          )[0].n,
+          1,
+        );
+        assert.equal(
+          (await pool.query("SELECT COUNT(*) n FROM seasons"))[0].n,
+          1,
+        );
+        assert.equal(
+          (await pool.query("SELECT COUNT(*) n FROM sessions"))[0].n,
+          0,
+        );
+        const marker = (
+          await pool.query(
+            "SELECT initialized_at FROM installation_state WHERE id=1",
+          )
+        )[0];
+        assert.ok(marker.initialized_at);
+        assert.equal(
+          (await pool.query("SELECT COUNT(*) n FROM migrations"))[0].n,
+          3,
+        );
+        const audits = JSON.stringify(
+          await pool.query("SELECT before_data,after_data FROM audit_log"),
+        );
+        assert.equal(audits.includes(config.SETUP_TOKEN), false);
+        assert.equal(audits.includes(password), false);
+      },
+    );
+    await t.test(
+      "setup remains closed after restart and after removal of the original admin row",
+      async () => {
+        await app.close();
+        app = await buildApp();
+        assert.equal((await app.inject("/setup")).statusCode, 302);
+        const user = (
+          await pool.query("SELECT * FROM users WHERE role='PARENT_ADMIN'")
+        )[0];
+        await pool.query("DELETE FROM users WHERE id=?", [user.id]);
+        assert.equal(
+          (
+            await request(
+              "POST",
+              "/setup",
+              { email, password, confirmPassword: password },
+              false,
+              { "x-setup-token": config.SETUP_TOKEN },
+            )
+          ).statusCode,
+          404,
+        );
+        await assert.rejects(initAdmin(email, password), /already initialized/);
+        // Start an independent CLI initialization fixture; never do this reset outside a disposable test DB.
+        await pool.query(
+          "UPDATE installation_state SET initialized_at=NULL WHERE id=1",
+        );
+      },
+    );
+    await seed();
+    await seed();
     await t.test(
       "secure one-time initialization, invalid login, protected routes and cookie flags",
       async () => {
@@ -1006,6 +1178,37 @@ await test("MariaDB local pilot acceptance and security", async (t) => {
           (await request("GET", "/media/" + evidence)).statusCode,
           404,
         );
+      },
+    );
+    await t.test(
+      "legacy admin installs refuse web setup before migration 003 and backfill the initialized marker",
+      async () => {
+        await pool.query("DROP TABLE installation_state");
+        await pool.query(
+          "DELETE FROM migrations WHERE name='003_installation_state.sql'",
+        );
+        assert.equal((await app.inject("/setup")).statusCode, 302);
+        assert.equal(
+          (
+            await request(
+              "POST",
+              "/setup",
+              { email, password, confirmPassword: password },
+              false,
+              { "x-setup-token": config.SETUP_TOKEN },
+            )
+          ).statusCode,
+          404,
+        );
+        await migrate();
+        assert.ok(
+          (
+            await pool.query(
+              "SELECT initialized_at FROM installation_state WHERE id=1",
+            )
+          )[0].initialized_at,
+        );
+        await assert.rejects(initAdmin(email, password), /already initialized/);
       },
     );
     await t.test(

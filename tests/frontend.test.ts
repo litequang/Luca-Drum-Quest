@@ -339,3 +339,58 @@ test("teacher DOM submits explicit feedback and renders only assigned practice e
     w.close();
   }
 });
+
+test("first-admin form checks password confirmation, sends the setup key only in a header and clears credentials", async () => {
+  const dom = new JSDOM(await readFile("admin/setup.html", "utf8"), {
+      url: "http://localhost:3000/setup",
+      runScripts: "outside-only",
+    }),
+    w = dom.window,
+    d = w.document;
+  let sent: any;
+  (w as any).__api = async (path: string, options: any) => {
+    sent = { path, ...structuredClone(options) };
+    return { ok: true, loginUrl: "/admin/login" };
+  };
+  try {
+    const js = (await readFile("admin/setup.js", "utf8")).replace(
+      /^import .*?from ["']\/apiClient\.js["'];$/m,
+      "const api=window.__api;",
+    );
+    await w.eval("(async()=>{" + js + "})()");
+    const form = d.querySelector("form")!;
+    (d.querySelector("[name=setupToken]") as HTMLInputElement).value =
+      "a".repeat(64);
+    (d.querySelector("[name=email]") as HTMLInputElement).value =
+      "parent@example.invalid";
+    (d.querySelector("[name=password]") as HTMLInputElement).value =
+      "Fictional passphrase only";
+    (d.querySelector("[name=confirmPassword]") as HTMLInputElement).value =
+      "Mismatch";
+    form.dispatchEvent(
+      new w.Event("submit", { bubbles: true, cancelable: true }),
+    );
+    assert.equal(Boolean(sent), false);
+    assert.match(d.querySelector("#message")!.textContent!, /chưa khớp/);
+    (d.querySelector("[name=confirmPassword]") as HTMLInputElement).value =
+      "Fictional passphrase only";
+    form.dispatchEvent(
+      new w.Event("submit", { bubbles: true, cancelable: true }),
+    );
+    await new Promise((r) => setTimeout(r, 5));
+    assert.equal(sent.path, "/setup");
+    assert.equal(sent.headers["x-setup-token"], "a".repeat(64));
+    assert.equal("setupToken" in sent.body, false);
+    assert.equal(form.hidden, true);
+    assert.equal(
+      (d.querySelector("[name=password]") as HTMLInputElement).value,
+      "",
+    );
+    assert.equal(
+      d.querySelector("#message a")!.getAttribute("href"),
+      "/admin/login",
+    );
+  } finally {
+    w.close();
+  }
+});

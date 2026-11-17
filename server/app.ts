@@ -14,6 +14,7 @@ import { canViewJournal } from "./permissions.js";
 import { accessRoutes } from "./access.js";
 import { mediaRoutes } from "./media.js";
 import { teacherRoutes, teacher } from "./teacher.js";
+import { setupRoutes } from "./setup.js";
 import {
   schemas,
   seasonSchema,
@@ -76,6 +77,7 @@ export async function buildApp() {
     "/admin/admin.css": ["admin/admin.css", "text/css"],
     "/admin/login.js": ["admin/login.js", "text/javascript"],
     "/admin/admin.js": ["admin/admin.js", "text/javascript"],
+    "/admin/setup.js": ["admin/setup.js", "text/javascript"],
     "/admin/teacher.js": ["admin/teacher.js", "text/javascript"],
   };
   for (const [url, [file, type]] of Object.entries(assets))
@@ -445,6 +447,7 @@ export async function buildApp() {
       return { id };
     },
   });
+  await setupRoutes(app);
   await accessRoutes(app);
   await teacherRoutes(app);
   await mediaRoutes(app);

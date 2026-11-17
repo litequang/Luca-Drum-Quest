@@ -1,12 +1,16 @@
 # Luca Drum Quest — local pilot handoff
 
-Date: 2026-11-16. Branch: `codex/local-backend-admin-pilot`, based on main `36156a64c55effb67ee8cfd8c82cf0b1f3a426a5`. The final commit SHA and PR URL accompany this report in the delivery message; `git rev-parse HEAD` identifies the checked-out version. No production deployment or merge is part of this work.
+Updated: 2026-11-17. Branch: `codex/local-backend-admin-pilot`, based on main `36156a64c55effb67ee8cfd8c82cf0b1f3a426a5`. The final commit SHA and PR URL accompany this report in the delivery message; `git rev-parse HEAD` identifies the checked-out version. No production deployment or merge is part of this work.
 
 Owner follow-up: continue local implementation; **video is YouTube embedding only**. PR remains [#2](https://github.com/litequang/Luca-Drum-Quest/pull/2), without merge/deployment. The current head SHA is in the delivery message/PR. No actual child video was uploaded to any service.
+
+Owner follow-up on 2026-11-17 requested first-admin browser setup and PC-build/host-runtime packaging. The upload package and private-key installer are implemented and tested locally; actual HawkHost/Passenger compatibility remains unverified. The step-by-step guide is [HAWKHOST_SETUP.md](HAWKHOST_SETUP.md).
 
 ## Implemented
 
 - Node 24 LTS + TypeScript + Fastify REST API, MariaDB migrations, idempotent draft-only curriculum seed and secret-free environment template. Optional local Docker database setup; no frontend framework migration.
+- Browser-based `/setup` protected by a private generated SETUP_TOKEN, Origin/body/rate checks, database advisory lock and permanent installation marker. A valid key can migrate/seed a fresh configured DB and create one Admin; concurrent requests, restart, old CLI accounts and removed Admin rows cannot bypass the initialized guard. No default password or public registration.
+- `npm run package:host` produces compiled runtime files, matching dependency manifests, a secret-free host template and app.cjs bridge. Windows modules, real .env, private media, tests and backups are excluded. Production-only Linux dependencies and compiled CLI commands were tested outside the source checkout.
 - Secure one-time parent initialization, Argon2id passwords, server-side hashed sessions, login/logout, absolute expiry, CSRF/origin protection, login throttling and server role checks. No default credentials or public registration.
 - Responsive vanilla-JS `/admin`: project/public introduction, explicit seasons and archival status, complete Season 1 target configuration, low/high lesson estimates, equipment and optional contingency; manual gifts/in-kind/pending/confirmed/void status; expenses and corrections with audit snapshots; season-separated cash and funding calculations.
 - Curriculum stages, skill catalogue/prerequisites/home instructions, explicit status changes and teacher feedback recorded by the parent, status history, current learning stage, lesson attendance/cost/homework/teacher notes/next date and private practice logs. No automatically passed skills or invented events.
@@ -29,7 +33,7 @@ Owner follow-up: continue local implementation; **video is YouTube embedding onl
 
 ## Environment and migration
 
-Validated here on Node **24.22.1**, npm **11.9.0** and MariaDB **11.4.13** (local Docker). Preferred runtime is Node 24 LTS. `migrations/001_initial.sql` plus migrations tracking create the initial schema; `002_teacher_and_practice_media.sql` adds teacher roles/grants and preserves image associations while generalizing ownership to journal/practice records; JSON records are validated and linked inside transactions. Run migrations once at a time. `.env.example` lists DB connection, exact APP_ORIGIN, loopback HOST/PORT, MEDIA_DIR, secure-cookie setting and session duration. Database and media are durable local resources and must be backed up together.
+Validated here on Node **24.22.1**, npm **11.9.0** and MariaDB **11.4.13** (local Docker). Preferred runtime is Node 24 LTS. `migrations/001_initial.sql` plus migrations tracking create the initial schema; `002_teacher_and_practice_media.sql` adds teacher roles/grants and preserves image associations while generalizing ownership to journal/practice records; `003_installation_state.sql` persists first-init completion and protects old CLI-created admins; JSON records are validated and linked inside transactions. Run migrations once at a time. `.env.example` lists DB connection, exact APP_ORIGIN, loopback HOST/PORT, MEDIA_DIR, secure-cookie setting and session duration. Database and media are durable local resources and must be backed up together.
 
 Full Windows instructions: [LOCAL_PILOT_WINDOWS.md](LOCAL_PILOT_WINDOWS.md). Essential sequence from PowerShell after cloning/switching this branch:
 
@@ -60,11 +64,11 @@ Final functional checks were run against real MariaDB, not an in-memory replacem
 
 | Check | Result | Actual exit code |
 | --- | --- | --- |
-| `DB_PASSWORD=<local-test-value> DB_PORT=3307 TEST_DB_NAME=luca_pilot_test npm test` | 17 passed, 0 failed: 10 integration subtests, integration parent test, 4 DOM interaction tests and 2 YouTube parser/player tests | 0 |
+| `DB_PASSWORD=<local-test-value> DB_PORT=3307 TEST_DB_NAME=luca_pilot_test npm test` | 24 passed, 0 failed: 14 integration subtests, integration parent test, 5 DOM interaction tests, 2 private-key/package-guard tests and 2 YouTube parser/player tests | 0 |
 | `npm ci` | Clean lockfile installation succeeded (122 packages) | 0 |
 | `npm run typecheck` | TypeScript passed | 0 |
-| `npm run build` | Compiled server passed | 0 |
-| `npm run db:migrate` against local pilot DB | Initial schema plus upgrade 002 applied; existing curriculum/admin preserved | 0 |
+| `npm run build` | Runtime-only compiled server passed, with tests excluded by tsconfig.build.json | 0 |
+| `npm run db:migrate` against local pilot DB | Initial schema plus upgrades 002/003 applied; existing curriculum/admin preserved and init marker backfilled | 0 |
 | `npm run db:seed` twice | Completed both; no duplicate future seasons or fake events | 0 each |
 | `npm run admin:init` with randomly generated environment-only password | One-time initialization completed; repeated initialization rejection also tested | 0 |
 | Compiled `dist/server/index.js` HTTP smoke | Public page/assets and API 200, protected pages redirect, source/secrets 404, private-stage field excluded, graceful server shutdown 0 | 0 |
@@ -72,19 +76,23 @@ Final functional checks were run against real MariaDB, not an in-memory replacem
 | `docker compose --env-file .env.example config --quiet` with explicit local DB_PASSWORD | Compose syntax validated; does not claim Windows/Docker Desktop execution | 0 |
 | Same Compose command without a password | Refused missing DB_PASSWORD as intended | 1 (expected) |
 | `npm audit --omit=dev --audit-level=high` | Zero reported production dependency vulnerabilities at check time | 0 |
+| `npm run package:host` | Secret-free release directory generated; existing private runtime folders refused | 0 |
+| Packaged Linux runtime (`npm ci --omit=dev`, 88 packages) and app.cjs, tested outside source checkout | Empty-DB browser install, login, project edit, compiled migration/seed, restart persistence, permanent setup lock and private-file denial passed; tsx/TypeScript absent | 0 |
 | Synthetic encrypted local backup/restore drill | Matching DB counts/private image hash; denied public media; inactive user preserved; sessions/invitations purged; deletion verified in isolated restore instance | 0 |
 | `git diff --check` | No whitespace errors | 0 |
 | `git diff --exit-code -- index.html styles.css data.js` | Original public HTML, CSS and demo reference file unchanged | 0 |
 
-Initial test runs caught the MariaDB connector's automatic JSON conversion and a secure-cookie test subprocess that did not close its DB pool. These and follow-up checks caught a reserved YouTube playlist placeholder accepted as a video ID and a MariaDB DECIMAL string quota-addition issue. All were corrected; the passing results above refer to the corrected implementation. A JSDOM cross-realm object comparison and CSS serialization assertion were also corrected in the tests. Dependency audit does not establish production readiness.
+Initial test runs caught the MariaDB connector's automatic JSON conversion and a secure-cookie test subprocess that did not close its DB pool. These and follow-up checks caught a reserved YouTube playlist placeholder accepted as a video ID and a MariaDB DECIMAL string quota-addition issue. All were corrected; the passing results above refer to the corrected implementation. A JSDOM cross-realm object comparison, CSS serialization assertion and TypeScript narrowing in a test were also corrected. The first-run installer tests recreate only the explicitly disposable `_test` schema, never the local pilot/host database. Dependency audit does not establish production readiness.
 
 Acceptance coverage: 1–12 and 14 have automated API/DB coverage (project editing also has a DOM form test). Criterion 13 has DOM navigation/filter/dialog coverage and preserved HTML/CSS; actual desktop/tablet/mobile visual and touch behavior remains unverified. Secure-cookie configuration is exercised separately; an end-to-end HTTPS browser check remains on the device checklist.
+
+For the host workflow, `/setup` needs the private generated key and is an alternative to the CLI initialization sequence above; do not try to initialize a second parent. Linux runtime packaging was verified locally, not on HawkHost or Windows. No hosting account or production database was accessed.
 
 ## Exact real-device checklist for Codex PC
 
 Use a fresh local database, **fictional records/generated images only**, and record browser/OS/device/date plus pass/fail notes. Keep these checks unmarked until performed.
 
-1. On Windows, record `node --version` and MariaDB version. Run the guide's migrate/seed/init sequence, typecheck/build/test. Confirm a second initialization refuses to overwrite the parent. Restart the DB and app; original project data remains.
+1. On a fresh disposable install, generate SETUP_TOKEN privately, open `/setup`, create an Admin and verify normal login. A blank/wrong key must not create data. Retry/refresh after success and restart: setup must remain closed. For an existing CLI-created Admin, migration 003 must preserve credentials and close setup. Then on Windows, record `node --version` and MariaDB version. Run the guide's migrate/seed/init sequence, typecheck/build/test. Confirm a second initialization refuses to overwrite the parent. Restart the DB and app; original project data remains.
 2. Desktop Chrome/Edge at 1440×900 and 1280×800: open each of Hành trình/Giáo trình/Nhật ký/Quỹ Luca via desktop navigation and hash links; reload each. Confirm the active route, readable layout and no horizontal overflow. Test Tab/Enter/Space, visible focus, dialog Escape/backdrop/close and focus return.
 3. iPad Safari portrait and landscape (e.g. 768×1024, 1024×768): verify the bottom dock replaces desktop navigation at the existing breakpoint, all four routes work, stage rail preserves its horizontal position, dialogs stay scrollable and safe-area spacing keeps content reachable.
 4. iPhone Safari around 390×844 and Android Chrome around 360×800; also small 375px width and landscape below 520px high: test dock taps, stage rail swipes, filters, skill dialogs, journal cards, form keyboard opening, zoom and reduced-motion setting. Check there is no clipped/covered save button or sideways page scroll. Compare the preserved public design with main.

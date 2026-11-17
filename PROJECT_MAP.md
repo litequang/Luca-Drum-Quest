@@ -1,6 +1,7 @@
 # PROJECT MAP — Luca Drum Quest
 
-**Ngày cập nhật:** 2026-11-16  
+**Ngày cập nhật:** 2026-11-17
+
 **Repository:** https://github.com/litequang/Luca-Drum-Quest  
 **Trạng thái:** LOCAL BACKEND + ADMIN PILOT implemented on `codex/local-backend-admin-pilot`; no production deployment. Node 24/TypeScript/Fastify/MariaDB, authenticated parent admin, audited manual finance, curriculum/lesson/practice/journal forms, invited family viewing and protected sanitized images. YouTube video links/embeds, record-scoped teacher feedback and private practice images are implemented. A synthetic local encrypted backup/restore drill passed; target-host backups, real-device/browser playback and Windows verification remain incomplete. Video file uploads are excluded by owner choice. Original public HTML/CSS is preserved; no real child/supporter data is seeded.
 
@@ -8,6 +9,8 @@
 
 
 **Follow-up (2026-11-16, owner CONFIRMED C13):** Continue the local pilot; video uses **YouTube embeds only**, not uploaded files. Implemented direct-link validation/canonicalization, click-to-load privacy-enhanced embeds in journal/practice evidence, explicit teacher invitations/grants/feedback and private practice images. See the updated handoff report for actual verification and platform privacy limits. `002_teacher_and_practice_media.sql` upgrades existing data without reseeding or changing credentials.
+
+**Follow-up (2026-11-17, owner CONFIRMED C14):** Owner clarified that PC builds will be uploaded to a hosting account with its own database/.env and requested first-admin browser setup. Implemented `/setup` with private SETUP_TOKEN, automatic schema/draft seed for a fresh configured DB and permanent first-init lock; `003_installation_state.sql` also protects existing CLI-created admins. `npm run package:host` prepares compiled runtime files and an app.cjs bridge without secrets/Windows modules. Actual HawkHost plan, Node 24 selector and Passenger compatibility remain unverified; nothing is deployed. Guide: [HAWKHOST_SETUP.md](docs/HAWKHOST_SETUP.md).
 
 > **Dành cho AI mới tiếp quản:** Đọc trang này trước. Không suy đoán rằng một đề xuất trong tài liệu đã được người dùng đồng ý triển khai.
 
@@ -34,6 +37,7 @@ Luca Drum Quest là website dự án gia đình (vui, ấm áp, có chút hài h
 | C11 | Giao diện đã được tác giả hóa trên `main`; Codex **không được tự thiết kế lại hoặc ghi đè UI**, chỉ nối API sau khi chốt backend |
 | C12 | Owner authorized Node/TypeScript/Fastify/MariaDB local backend + Admin pilot, branch/commit/push/PR; no production or payment processing |
 | C13 | Owner requested continued local work and selected YouTube embedding only for video; no server video file uploads |
+| C14 | Owner requested first-admin setup and PC-build/host-runtime packaging; actual hosting/deployment still requires validation and authorization |
 
 ## 3. Đề xuất đang THẢO LUẬN (PROPOSED, chưa chốt)
 
@@ -71,10 +75,11 @@ Luca Drum Quest là website dự án gia đình (vui, ấm áp, có chút hài h
 | New path | Responsibility |
 |---|---|
 | `server/` | REST API, Zod contracts, MariaDB access, sessions, initialization and cleanup |
-| `migrations/` | Initial schema plus `002` teacher roles/grants and shared journal/practice media ownership |
+| `migrations/` | Initial schema, `002` teacher grants/media ownership, `003` durable installation marker |
 | `admin/` | Parent forms, role-aware login, invited-family journal and scoped teacher workspace |
 | `youtube.js` | Shared YouTube URL parser and click-to-load player; no arbitrary iframe HTML |
-| `.env.example`, `compose.yaml`, `package.json` | Secret-free environment template, optional local DB containers, run/test commands |
+| `.env.example`, `compose.yaml`, `package.json` | Secret-free environment template, optional local DB containers, run/test/package commands |
+| `scripts/`, `hosting/`, `tsconfig.build.json` | Secret-key generation, runtime upload packaging and cPanel startup bridge |
 | `tests/` | Real MariaDB integration/security tests plus JSDOM interaction tests |
 
 ## 5b. Tài liệu nền

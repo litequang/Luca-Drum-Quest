@@ -50,11 +50,16 @@ export async function auth(app: FastifyInstance) {
       req.url.startsWith("/api/") ||
       req.url.startsWith("/admin") ||
       req.url.startsWith("/family") ||
-      req.url.startsWith("/teacher")
+      req.url.startsWith("/teacher") ||
+      req.url.startsWith("/setup")
     )
       reply.header("Cache-Control", "no-store");
     const token = req.cookies[cookieName];
-    if (token && /^[a-f0-9]{64}$/.test(token)) {
+    const setupRoute = ["/setup", "/api/v1/setup"].includes(
+      req.routeOptions.url ?? "",
+    );
+    // Bootstrap has its own out-of-band key; an empty database has no session table yet.
+    if (!setupRoute && token && /^[a-f0-9]{64}$/.test(token)) {
       const rows = await pool.query(
         "SELECT u.id,u.role,s.csrf FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token_hash=? AND s.expires_at>UTC_TIMESTAMP() AND u.active=TRUE",
         [digest(token)],

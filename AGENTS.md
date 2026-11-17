@@ -6,11 +6,17 @@ The owner explicitly authorized Node 24/TypeScript/Fastify/MariaDB local backend
 
 - Preserve `index.html`, `styles.css`, navigation and the public visual design. New admin assets live in `admin/`; public `app.js` uses a live API adapter with no fictional fallback.
 - Serve only explicit public asset routes. Never expose the repository, `.env`, source, backup files or MEDIA_DIR through a static web server.
-- Tests require an explicitly configured disposable `_test` MariaDB database and erase its application rows. Never run them on the pilot or production database.
+- Tests require an explicitly configured disposable `_test` MariaDB database and recreate its application tables. Never run them on the pilot or production database.
 - Run `npm run typecheck`, `npm run build` and the relevant `npm test` checks after functional changes. Report actual exit codes and distinguish DOM tests from rendered/physical-device checks.
 - Generated images only during development. The owner specified **YouTube embeds for video** in the follow-up; never add video file uploads. Only accept direct HTTPS YouTube video links, render click-to-load fixed-origin `youtube-nocookie` iframes, and keep link disclosure within journal/practice permissions. Website sessions cannot protect a YouTube unlisted link once copied.
 - Invited TEACHER accounts now have explicit per-record grants for skills/practices. Never widen this to whole-season, financial, supporter or family-journal access. Revoke sessions and grants when access is removed; regrant starts without restored record grants.
 - Keep audit/reference checks inside transactions when extending JSON record contracts. Keep unknown budgets/progress null. Never create future seasons automatically or mark skills passed automatically.
+
+## First-run setup and host packaging — 2026-11-17
+
+Owner requested a PC-build/host-runtime workflow and first-admin account creation. `/setup` is enabled only by a private 256-bit SETUP_TOKEN; no key goes into a URL or audit log. A persistent installation_state marker and legacy-admin check permanently close initialization after success, including CLI creation. Setup may migrate/seed only the configured database after key validation; it never creates/drops a database or exposes general registration. Keep the Origin/rate/body checks and database locking.
+
+`npm run package:host` creates an ignored, secret-free release/ upload package; runtime dependencies must be installed for Linux on the host. app.cjs is a startup bridge, not proof of HawkHost/Passenger compatibility. Do not upload Windows node_modules or put application configuration/media under public_html. No actual hosting setup or deployment has been authorized/performed by this change. See [docs/HAWKHOST_SETUP.md](docs/HAWKHOST_SETUP.md).
 
 ## Đọc trước khi làm bất kỳ việc gì
 

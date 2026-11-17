@@ -1,3 +1,5 @@
+> **PC build → host runtime + first Admin:** [HawkHost/setup guide](docs/HAWKHOST_SETUP.md). Build with `npm run package:host`; configure the private host .env and Node app, then initialize once at `/setup` using a private generated key. Hosting compatibility is not yet verified; nothing is deployed.
+
 > **Local backend + Admin pilot (2026-11-16):** [Windows setup](docs/LOCAL_PILOT_WINDOWS.md) · [Architecture/API/security](docs/LOCAL_PILOT_ARCHITECTURE.md) · [Implementation report and device checklist](docs/LOCAL_PILOT_REPORT.md). Run the Fastify server, not a generic static file server. YouTube-only video embeds, scoped teacher feedback and private practice images are included. No production deployment; no payments or real child data. Historical frontend setup notes below predate this pilot.
 
 # 🥁 Luca Drum Quest

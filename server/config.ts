@@ -2,6 +2,9 @@ import { resolve } from "node:path";
 import { z } from "zod";
 const env = z
   .object({
+    SETUP_TOKEN: z
+      .union([z.literal(""), z.string().regex(/^[a-f0-9]{64}$/)])
+      .default(""),
     HOST: z.string().default("127.0.0.1"),
     PORT: z.coerce.number().int().min(1).max(65535).default(3000),
     APP_ORIGIN: z.url().default("http://localhost:3000"),

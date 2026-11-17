@@ -8,14 +8,16 @@
   },
   "scripts": {
     "dev": "node --env-file-if-exists=.env --import tsx server/index.ts",
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "start": "node --env-file-if-exists=.env dist/server/index.js",
     "db:migrate": "node --env-file-if-exists=.env --import tsx server/cli.ts migrate",
     "db:seed": "node --env-file-if-exists=.env --import tsx server/cli.ts seed",
     "admin:init": "node --env-file-if-exists=.env --import tsx server/cli.ts init-admin",
     "test": "node --env-file-if-exists=.env --import tsx --test tests/*.test.ts",
-    "media:cleanup": "node --env-file-if-exists=.env --import tsx server/cleanup.ts"
+    "media:cleanup": "node --env-file-if-exists=.env --import tsx server/cleanup.ts",
+    "package:host": "npm run build && node scripts/package-host.mjs",
+    "setup:key": "node scripts/setup-key.mjs"
   },
   "dependencies": {
     "@fastify/cookie": "^11.1.5",

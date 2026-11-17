@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["server/**/*.ts", "youtube.js"],
+  "exclude": ["tests", "node_modules", "release", "work"]
+}

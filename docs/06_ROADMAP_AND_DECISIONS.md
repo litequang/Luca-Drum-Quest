@@ -9,6 +9,8 @@
 | 2026-11-16 | D-017 | OPEN / PRODUCTION BLOCKER | Target-host private-media/security review, production backups, account recovery, real-device/YouTube playback checks, hosting and full budget/schedule approval |
 | 2026-11-16 | D-018 | CONFIRMED | Owner requested continuation and specified YouTube embedding only for video; no video file storage/transcoding implementation |
 | 2026-11-16 | D-019 | IMPLEMENTED LOCAL | YouTube link validation/click-to-load player; explicit TEACHER invitations and skill/practice grants; authenticated feedback history; private practice images and scoped revocation; synthetic encrypted local backup/restore drill passed |
+| 2026-11-17 | D-020 | CONFIRMED | Owner requested first-admin browser setup and PC-build/host database/environment workflow; no actual production deployment |
+| 2026-11-17 | D-021 | IMPLEMENTED LOCAL | Private-key /setup with durable lock, auto migration/draft seed after key authorization, migration 003 legacy protection; compiled runtime package and app.cjs bridge |
 
 ## Local pilot implementation checklist (current)
 
@@ -21,9 +23,12 @@
 - [x] Invited teacher workspace with explicit skill/practice grants, feedback/status history and private practice images.
 - [x] YouTube-only video links in journal/practice; protected disclosure and click-to-load player. Video uploads excluded by owner choice.
 - [x] Synthetic encrypted database/image backup and restore into isolated local MariaDB; token purge, image hash, private access and revoked-account checks.
+- [x] First-admin browser setup with private key, concurrency protection and durable initialized marker; CLI remains available.
+- [x] Runtime upload package tested outside the source checkout with Linux production dependencies only, plus compiled CLI and restart checks.
+- [ ] Actual HawkHost plan/Node/Passenger/HTTPS/Apache routing verification and owner approval before deployment.
 - [ ] Real-browser/real-device YouTube playback, target-host backup rotation/restore, teacher lesson feedback and per-member family ACLs.
 - [ ] Windows/native builds, browser visual regression and physical PC/iPad/mobile verification.
-- [ ] Encrypted backup/restore drill, retention/privacy review, production hosting and deployment approval.
+- [ ] Target-host encrypted backup/restore drill, retention/privacy review, production hosting and deployment approval.
 
 The original roadmap below remains as historical product/education planning; it does not revoke D-015.
 
