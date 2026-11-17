@@ -6,6 +6,8 @@ export const pool = mariadb.createPool({
   user: config.DB_USER,
   password: config.DB_PASSWORD,
   database: config.DB_NAME,
+  // Never inherit a host's latin1 handshake charset (which replaces Vietnamese with '?').
+  charset: "utf8mb4",
   connectionLimit: 5,
   autoJsonMap: false,
   timezone: "+00:00",

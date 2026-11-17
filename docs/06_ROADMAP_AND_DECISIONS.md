@@ -4,6 +4,9 @@
 
 | Ngày | Mã | Trạng thái | Nội dung |
 |---|---|---|---|
+| 2026-11-17 | D-032 | CONFIRMED REQUEST / LOCAL HANDOFF | Owner yêu cầu cập nhật các bản sửa lên GitHub và tài liệu để AI khác tiếp tục. Rà soát/commit/push nhánh hiện tại; thêm AI_HANDOFF_VI.md, thống nhất trạng thái mới nhất 30 tests/UTF-8/WASM và ghi rõ khoảng trống InnoDB/FK trên host. Không đưa SQL/config/media/logs riêng vào Git; push không phải merge/deploy |
+| 2026-11-17 | D-031 | CONFIRMED REQUEST / IMPLEMENTED LOCAL | Owner cung cấp SQL riêng và yêu cầu bản sửa sẵn nhập lại. Tạo guarded UPDATE patch riêng ở Downloads: phục hồi 124 chuỗi nguồn đã biết/22 bản ghi, không đoán nội dung riêng; giữ tài khoản/ID/tiến độ/audit lịch sử, thêm audit mới; đổi 12 bảng MyISAM trong snapshot sang InnoDB. Kiểm tra import full dump và patch, nhập lặp và giữ sửa đổi mới hơn trên MariaDB `_test` tạm đạt; đã dọn DB tạm. Không commit/package SQL riêng, chưa import host |
+| 2026-11-17 | D-030 | IMPLEMENTED LOCAL / HOST VERIFICATION OPEN | Owner báo tiếng Việt thành dấu ?. API công khai xác nhận payload đã mất dấu, HTTP UTF-8 đúng. Ép pool utf8mb4 và thêm migration 004 chuyển các cột nội dung/JSON/audit/nhãn/nhận xét sang utf8mb4, giữ nguyên khóa ngoại/tài khoản/nội dung cũ. Hướng dẫn owner backup/cập nhật/migrate và nhập lại hai câu gốc; không reseed hay đoán nội dung đã mất. Chưa thao tác DB/deploy trên host |
 | 2026-11-16 | D-015 | CONFIRMED | Owner explicitly authorized Node 24/TypeScript/Fastify/MariaDB local backend, secure Admin Dashboard, API integration, audited manual finance and a branch/commit/push/PR; no production deployment, real child data or payments |
 | 2026-11-16 | D-016 | IMPLEMENTED LOCAL | Parent sessions/CSRF/rate limits; season/project/finance/lesson/skill/practice/journal forms; published public projections; single-use invited family access and revocation; sanitized private images |
 | 2026-11-16 | D-017 | OPEN / PRODUCTION BLOCKER | Target-host private-media/security review, production backups, account recovery, real-device/YouTube playback checks, hosting and full budget/schedule approval |
@@ -11,8 +14,21 @@
 | 2026-11-16 | D-019 | IMPLEMENTED LOCAL | YouTube link validation/click-to-load player; explicit TEACHER invitations and skill/practice grants; authenticated feedback history; private practice images and scoped revocation; synthetic encrypted local backup/restore drill passed |
 | 2026-11-17 | D-020 | CONFIRMED | Owner requested first-admin browser setup and PC-build/host database/environment workflow; no actual production deployment |
 | 2026-11-17 | D-021 | IMPLEMENTED LOCAL | Private-key /setup with durable lock, auto migration/draft seed after key authorization, migration 003 legacy protection; compiled runtime package and app.cjs bridge |
+| 2026-11-17 | D-022 | CONFIRMED | Chủ dự án yêu cầu cập nhật đúng nhánh tại PC, hoàn tất cài đặt/kiểm tra/build/đóng gói ở máy; chỉ bàn giao thao tác hosting cho chủ dự án. Không thao tác hosting trong nhiệm vụ này. Xem HOSTING_BAN_GIAO_VI.md và WINDOWS_BUILD_REPORT.md |
+| 2026-11-17 | D-023 | IMPLEMENTED LOCAL | Windows x64: Node 24.22.3/MariaDB 11.4.14 riêng; cài dependencies/typecheck/build, 24 tests đạt; gói runtime độc lập chạy setup/login/lưu dữ liệu/restart và kiểm tra HTTP file riêng đạt. ZIP và cấu hình host riêng được chuẩn bị; Chrome visual check không thực hiện được do công cụ không xác định URL. Chưa deploy |
+| 2026-11-17 | D-024 | OPEN / IMPLEMENTED LOCAL DIAGNOSTICS | Owner báo 503 trên host và cung cấp log/ảnh cPanel. Bridge cũ che nguyên nhân; bản mới ghi mã lỗi/field an toàn, không raw error/stack/secrets. Typecheck/build và 3 packaging tests đạt (exit 0); cần log mới sau khi owner thay app.cjs/restart để xác định lỗi thực tế. Chưa xác nhận khắc phục 503 |
+| 2026-11-17 | D-025 | OBSERVED / OPEN HOST FIX | Log mới từ owner xác nhận Node v24.22.3 báo ERR_DLOPEN_FAILED khi import backend. Lỗi nạp native addon; chưa xác định argon2/sharp, binary hay system library cụ thể. Đã thêm lệnh kiểm tra từng module không đọc .env/DB trong hướng dẫn; lệnh chạy local Windows đạt cả hai, không chứng minh Linux host tương thích |
+| 2026-11-17 | D-026 | OBSERVED / PROPOSED HOST FIX | Owner kiểm tra trong đúng Node environment/Application root: Argon2 prebuilt báo thiếu GLIBC_2.34, sharp OK. Hướng dẫn build riêng version Argon2 đang cài từ source trên host; cần toolchain Python/make/C++. Chưa có kết quả build hoặc xác nhận hết 503; không đổi thuật toán/hash/DB |
+| 2026-11-17 | D-027 | OPEN HOST VERIFICATION | Owner gửi tiếp stack trace vẫn nạp Argon2 prebuild, chưa cung cấp output của lệnh rebuild. Bổ sung cách gọi trực tiếp node-gyp@11 cho module hiện có để tránh phụ thuộc install script; chờ log build thực tế, chưa kết luận compiler bị chặn hay đã build thành công |
+| 2026-11-17 | D-028 | OBSERVED / OPEN HOST FIX | Log đầy đủ xác nhận npm rebuild bị allowScripts bỏ qua; direct node-gyp 11.5.0 đã tải headers nhưng chọn Python 3.6.8, lỗi cú pháp := trước khi compile. Bổ sung dò Python 3.9+ và --python tường minh; chưa biết Python/toolchain khác trên tài khoản và chưa xác nhận host phục hồi |
 
 ## Local pilot implementation checklist (current)
+
+**D-029 — 2026-11-17 — IMPLEMENTED LOCAL / PROPOSED HOST FIX:** Sau khi owner xác nhận không tìm thấy GCC Toolset tại các vị trí đã kiểm tra, chuẩn bị bản local dùng hash-wasm 4.13.0 cho Argon2id trong worker, giữ nguyên PHC v19/m65536/t3/p4, salt 16 bytes và digest 32 bytes; native argon2 chuyển dev-only để kiểm tra hai chiều. Hàng đợi giới hạn, một derivation hoạt động và so sánh timingSafeEqual; không đổi password/DB/UI. Typecheck/build, 29 tests và production-only runtime HTTP/restart checks đạt; audit production 0 reported vulnerabilities. Owner thực hiện hosting update; chưa xác nhận host phục hồi và không coi implementation choice này là quyết định production đã duyệt.
+
+**D-029 — 2026-11-17 — IMPLEMENTED LOCAL / HOST VERIFICATION OPEN:** Owner's host cannot find GCC Toolset 12–14 at checked paths. Prepared a local compatibility fix: hash-wasm 4.13.0 replaces the runtime native Argon2 binding while retaining Argon2id v19/m65536/t3/p4 and PHC format. Native argon2 remains dev-only for two-way interoperability tests. Derivation runs in isolated bounded workers and compares digests with timingSafeEqual. No DB migration/password reset, backend stack/UI change or automatic hosting deployment. Validation and host upload remain recorded separately.
+
+**Host incident update, 2026-11-17 (OBSERVED / OPEN):** Python 3.11.18 đã chạy và phần C của Argon2 biên dịch được; C++ compiler mặc định không hỗ trợ `-std=gnu++20`. Cần toolchain C++20 được nhà cung cấp cho phép (đã thêm dò GCC Toolset 12–14 và CC/CXX tường minh trong hướng dẫn). Chưa có kết quả compiler mới hoặc phục hồi 503; không đổi auth/DB/stack.
 
 - [x] Persistent MariaDB migrations and idempotent draft-curriculum seed, no fabricated events or future seasons.
 - [x] Secure one-time admin initialization, login/logout, absolute session expiry, server role checks and CSRF/origin protection.
@@ -27,7 +43,8 @@
 - [x] Runtime upload package tested outside the source checkout with Linux production dependencies only, plus compiled CLI and restart checks.
 - [ ] Actual HawkHost plan/Node/Passenger/HTTPS/Apache routing verification and owner approval before deployment.
 - [ ] Real-browser/real-device YouTube playback, target-host backup rotation/restore, teacher lesson feedback and per-member family ACLs.
-- [ ] Windows/native builds, browser visual regression and physical PC/iPad/mobile verification.
+- [x] Windows native dependency installation, typecheck/build, 24 automated tests and isolated packaged-runtime HTTP/restart verification; see WINDOWS_BUILD_REPORT.md.
+- [ ] Browser visual regression and physical PC/iPad/mobile verification; computer-use could not determine the Chrome URL during Windows verification.
 - [ ] Target-host encrypted backup/restore drill, retention/privacy review, production hosting and deployment approval.
 
 The original roadmap below remains as historical product/education planning; it does not revoke D-015.

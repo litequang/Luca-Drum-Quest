@@ -3,7 +3,7 @@
 **Ngày cập nhật:** 2026-11-17
 
 **Repository:** https://github.com/litequang/Luca-Drum-Quest  
-**Trạng thái:** LOCAL BACKEND + ADMIN PILOT implemented on `codex/local-backend-admin-pilot`; no production deployment. Node 24/TypeScript/Fastify/MariaDB, authenticated parent admin, audited manual finance, curriculum/lesson/practice/journal forms, invited family viewing and protected sanitized images. YouTube video links/embeds, record-scoped teacher feedback and private practice images are implemented. A synthetic local encrypted backup/restore drill passed; target-host backups, real-device/browser playback and Windows verification remain incomplete. Video file uploads are excluded by owner choice. Original public HTML/CSS is preserved; no real child/supporter data is seeded.
+**Trạng thái:** LOCAL BACKEND + ADMIN PILOT implemented on `codex/local-backend-admin-pilot`; agent has not deployed to production. Node 24/TypeScript/Fastify/MariaDB, authenticated parent admin, audited manual finance, curriculum/lesson/practice/journal forms, invited family viewing and protected sanitized images. YouTube embeds, record-scoped teacher grants and private practice images are implemented. Latest Windows checks: typecheck/build, **30 tests** and isolated compiled-runtime HTTP/Unicode/migration verification passed. Runtime uses Argon2id WASM; pool/content columns use utf8mb4. Owner has operated a real host and supplied incident logs/SQL; final host update/recovery, InnoDB/FK integrity, backup and real-device checks remain unverified. Original public UI is preserved; no real child/supporter data is seeded. Start continuation at [AI_HANDOFF_VI.md](docs/AI_HANDOFF_VI.md).
 
 **CONFIRMED C12 (2026-11-16):** Owner authorized local implementation beyond historical B0, plus branch/commit/push/PR. Production/media/payment restrictions remain. Current setup: [LOCAL_PILOT_WINDOWS.md](docs/LOCAL_PILOT_WINDOWS.md); design/API/security: [LOCAL_PILOT_ARCHITECTURE.md](docs/LOCAL_PILOT_ARCHITECTURE.md); validation and device checklist: [LOCAL_PILOT_REPORT.md](docs/LOCAL_PILOT_REPORT.md). Historical sections below retain earlier planning context and are superseded by C12 for the local pilot.
 
@@ -14,7 +14,19 @@
 
 > **Dành cho AI mới tiếp quản:** Đọc trang này trước. Không suy đoán rằng một đề xuất trong tài liệu đã được người dùng đồng ý triển khai.
 
+**Bàn giao phát triển tiếp (17/11/2026):** [AI_HANDOFF_VI.md](docs/AI_HANDOFF_VI.md) tổng hợp nhánh, code, lệnh kiểm tra/build, sự cố host, dữ liệu riêng và việc còn mở. Owner yêu cầu cập nhật các bản sửa lên GitHub; push nhánh không phải merge hay deploy. Đặc biệt: dump host dùng MyISAM và thiếu FK; patch SQL riêng mới chuyển engine, chưa xác nhận import và chưa bổ sung FK.
+
+**Follow-up (2026-11-17, owner CONFIRMED C15):** Chủ dự án yêu cầu lấy nhánh về `E:\CODE\Luca-Drum-Quest`, hoàn tất cài đặt/kiểm tra/build/đóng gói trên PC và chỉ bàn giao thao tác hosting. Không triển khai lên host trong nhiệm vụ này. Hướng dẫn tiếng Việt: [HOSTING_BAN_GIAO_VI.md](docs/HOSTING_BAN_GIAO_VI.md); bằng chứng kiểm tra Windows: [WINDOWS_BUILD_REPORT.md](docs/WINDOWS_BUILD_REPORT.md). Gói upload là `luca-host.zip`; cấu hình riêng `.env.host-private` bị Git bỏ qua và được upload riêng, không nằm trong ZIP.
+
 ## 1. Tóm tắt 30 giây
+
+**Owner SQL recovery (2026-11-17, IMPLEMENTED LOCAL / OWNER IMPORT PENDING):** Owner supplied a private SQL dump and requested ready-to-import correction. Private outputs in Downloads restore 124 known-source strings in 22 project/season/stage/skill rows; the recommended guarded UPDATE patch preserves credentials, IDs, progress and original audit entries, adds repair audits, and converts the supplied MyISAM tables to InnoDB for transactions. Actual disposable MariaDB import/reimport/newer-edit checks passed and temporary databases were removed. No private SQL was added to Git or release; no host import performed.
+
+**Unicode host follow-up (2026-11-17, IMPLEMENTED LOCAL / HOST VERIFICATION OPEN):** Public API returned HTTP 200 with UTF-8 headers but question marks already present in Vietnamese project text. Pool now explicitly requests utf8mb4; additive migration 004 converts human-readable content columns without changing foreign keys or credentials. Legacy migrations stay immutable. Lost characters require owner re-entry from known originals; no automatic reseed/content rewrite. Upgrade instructions at the top of HOSTING_BAN_GIAO_VI.md.
+
+**Current local compatibility patch (2026-11-17, IMPLEMENTED LOCAL / HOST VERIFICATION OPEN):** GCC Toolset 12–14 was not found at the checked host paths. Runtime Argon2id now uses `hash-wasm@4.13.0` in isolated workers, retaining v19/m65536/t3/p4, PHC encoding, 16-byte salt and 32-byte digest. Native argon2 moved to development-only interoperability tests. No auth algorithm/DB/UI change or password reset is required for app-generated hashes. Current host upgrade steps are at the top of HOSTING_BAN_GIAO_VI.md; old compiler workarounds below are incident history. Actual host recovery remains open.
+
+**Hosting incident history (2026-11-17, superseded by the WASM patch above):** `/setup` returned 503; native Argon2 required GLIBC_2.34 while sharp loaded. Source build then failed on an old C++ compiler and the checked GCC Toolset paths were unavailable. Do not repeat these historical rebuild steps for the current package. Startup diagnostics now log safe codes/field names. Later public API returned HTTP 200 with corrupted Vietnamese text; final recovery after both fixes is still unverified.
 
 Luca Drum Quest là website dự án gia đình (vui, ấm áp, có chút hài hước kiểu gọi vốn startup) theo dõi hành trình Luca, con trai 4 tuổi, **học trống bài bản để chơi nhạc thờ phượng Chúa**. **Dự án có thể gồm nhiều vòng nối tiếp nhau; Vòng 1 kéo dài trọn 24 tháng**. Huy động hỗ trợ mua trống + học phí chủ yếu từ ông bà/người thân, cập nhật video tập và tiến bộ cho những người được phép xem. Đồng thời tạo hệ thống học tập để bố mẹ không phó mặc toàn bộ cho thầy: có kỹ năng, tiền đề, bài tập ở nhà, đánh giá HOME READY và giáo viên xác nhận TEACHER PASS.
 
@@ -38,6 +50,7 @@ Luca Drum Quest là website dự án gia đình (vui, ấm áp, có chút hài h
 | C12 | Owner authorized Node/TypeScript/Fastify/MariaDB local backend + Admin pilot, branch/commit/push/PR; no production or payment processing |
 | C13 | Owner requested continued local work and selected YouTube embedding only for video; no server video file uploads |
 | C14 | Owner requested first-admin setup and PC-build/host-runtime packaging; actual hosting/deployment still requires validation and authorization |
+| C15 | Owner requested completing all PC preparation, checks, build and upload packaging locally; owner will perform the hosting steps using the Vietnamese handoff |
 
 ## 3. Đề xuất đang THẢO LUẬN (PROPOSED, chưa chốt)
 

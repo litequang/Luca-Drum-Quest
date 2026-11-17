@@ -1,5 +1,7 @@
 # Build on PC, configure database/environment on the host
 
+2026-11-17 compatibility update: use the latest package, which implements the same Argon2id/PHC password policy through hash-wasm workers. Native argon2 is development-only; no Argon2 C++ compilation is required on the host. Sharp still requires its Linux native runtime. Follow the current Vietnamese upgrade note in HOSTING_BAN_GIAO_VI.md; native Argon2 build references below are historical.
+
 Status: a portable upload package and first-admin browser installer are implemented and tested locally. The actual HawkHost plan, Node selector, Passenger behavior and hosting security remain unverified. This is not authorization to deploy this repository, and no hosting changes were made by this task.
 
 ## What runs where

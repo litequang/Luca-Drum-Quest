@@ -2,7 +2,7 @@ import { readFile, readdir } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import argon2 from "argon2";
+import { hashPassword } from "./password.js";
 import { z } from "zod";
 import { pool, transaction, audit } from "./db.js";
 export async function migrate() {
@@ -94,11 +94,7 @@ export async function seed() {
 export async function initAdmin(email: string, password: string) {
   email = z.email().max(254).parse(email).toLowerCase();
   z.string().min(14).max(128).parse(password);
-  const hash = await argon2.hash(password, {
-    type: argon2.argon2id,
-    memoryCost: 65536,
-    timeCost: 3,
-  });
+  const hash = await hashPassword(password);
   await transaction(async (c) => {
     const state = (
       await c.query(

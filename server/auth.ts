@@ -1,6 +1,6 @@
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import argon2 from "argon2";
+import { hashPassword, verifyPassword } from "./password.js";
 import { z } from "zod";
 import { pool, transaction, audit } from "./db.js";
 import { config } from "./config.js";
@@ -83,7 +83,7 @@ export async function auth(app: FastifyInstance) {
       }
     }
   });
-  const dummy = await argon2.hash(secret());
+  const dummy = await hashPassword(secret());
   app.post(
     "/api/v1/auth/login",
     { config: { rateLimit: { max: 5, timeWindow: "1 minute" } } },
@@ -99,7 +99,7 @@ export async function auth(app: FastifyInstance) {
         body.email.toLowerCase(),
       ]);
       const user = rows[0];
-      const valid = await argon2.verify(
+      const valid = await verifyPassword(
         user?.password_hash ?? dummy,
         body.password,
       );

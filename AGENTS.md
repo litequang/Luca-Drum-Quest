@@ -14,6 +14,8 @@ The owner explicitly authorized Node 24/TypeScript/Fastify/MariaDB local backend
 
 ## First-run setup and host packaging — 2026-11-17
 
+Local host-compatibility fix: runtime passwords use Argon2id via pinned hash-wasm in isolated workers, preserving the original PHC parameters (m=65536,t=3,p=4,v=19), random 16-byte salts and 32-byte digest. Keep constant-time digest comparison and bounded work queue. Native argon2 is development-only for interoperability tests; never restore it to runtime imports to solve a host issue. The owner performs the hosting update; actual host recovery is not yet verified.
+
 Owner requested a PC-build/host-runtime workflow and first-admin account creation. `/setup` is enabled only by a private 256-bit SETUP_TOKEN; no key goes into a URL or audit log. A persistent installation_state marker and legacy-admin check permanently close initialization after success, including CLI creation. Setup may migrate/seed only the configured database after key validation; it never creates/drops a database or exposes general registration. Keep the Origin/rate/body checks and database locking.
 
 `npm run package:host` creates an ignored, secret-free release/ upload package; runtime dependencies must be installed for Linux on the host. app.cjs is a startup bridge, not proof of HawkHost/Passenger compatibility. Do not upload Windows node_modules or put application configuration/media under public_html. No actual hosting setup or deployment has been authorized/performed by this change. See [docs/HAWKHOST_SETUP.md](docs/HAWKHOST_SETUP.md).

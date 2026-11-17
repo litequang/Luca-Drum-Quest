@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { randomUUID } from "node:crypto";
-import argon2 from "argon2";
+import { hashPassword } from "./password.js";
 import { z } from "zod";
 import { pool, transaction, audit } from "./db.js";
 import { parent, fail, secret, digest, session } from "./auth.js";
@@ -40,11 +40,7 @@ export async function accessRoutes(app: FastifyInstance) {
         })
         .strict()
         .parse(req.body);
-      const hash = await argon2.hash(data.password, {
-          type: argon2.argon2id,
-          memoryCost: 65536,
-          timeCost: 3,
-        }),
+      const hash = await hashPassword(data.password),
         id = randomUUID();
       const role = await transaction(async (c) => {
         const invite = (

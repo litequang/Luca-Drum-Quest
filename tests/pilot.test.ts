@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { randomBytes } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { resolve } from "node:path";
-import { rm } from "node:fs/promises";
+import { rm, readFile } from "node:fs/promises";
 import sharp from "sharp";
 // Never mutate a regular pilot DB. This suite requires a dedicated disposable DB.
 if (!process.env.TEST_DB_NAME?.endsWith("_test"))
@@ -72,6 +72,51 @@ await test("MariaDB local pilot acceptance and security", async (t) => {
       "migrations",
     ])
       await pool.query("DROP TABLE IF EXISTS " + table);
+    await t.test("Unicode migration upgrades legacy latin1 content columns without changing credentials, keys or damaged text", async () => {
+      // Simulate a hosting database whose original tables inherited latin1.
+      for (const file of ["001_initial.sql", "002_teacher_and_practice_media.sql", "003_installation_state.sql"]) {
+        for (const sql of (await readFile("migrations/" + file, "utf8")).split(";").filter(x => x.trim()))
+          await pool.query(sql);
+      }
+      const columns: Record<string, string> = {
+        project: "MODIFY description TEXT CHARACTER SET latin1 NOT NULL, MODIFY intro TEXT CHARACTER SET latin1 NOT NULL",
+        seasons: "MODIFY data LONGTEXT CHARACTER SET latin1 NOT NULL",
+        records: "MODIFY data LONGTEXT CHARACTER SET latin1 NOT NULL",
+        audit_log: "MODIFY before_data LONGTEXT CHARACTER SET latin1 NULL, MODIFY after_data LONGTEXT CHARACTER SET latin1 NULL",
+        skill_history: "MODIFY feedback TEXT CHARACTER SET latin1 NOT NULL",
+        invitations: "MODIFY label VARCHAR(100) CHARACTER SET latin1 NOT NULL",
+      };
+      for (const [table, definition] of Object.entries(columns))
+        await pool.query(`ALTER TABLE ${table} ${definition}`);
+      await pool.query("INSERT INTO project VALUES (1, 'H?c tr?ng', 'Legacy text', NULL)");
+      await pool.query("INSERT INTO users (id,email,password_hash,role) VALUES ('legacy-user','legacy@example.invalid','preserve-hash','PARENT_ADMIN')");
+      const idColumnsBefore = await pool.query("SELECT TABLE_NAME,COLUMN_NAME,CHARACTER_SET_NAME,COLLATION_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=? AND COLUMN_NAME IN ('id','user_id','record_id','season_id') ORDER BY TABLE_NAME,COLUMN_NAME", [config.DB_NAME]);
+      const migration = await readFile("migrations/004_unicode_content.sql", "utf8");
+      for (let pass = 0; pass < 2; pass++)
+        for (const sql of migration.split(";").filter(x => x.trim()))
+          await pool.query(sql);
+      assert.equal((await pool.query("SELECT description FROM project WHERE id=1"))[0].description, "H?c tr?ng");
+      assert.equal((await pool.query("SELECT password_hash FROM users WHERE id='legacy-user'"))[0].password_hash, "preserve-hash");
+      assert.deepEqual(await pool.query("SELECT TABLE_NAME,COLUMN_NAME,CHARACTER_SET_NAME,COLLATION_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=? AND COLUMN_NAME IN ('id','user_id','record_id','season_id') ORDER BY TABLE_NAME,COLUMN_NAME", [config.DB_NAME]), idColumnsBefore);
+      const unicode = "Học trống bài bản — thờ phượng Chúa 🥁 e\u0301";
+      const charset = (await pool.query("SELECT @@character_set_client client, @@character_set_connection connection, @@character_set_results results"))[0];
+      assert.deepEqual([charset.client, charset.connection, charset.results], ["utf8mb4", "utf8mb4", "utf8mb4"]);
+      await pool.query("UPDATE project SET description=?,intro=? WHERE id=1", [unicode, unicode]);
+      assert.equal((await pool.query("SELECT description FROM project WHERE id=1"))[0].description, unicode);
+      await pool.query("INSERT INTO seasons VALUES ('unicode-season',1,?)", [JSON.stringify({ title: unicode })]);
+      await pool.query("INSERT INTO records VALUES ('unicode-record','stages','unicode-season',?)", [JSON.stringify({ title: unicode })]);
+      assert.equal(JSON.parse((await pool.query("SELECT data FROM records WHERE id='unicode-record'"))[0].data).title, unicode);
+      await assert.rejects(pool.query("UPDATE records SET data='invalid JSON' WHERE id='unicode-record'"));
+      await assert.rejects(pool.query("UPDATE seasons SET data='invalid JSON' WHERE id='unicode-season'"));
+      await pool.query("INSERT INTO invitations (id,token_hash,label,expires_at) VALUES ('unicode-invite',?,?,'2099-01-01')", ["a".repeat(64), unicode]);
+      await pool.query("INSERT INTO skill_history (skill_id,actor_id,old_status,new_status,feedback) VALUES ('unicode-record','legacy-user',NULL,NULL,?)", [unicode]);
+      await pool.query("INSERT INTO audit_log (action,target_id,before_data,after_data) VALUES ('encoding.test','1',?,?)", [unicode, unicode]);
+      assert.equal((await pool.query("SELECT label FROM invitations WHERE id='unicode-invite'"))[0].label, unicode);
+      assert.equal((await pool.query("SELECT feedback FROM skill_history"))[0].feedback, unicode);
+      assert.equal((await pool.query("SELECT after_data FROM audit_log"))[0].after_data, unicode);
+      for (const table of ["media", "teacher_grants", "invitations", "sessions", "skill_history", "audit_log", "records", "users", "project", "seasons", "installation_state"])
+        await pool.query("DROP TABLE " + table);
+    });
     app = await buildApp();
     await t.test(
       "browser setup stays disabled without a key and throttles invalid keys without creating tables",
@@ -205,13 +250,16 @@ await test("MariaDB local pilot acceptance and security", async (t) => {
         assert.ok(marker.initialized_at);
         assert.equal(
           (await pool.query("SELECT COUNT(*) n FROM migrations"))[0].n,
-          3,
+          4,
         );
         const audits = JSON.stringify(
           await pool.query("SELECT before_data,after_data FROM audit_log"),
         );
         assert.equal(audits.includes(config.SETUP_TOKEN), false);
         assert.equal(audits.includes(password), false);
+        const seeded = await request("GET", "/public/project", undefined, false);
+        assert.equal(seeded.json().description, "Hành trình học trống bài bản để chơi nhạc thờ phượng Chúa.");
+        assert.equal(seeded.json().intro, "Vòng 1: 24 tháng học tập; quà tặng tự nguyện, không phải đầu tư hoặc hoàn vốn.");
       },
     );
     await t.test(
@@ -355,18 +403,18 @@ await test("MariaDB local pilot acceptance and security", async (t) => {
       async () => {
         await json("PUT", "/admin/project", {
           ...state.project,
-          description: "Fictional pilot update <script>alert(1)</script>",
-          intro: "Fictional intro",
+          description: "Học trống thờ phượng 🥁 <script>alert(1)</script>",
+          intro: "Quà tặng tự nguyện, không phải đầu tư hoặc hoàn vốn. e\u0301",
         });
         await app.close();
         app = await buildApp();
         assert.equal(
           (await json("GET", "/public/project")).description,
-          "Fictional pilot update <script>alert(1)</script>",
+          "Học trống thờ phượng 🥁 <script>alert(1)</script>",
         );
         assert.equal(
           (await json("GET", "/admin/state")).project.intro,
-          "Fictional intro",
+          "Quà tặng tự nguyện, không phải đầu tư hoặc hoàn vốn. e\u0301",
         );
         assert.equal(
           (

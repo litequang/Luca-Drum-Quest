@@ -1,6 +1,12 @@
 # Luca Drum Quest — local pilot handoff
 
+**Current continuation (2026-11-17):** See [AI_HANDOFF_VI.md](AI_HANDOFF_VI.md) for the latest source/commands, 30 passing tests, utf8mb4 migration 004, private SQL recovery and remaining host checks. A supplied host dump used MyISAM and lacked the expected FK constraints; the private repair patch converts engines but does not add missing FKs. Final host integrity/import remains open. Historical 24/29-test and Cloud-only statements below are superseded by WINDOWS_BUILD_REPORT.md.
+
+**Current host-compatibility patch (2026-11-17):** Runtime passwords use hash-wasm Argon2id in an isolated worker with the original PHC parameters; native argon2 is development-only for bidirectional compatibility tests. Pool and content-column migration 004 enforce utf8mb4. Typecheck/build, all 30 tests, clean production-only runtime setup/login/persistence/restart/Unicode checks and production audit passed on Windows. This removes the native Argon2 compiler requirement and prevents charset loss in future writes; it does not prove target-host recovery or restore characters already lost. Native Argon2/toolchain statements in historical results below describe the earlier package.
+
 Updated: 2026-11-17. Branch: `codex/local-backend-admin-pilot`, based on main `36156a64c55effb67ee8cfd8c82cf0b1f3a426a5`. The final commit SHA and PR URL accompany this report in the delivery message; `git rev-parse HEAD` identifies the checked-out version. No production deployment or merge is part of this work.
+
+**Windows follow-up, 2026-11-17:** The owner requested complete PC preparation and a hosting-only handoff. Windows Node 24/MariaDB installation, native dependencies, typecheck/build, 24 automated tests and isolated packaged-runtime HTTP/restart checks now pass. This supersedes the Windows-unverified statements in the historical Cloud report below. Browser rendering/playback and target-host checks remain unverified. See [WINDOWS_BUILD_REPORT.md](WINDOWS_BUILD_REPORT.md) and [HOSTING_BAN_GIAO_VI.md](HOSTING_BAN_GIAO_VI.md).
 
 Owner follow-up: continue local implementation; **video is YouTube embedding only**. PR remains [#2](https://github.com/litequang/Luca-Drum-Quest/pull/2), without merge/deployment. The current head SHA is in the delivery message/PR. No actual child video was uploaded to any service.
 

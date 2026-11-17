@@ -47,6 +47,8 @@ await writeFile(
 // The unchanged lockfile remains reproducible. Runtime installs omit declared dev tools.
 await writeFile(join(destination, ".npmrc"), "omit=dev\n");
 await cp("docs/HAWKHOST_SETUP.md", join(destination, "HOST_SETUP.md"));
+await cp("docs/HOSTING_BAN_GIAO_VI.md", join(destination, "HOST_SETUP_VI.md"));
+await cp("docs/WINDOWS_BUILD_REPORT.md", join(destination, "WINDOWS_BUILD_REPORT.md"));
 console.log(
   "release/ prepared: compiled server, public assets and migrations. Install Linux runtime dependencies on the host with npm ci --omit=dev.",
 );

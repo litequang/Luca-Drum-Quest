@@ -1,6 +1,8 @@
 # Launch the local pilot on Windows
 
-Use PowerShell from the repository root. Install Git, **Node 24 LTS** and either MariaDB 10.11+/11.4 locally or Docker Desktop with Linux containers. Native Argon2/sharp packages need a supported Windows x64/ARM64 Node installation; unsupported hosts may need their normal native build toolchain. Windows commands below are a handoff and have not been executed on a Windows machine in this Cloud task.
+**Đã thực hiện trên PC ngày 17/11/2026:** xem [WINDOWS_BUILD_REPORT.md](WINDOWS_BUILD_REPORT.md). Người dùng chỉ cần triển khai hosting theo [HOSTING_BAN_GIAO_VI.md](HOSTING_BAN_GIAO_VI.md); các bước cài mới bên dưới là tài liệu tham khảo cho lần chạy local tiếp theo.
+
+Use PowerShell from the repository root. Install Git, **Node 24 LTS** and either MariaDB 10.11+/11.4 locally or Docker Desktop with Linux containers. Runtime Argon2id uses WASM workers; native argon2 is development-only for interoperability tests. Sharp remains native. Windows checks have now been executed successfully; see WINDOWS_BUILD_REPORT.md for current evidence and AI_HANDOFF_VI.md for continuation. The commands below are also suitable for a fresh local checkout with private configuration.
 
 For **PC build → HawkHost runtime**, use [HAWKHOST_SETUP.md](HAWKHOST_SETUP.md). In that workflow the host owns its database/.env, Linux installs its dependencies, and `/setup` creates the first website Admin. The local-PC database steps below are only for running the entire pilot on your PC.
 
