@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { JSDOM } from "jsdom";
-import { youtubeMarkup, installYouTubeEmbeds } from "../youtube.js";
+import { youtubeMarkup, installYouTubeEmbeds, stopYouTubeEmbeds } from "../youtube.js";
 const { stages, skills, skillGroups } = await import("../data.js" as string);
 const publicSeason = {
   id: "season",
@@ -25,6 +25,7 @@ async function bootPublic(fail = false) {
     w = dom.window;
   (w as any).__youtubeMarkup = youtubeMarkup;
   (w as any).__installYouTubeEmbeds = installYouTubeEmbeds;
+  (w as any).__stopYouTubeEmbeds = stopYouTubeEmbeds;
   w.scrollTo = () => {};
   w.matchMedia = () => ({ matches: false }) as any;
   (w.document.querySelector("dialog") as any).showModal = function () {
@@ -84,8 +85,8 @@ async function bootPublic(fail = false) {
           "const api=window.__api;",
         )
         .replace(
-          "import { youtubeMarkup, installYouTubeEmbeds } from './youtube.js';",
-          "const youtubeMarkup=window.__youtubeMarkup,installYouTubeEmbeds=window.__installYouTubeEmbeds;",
+          "import { youtubeMarkup, installYouTubeEmbeds, stopYouTubeEmbeds } from './youtube.js';",
+          "const youtubeMarkup=window.__youtubeMarkup,installYouTubeEmbeds=window.__installYouTubeEmbeds,stopYouTubeEmbeds=window.__stopYouTubeEmbeds;",
         ) +
       "})()",
   );
@@ -127,6 +128,17 @@ test("public DOM interactions: stored copy, four routes, filters, dialogs and bu
     assert.equal((d.querySelector("dialog") as any).open, false);
     (d.querySelector('[data-stage="2"]') as any).click();
     assert.match(d.querySelector("#stage-detail")!.textContent!, /Giữ nhịp/);
+    (d.querySelector('.desktop-nav [data-route="journal"]') as any).click();
+    assert.equal(d.querySelector("#journal-grid iframe"), null);
+    assert.ok(d.querySelector(".journal-card--video .youtube-cover"));
+    assert.equal(d.querySelector(".journal-card--video button button"), null);
+    (d.querySelector("#journal-grid [data-youtube-load]") as HTMLButtonElement).click();
+    assert.equal((d.querySelector("#journal-grid iframe") as HTMLIFrameElement).src,
+      "https://www.youtube-nocookie.com/embed/AbC_123-xYz?autoplay=1&playsinline=1");
+    assert.equal((d.querySelector("dialog") as any).open, false);
+    (d.querySelector('.desktop-nav [data-route="home"]') as any).click();
+    assert.equal(d.querySelector("#journal-grid iframe"), null);
+    (d.querySelector('.desktop-nav [data-route="journal"]') as any).click();
     (d.querySelector("[data-entry]") as any).click();
     await new Promise((r) => setTimeout(r, 0));
     assert.match(d.querySelector("#dialog-body")!.textContent!, /<img src=x/);
@@ -137,7 +149,7 @@ test("public DOM interactions: stored copy, four routes, filters, dialogs and bu
     ).click();
     assert.equal(
       (d.querySelector("#dialog-body iframe") as HTMLIFrameElement).src,
-      "https://www.youtube-nocookie.com/embed/AbC_123-xYz",
+      "https://www.youtube-nocookie.com/embed/AbC_123-xYz?autoplay=1&playsinline=1",
     );
     const goal = d.querySelector("#funding-goal")!.textContent;
     const equipment = d.querySelector("#equipment-budget") as HTMLInputElement;

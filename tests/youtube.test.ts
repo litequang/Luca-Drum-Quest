@@ -5,6 +5,7 @@ import {
   youtubeVideoId,
   youtubeMarkup,
   installYouTubeEmbeds,
+  stopYouTubeEmbeds,
 } from "../youtube.js";
 test("YouTube accepts direct video links and rejects arbitrary embeds/URLs", () => {
   for (const url of [
@@ -36,7 +37,9 @@ test("YouTube click-to-load creates only the fixed privacy-enhanced iframe", () 
     assert.equal(d.querySelector("img"), null);
     (d.querySelector("button") as HTMLButtonElement).click();
     const f = d.querySelector("iframe")!;
-    assert.equal(f.src, "https://www.youtube-nocookie.com/embed/AbC_123-xYz");
+    assert.equal(f.src, "https://www.youtube-nocookie.com/embed/AbC_123-xYz?autoplay=1&playsinline=1");
+    assert.match(f.allow, /autoplay/);
+    assert.equal(d.querySelector("a[href]"), null);
     assert.equal(f.referrerPolicy, "strict-origin-when-cross-origin");
     assert.equal(
       f.getAttribute("sandbox"),
@@ -44,6 +47,9 @@ test("YouTube click-to-load creates only the fixed privacy-enhanced iframe", () 
     );
     assert.match(f.style.aspectRatio, /^16\s*\/\s*9$/);
     assert.equal(d.querySelectorAll("iframe").length, 1);
+    stopYouTubeEmbeds(d);
+    assert.equal(d.querySelector("iframe"), null);
+    assert.ok(d.querySelector(".youtube-cover[data-youtube-load]"));
   } finally {
     dom.window.close();
   }

@@ -111,7 +111,7 @@ const defaults = {
 };
 const fieldLabels = {
   youtubeUrl:
-    "Link video YouTube (tùy chọn; quyền riêng tư do YouTube quyết định)",
+    "Link YouTube để nhúng video (watch, youtu.be, Shorts; tùy chọn)",
   currentStageId: "Chặng học hiện tại",
   description: "Mô tả",
   intro: "Giới thiệu công khai",
@@ -386,9 +386,21 @@ function edit(kind, row) {
     })
     .join("");
   $("#editor").innerHTML =
-    `<div class="admin-card"><h2>${row ? "Chỉnh sửa" : "Thêm"} · ${labels[kind]}</h2><form id="edit-form" class="admin-form">${fields}<div class="wide admin-actions"><button class="primary">Lưu</button><button type="button" id="cancel-edit">Hủy</button></div></form>${["journal", "practices"].includes(kind) && row ? `<h3>Ảnh đính kèm</h3><p class="help">JPEG/PNG/WebP ≤5MB, tối đa 10 ảnh/bài. Video dùng link YouTube ở form trên; không tải file video. Chỉ dùng ảnh giả trong pilot.</p><form id="upload"><input name="file" type="file" accept="image/jpeg,image/png,image/webp" required><button>Tải ảnh</button></form><div id="media-list"></div>` : ""}</div>`;
+    `<div class="admin-card"><h2>${row ? "Chỉnh sửa" : "Thêm"} · ${labels[kind]}</h2><form id="edit-form" class="admin-form">${fields}<div class="wide admin-actions"><button class="primary">Lưu</button><button type="button" id="cancel-edit">Hủy</button></div></form>${["journal", "practices"].includes(kind) ? '<div class="youtube-preview"><h3>Xem thử video nhúng</h3><p class="help">Dán link YouTube, rồi bấm Play để phát ngay tại đây trước khi lưu. Video phải cho phép nhúng; YouTube quyết định quyền xem.</p><div id="youtube-input-preview"></div></div>' : ""}${["journal", "practices"].includes(kind) && row ? `<h3>Ảnh đính kèm</h3><p class="help">JPEG/PNG/WebP ≤5MB, tối đa 10 ảnh/bài. Video dùng link YouTube ở form trên; không tải file video. Chỉ dùng ảnh giả trong pilot.</p><form id="upload"><input name="file" type="file" accept="image/jpeg,image/png,image/webp" required><button>Tải ảnh</button></form><div id="media-list"></div>` : ""}</div>`;
   $("#editor").scrollIntoView({ block: "start" });
   $("#cancel-edit").onclick = () => ($("#editor").innerHTML = "");
+  const youtubeInput = $("#edit-form [name=youtubeUrl]");
+  const youtubePreview = $("#youtube-input-preview");
+  if (youtubeInput && youtubePreview) {
+    const updatePreview = () => {
+      const value = youtubeInput.value.trim();
+      const markup = youtubeMarkup(value);
+      youtubePreview.innerHTML = markup ||
+        '<p class="help">' + (value ? "Link chưa hợp lệ. Hãy dùng link trực tiếp của một video YouTube HTTPS." : "Chưa có video YouTube.") + '</p>';
+    };
+    youtubeInput.addEventListener("input", updatePreview);
+    updatePreview();
+  }
   $("#edit-form").onsubmit = async (event) => {
     event.preventDefault();
     const form = event.currentTarget,

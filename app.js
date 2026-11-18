@@ -1,6 +1,6 @@
 import { skillGroups } from './data.js';
 import { api } from './apiClient.js';
-import { youtubeMarkup, installYouTubeEmbeds } from './youtube.js';
+import { youtubeMarkup, installYouTubeEmbeds, stopYouTubeEmbeds } from './youtube.js';
 installYouTubeEmbeds(document);
 let stages = [], skills = [], entries = [], publicProject = null, publicBudget = null;
 let apiUnavailable = false;
@@ -25,7 +25,8 @@ let currentJournalFilter = 'all';
 
 function navigate(page, updateHash = true) {
   const next = pages.has(page) ? page : 'home';
-  $$('.view').forEach(view => {
+  if (next !== 'journal') stopYouTubeEmbeds($('#journal-grid'));
+  $('.view').forEach(view => {
     const active = view.dataset.view === next;
     view.hidden = !active;
     view.classList.toggle('is-visible', active);
@@ -167,6 +168,7 @@ $$('[data-dialog-close]').forEach(button => button.addEventListener('click', () 
 dialog.addEventListener('click', event => {
   if (event.target === dialog) dialog.close();
 });
+dialog.addEventListener('close', () => stopYouTubeEmbeds($('#dialog-body')));
 
 function renderJournalFilters() {
   const filters = [{id:'all',label:'Tất cả'},{id:'Video luyện tập',label:'Video'},{id:'Bài học',label:'Bài học'},{id:'Cột mốc',label:'Cột mốc'}];
@@ -180,14 +182,20 @@ function renderJournalFilters() {
 function renderJournal() {
   const filtered = currentJournalFilter === 'all' ? entries :
     entries.filter(entry => entry.kind === currentJournalFilter);
-  $('#journal-grid').innerHTML = filtered.map(entry =>
-    '<button type="button" class="journal-card" data-entry="' + entry.id + '">' +
-    '<div class="journal-art ' + escapeHtml(entry.color) + '"><span class="journal-art-symbol">' +
-    escapeHtml(entry.symbol) + '</span><span class="play-bubble" aria-hidden="true">↗</span></div>' +
-    '<div class="journal-content"><small>' + escapeHtml(entry.tag) + '</small><h3>' +
-    escapeHtml(entry.title) + '</h3><p>' + escapeHtml(entry.caption) +
-    '</p><span class="journal-date">' + escapeHtml(entry.date) + '</span></div></button>'
-  ).join('');
+  $('#journal-grid').innerHTML = filtered.map(entry => {
+    const id = escapeHtml(entry.id);
+    const video = youtubeMarkup(entry.youtubeUrl);
+    const content = '<small>' + escapeHtml(entry.tag) + '</small><span class="journal-title">' +
+      escapeHtml(entry.title) + '</span><span class="journal-caption">' + escapeHtml(entry.caption) +
+      '</span><span class="journal-date">' + escapeHtml(entry.date) + '</span>';
+    if (video) return '<article class="journal-card journal-card--video">' + video +
+      '<div class="journal-video-content"><button type="button" class="journal-content journal-open" data-entry="' +
+      id + '">' + content + '<span class="journal-detail-action">Xem nhật ký <span aria-hidden="true">→</span></span></button></div></article>';
+    return '<button type="button" class="journal-card" data-entry="' + id + '">' +
+      '<span class="journal-art ' + escapeHtml(entry.color) + '"><span class="journal-art-symbol">' +
+      escapeHtml(entry.symbol) + '</span><span class="play-bubble" aria-hidden="true">↗</span></span>' +
+      '<span class="journal-content">' + content + '</span></button>';
+  }).join('');
 }
 $('#journal-filters').addEventListener('click', event => {
   const button = event.target.closest('[data-journal-filter]');
@@ -201,6 +209,7 @@ $('#journal-grid').addEventListener('click', async event => {
   if (!card) return;
   const entry = entries.find(item => item.id === card.dataset.entry);
   if (!entry) return;
+  stopYouTubeEmbeds($('#journal-grid'));
   let media = [];
   try { media = await api('/journal/' + entry.id + '/media'); } catch { /* Post may have been unpublished. */ }
   showDialog('<span class="aside-kicker">NHẬT KÝ · ' + escapeHtml(entry.date) + '</span>' +

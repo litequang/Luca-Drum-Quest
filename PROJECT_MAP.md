@@ -125,3 +125,8 @@ Luca Drum Quest là website dự án gia đình (vui, ấm áp, có chút hài h
 Khi có quyết định mới: ghi ID, ngày, phân loại CONFIRMED/PROPOSED/OPEN; sửa file liên quan; ghi trong [decision log](docs/06_ROADMAP_AND_DECISIONS.md). Đừng âm thầm nâng đề xuất thành yêu cầu.
 
 **Source of truth:** lời xác nhận mới nhất của chủ dự án > bảng quyết định ở đây > các tài liệu đề xuất cũ.
+
+### 2026-11-18 — inline YouTube journal display
+- Nhật ký hiển thị khung video 16:9 trực tiếp trên bài khi có YouTube URL hợp lệ; bấm Play phát ngay tại chỗ, không mở tab YouTube hoặc phải mở chi tiết bài trước. Vẫn giữ click-to-load để tránh kết nối bên thứ ba trước khi người xem chủ động chọn phát.
+- Admin có xem thử link YouTube ngay trong form thêm/chỉnh sửa nhật ký và buổi luyện, không cần lưu trước. Family/teacher dùng chung trình phát, giữ nguyên quyền hiện hành. Không cần migration, không thêm upload video hoặc thay đổi CSP.
+- Rời trang nhật ký hoặc đóng dialog dừng trình phát tương ứng. Video phải cho phép nhúng; chưa xác minh playback thực tế.
