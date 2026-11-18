@@ -129,12 +129,10 @@ test("public DOM interactions: stored copy, four routes, filters, dialogs and bu
     (d.querySelector('[data-stage="2"]') as any).click();
     assert.match(d.querySelector("#stage-detail")!.textContent!, /Giữ nhịp/);
     (d.querySelector('.desktop-nav [data-route="journal"]') as any).click();
-    assert.equal(d.querySelector("#journal-grid iframe"), null);
-    assert.ok(d.querySelector(".journal-card--video .youtube-cover"));
+    assert.equal(d.querySelector(".journal-card--video .youtube-cover"), null);
     assert.equal(d.querySelector(".journal-card--video button button"), null);
-    (d.querySelector("#journal-grid [data-youtube-load]") as HTMLButtonElement).click();
     assert.equal((d.querySelector("#journal-grid iframe") as HTMLIFrameElement).src,
-      "https://www.youtube-nocookie.com/embed/AbC_123-xYz?autoplay=1&playsinline=1");
+      "https://www.youtube-nocookie.com/embed/AbC_123-xYz?autoplay=0&playsinline=1");
     assert.equal((d.querySelector("dialog") as any).open, false);
     (d.querySelector('.desktop-nav [data-route="home"]') as any).click();
     assert.equal(d.querySelector("#journal-grid iframe"), null);
@@ -143,14 +141,16 @@ test("public DOM interactions: stored copy, four routes, filters, dialogs and bu
     await new Promise((r) => setTimeout(r, 0));
     assert.match(d.querySelector("#dialog-body")!.textContent!, /<img src=x/);
     assert.equal(d.querySelector("#dialog-body img"), null);
-    assert.equal(d.querySelector("#dialog-body iframe"), null);
-    (
-      d.querySelector("#dialog-body [data-youtube-load]") as HTMLButtonElement
-    ).click();
+    assert.equal(d.querySelector("#dialog-body [data-youtube-load]"), null);
     assert.equal(
       (d.querySelector("#dialog-body iframe") as HTMLIFrameElement).src,
-      "https://www.youtube-nocookie.com/embed/AbC_123-xYz?autoplay=1&playsinline=1",
+      "https://www.youtube-nocookie.com/embed/AbC_123-xYz?autoplay=0&playsinline=1",
     );
+    assert.equal(d.querySelector("#journal-grid iframe"), null);
+    (d.querySelector("[data-dialog-close]") as any).click();
+    d.querySelector("dialog")!.dispatchEvent(new w.Event("close"));
+    assert.equal(d.querySelector("#dialog-body iframe"), null);
+    assert.ok(d.querySelector("#journal-grid iframe"));
     const goal = d.querySelector("#funding-goal")!.textContent;
     const equipment = d.querySelector("#equipment-budget") as HTMLInputElement;
     equipment.value = "20000000";
