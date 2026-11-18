@@ -21,7 +21,7 @@ Owner yêu cầu hoàn tất trên PC, owner tự cập nhật hosting. Owner đ
 - `server/db.ts`: pool ép **utf8mb4**. `migrations/004_unicode_content.sql` nâng charset các cột nội dung mà không đổi khóa ngoại hay nội dung cũ. Không sửa migrations 001–003 đã phát hành.
 - `hosting/app.cjs`: bridge Node 24, nạp `.env` riêng và báo lỗi startup theo mã/field allowlist; không log raw error/stack/SQL/secrets. Bridge chưa chứng minh Passenger phù hợp mọi hosting.
 - `scripts/package-host.mjs`: tạo `release/` gồm compiled runtime, public assets, migrations, manifests và hướng dẫn. Runtime cài dependencies Linux trên host; không upload Windows `node_modules`.
-- YouTube chỉ nhận link video HTTPS trực tiếp, iframe `youtube-nocookie` cố định và click-to-load. Không thêm upload video. Tiến độ/ngân sách chưa biết để null; không tự mở vòng mới hoặc PASS kỹ năng.
+- YouTube chỉ nhận link video HTTPS trực tiếp. Nhật ký hiển thị khung phát 16:9 ngay trên thẻ bài; bấm Play tải iframe `youtube-nocookie` cố định trong cùng trang, không mở YouTube. Admin xem thử URL ở form trước khi lưu. Family/teacher dùng chung player, giữ phân quyền hiện có. Không tải thumbnail/iframe từ bên thứ ba trước khi bấm Play; không thêm upload video. Video YouTube phải cho phép nhúng. Tiến độ/ngân sách chưa biết để null; không tự mở vòng mới hoặc PASS kỹ năng.
 
 ## Sự cố đã xử lý và bằng chứng
 

@@ -260,6 +260,22 @@ test("admin DOM form submits stored project edits and renders persisted state sa
     await new Promise((r) => setTimeout(r, 5));
     assert.equal(saved.description, "Changed in admin");
     assert.match(d.querySelector("#content")!.textContent!, /Changed in admin/);
+    // Preview a pasted YouTube URL before saving a journal entry.
+    (d.querySelector('[data-tab="journal"]') as any).click();
+    (d.querySelector("[data-new]") as any).click();
+    const input = d.querySelector('[name="youtubeUrl"]') as HTMLInputElement;
+    const target = d.querySelector("#youtube-input-preview")!;
+    input.value = "https://youtu.be/AbC_123-xYz";
+    input.dispatchEvent(new w.Event("input", { bubbles: true }));
+    assert.ok(target.querySelector("[data-youtube-load]"));
+    assert.equal(target.querySelector("iframe"), null);
+    (target.querySelector("[data-youtube-load]") as HTMLButtonElement).click();
+    assert.equal((target.querySelector("iframe") as HTMLIFrameElement).src,
+      "https://www.youtube-nocookie.com/embed/AbC_123-xYz?autoplay=1&playsinline=1");
+    input.value = "https://example.invalid/not-youtube";
+    input.dispatchEvent(new w.Event("input", { bubbles: true }));
+    assert.equal(target.querySelector("iframe"), null);
+    assert.match(target.textContent!, /Link chưa hợp lệ/);
   } finally {
     dom.window.close();
   }
