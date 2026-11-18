@@ -54,3 +54,18 @@ test("YouTube click-to-load creates only the fixed privacy-enhanced iframe", () 
     dom.window.close();
   }
 });
+
+test("Immediate journal player is inline, lazy and cannot autoplay or accept arbitrary URLs", () => {
+  assert.equal(youtubeMarkup("https://evil.invalid/video", true), "");
+  const dom = new JSDOM(youtubeMarkup("https://youtu.be/AbC_123-xYz", true));
+  try {
+    const d = dom.window.document;
+    const f = d.querySelector("iframe")!;
+    assert.equal(f.src, "https://www.youtube-nocookie.com/embed/AbC_123-xYz?autoplay=0&playsinline=1");
+    assert.equal(f.getAttribute("loading"), "lazy");
+    assert.equal(f.getAttribute("referrerpolicy"), "strict-origin-when-cross-origin");
+    assert.equal(d.querySelector("[data-youtube-load]"), null);
+    stopYouTubeEmbeds(d);
+    assert.equal(d.querySelector("iframe"), null);
+  } finally { dom.window.close(); }
+});
