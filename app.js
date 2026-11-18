@@ -25,7 +25,11 @@ let currentJournalFilter = 'all';
 
 function navigate(page, updateHash = true) {
   const next = pages.has(page) ? page : 'home';
-  if (next !== 'journal') stopYouTubeEmbeds($('#journal-grid'));
+  if (next !== 'journal') {
+    stopYouTubeEmbeds($('#journal-grid'));
+    const openDialog = $('#detail-dialog');
+    if (openDialog?.open) openDialog.close();
+  }
   $('.view').forEach(view => {
     const active = view.dataset.view === next;
     view.hidden = !active;
@@ -262,7 +266,7 @@ renderStages();
 renderSkillFilters();
 renderSkills();
 renderJournalFilters();
-renderJournal();
+if ($('.view[data-view="journal"]').hidden) renderJournal();
 renderBudget();
 
 if (publicProject) {
