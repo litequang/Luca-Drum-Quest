@@ -90,7 +90,7 @@ Luca Drum Quest là website dự án gia đình (vui, ấm áp, có chút hài h
 | `server/` | REST API, Zod contracts, MariaDB access, sessions, initialization and cleanup |
 | `migrations/` | Initial schema, `002` teacher grants/media ownership, `003` durable installation marker |
 | `admin/` | Parent forms, role-aware login, invited-family journal and scoped teacher workspace |
-| `youtube.js` | Shared YouTube URL parser and click-to-load player; no arbitrary iframe HTML |
+| `youtube.js` | Shared YouTube URL parser, immediate public journal embeds and click-to-load private/preview players; no arbitrary iframe HTML |
 | `.env.example`, `compose.yaml`, `package.json` | Secret-free environment template, optional local DB containers, run/test/package commands |
 | `scripts/`, `hosting/`, `tsconfig.build.json` | Secret-key generation, runtime upload packaging and cPanel startup bridge |
 | `tests/` | Real MariaDB integration/security tests plus JSDOM interaction tests |
@@ -127,6 +127,8 @@ Khi có quyết định mới: ghi ID, ngày, phân loại CONFIRMED/PROPOSED/OP
 **Source of truth:** lời xác nhận mới nhất của chủ dự án > bảng quyết định ở đây > các tài liệu đề xuất cũ.
 
 ### 2026-11-18 — inline YouTube journal display
-- Nhật ký hiển thị khung video 16:9 trực tiếp trên bài khi có YouTube URL hợp lệ; bấm Play phát ngay tại chỗ, không mở tab YouTube hoặc phải mở chi tiết bài trước. Vẫn giữ click-to-load để tránh kết nối bên thứ ba trước khi người xem chủ động chọn phát.
+- Nhật ký hiển thị khung video 16:9 trực tiếp trên bài khi có YouTube URL hợp lệ; bấm Play phát ngay tại chỗ, không mở tab YouTube hoặc phải mở chi tiết bài trước. Theo yêu cầu mới nhất, trang Nhật ký công khai và chi tiết bài hiển thị iframe YouTube trực tiếp khi mở, không cần nút tải trình phát riêng; không autoplay, lazy load. Các view Admin/family/teacher giữ click-to-load. Người xem kết nối YouTube khi trình phát được tải.
 - Admin có xem thử link YouTube ngay trong form thêm/chỉnh sửa nhật ký và buổi luyện, không cần lưu trước. Family/teacher dùng chung trình phát, giữ nguyên quyền hiện hành. Không cần migration, không thêm upload video hoặc thay đổi CSP.
 - Rời trang nhật ký hoặc đóng dialog dừng trình phát tương ứng. Video phải cho phép nhúng; chưa xác minh playback thực tế.
+
+- Hotfix hiển thị trực tiếp: `app.js`, `youtube.js` trên nhánh backend; CSS iframe 16:9 hiện có được giữ nguyên. Không sửa API/schema, không cần migration. Test assertions đã cập nhật; chưa chạy suite mới trên PC/host.
