@@ -127,6 +127,11 @@ svg{max-width:100%}
 .page-intro{max-width:750px;color:#65737a;font-size:14px;line-height:2;margin-bottom:0}
 .disclaimer{margin-top:25px;background:#eee8db;border:1px solid #e8dfcf;border-radius:13px;color:#76614d;padding:12px 15px;font-size:11px;line-height:1.8;max-width:790px}
 .curriculum-layout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:50px;padding-bottom:110px}
+/* Grid children must shrink below the min-content width of scroll rails. */
+.curriculum-main,.curriculum-aside{min-width:0;max-width:100%}
+.curriculum-main>*,.stage-detail>*,.skill-card{min-width:0;max-width:100%}
+.curriculum-main button,.curriculum-aside{overflow-wrap:anywhere}
+.curriculum-main .stage-grid,.curriculum-main .skill-filters{min-width:0;max-width:100%}
 .small-section-head{display:flex;justify-content:space-between;align-items:baseline;gap:15px;margin-bottom:19px}
 .small-section-head h2{font-size:23px;font-weight:700;margin:0}
 .small-section-head span{font-size:10px;color:var(--muted);text-align:right}
@@ -361,7 +366,7 @@ input[type=range]{min-height:40px}
  .section-block{padding-top:65px;padding-bottom:65px}
  .feature-section{padding:62px 0}
  .section-head{align-items:flex-start;flex-wrap:wrap}
- .curriculum-layout{grid-template-columns:1fr;gap:21px}
+ .curriculum-layout{grid-template-columns:minmax(0,1fr);gap:21px}
  .curriculum-aside{order:-1}
  .aside-box{position:static;padding:24px}
  .aside-box h3{font-size:22px;margin:11px 0}
@@ -434,31 +439,46 @@ input[type=range]{min-height:40px}
  .page-intro{font-size:13px;line-height:1.85}
  .disclaimer{margin-top:15px;font-size:11px;line-height:1.7}
  .small-section-head{flex-wrap:wrap;align-items:flex-start;gap:3px;margin-bottom:13px}
- .small-section-head h2{font-size:19px;flex:none}
+ .small-section-head h2{font-size:19px;flex:1 1 100%;min-width:0}
  .small-section-head span{text-align:left;font-size:10px}
  .stage-grid{
    display:flex;grid-template-columns:none;gap:10px;
+   width:100%;min-width:0;max-width:100%;
    overflow-x:auto;scroll-snap-type:x proximity;overscroll-behavior-inline:contain;
-   scrollbar-width:none;-webkit-overflow-scrolling:touch;
-   margin-right:-18px;padding:0 18px 10px 0
+   scrollbar-width:thin;scrollbar-color:#cbb4a4 transparent;-webkit-overflow-scrolling:touch;
+   margin-inline:0;padding:5px 3px 10px;scroll-padding-inline:3px
  }
- .stage-grid::-webkit-scrollbar,.skill-filters::-webkit-scrollbar,.journal-filters::-webkit-scrollbar{display:none}
- .stage-card{flex:0 0 clamp(142px,43vw,188px);min-height:128px;padding:13px;scroll-snap-align:start}
+ .stage-grid::-webkit-scrollbar{height:5px}
+ .stage-grid::-webkit-scrollbar-thumb{background:#cbb4a4;border-radius:999px}
+ .journal-filters::-webkit-scrollbar{display:none}
+ .stage-card{flex:0 0 clamp(132px,42%,185px);min-width:0;min-height:128px;padding:12px;scroll-snap-align:start}
+ .stage-card.is-active{transform:none}
+ .stage-card .stage-number{gap:4px;letter-spacing:0}
+ .stage-number>span{flex:none}
  .stage-card strong{font-size:12px;line-height:1.45}
  .stage-card small{font-size:10px}
  .stage-number span{font-size:20px}
- .stage-detail{grid-template-columns:1fr;margin-top:2px;padding:18px;gap:7px}
+ .stage-detail{grid-template-columns:minmax(0,1fr);margin-top:6px;padding:17px;gap:12px;scroll-margin-bottom:var(--dock-clearance)}
  .stage-detail h3{font-size:19px}
  .stage-detail p,.stage-detail ul{font-size:12px;line-height:1.85}
  .skill-head{margin-top:38px}
- .skill-filters,.journal-filters{
+ .journal-filters{
    flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-inline:contain;
    scrollbar-width:none;-webkit-overflow-scrolling:touch;
    margin-right:-18px;padding:0 18px 5px 0
  }
- .filter-button{min-height:42px;flex:none;white-space:nowrap;font-size:11px}
- .skill-grid{grid-template-columns:1fr;gap:11px}
- .skill-card{padding:16px;min-height:120px;gap:6px}
+ .skill-filters{flex-wrap:wrap;gap:7px;margin:0 0 16px;padding:0;overflow:visible}
+ .skill-filters .filter-button{min-width:0;max-width:100%;min-height:44px;padding:7px 12px;white-space:normal;line-height:1.4}
+ .journal-filters .filter-button{min-height:42px;flex:none;white-space:nowrap;font-size:11px}
+ .skill-grid{grid-template-columns:minmax(0,1fr);gap:11px}
+ .skill-card{padding:16px;min-height:120px;gap:6px;width:100%}
+ .skill-card-top,.skill-card-bottom{flex-wrap:wrap;min-width:0}
+ .skill-id{min-width:0;flex:1 1 100px}
+ .skill-state{flex:none}
+ .skill-card-bottom>span:first-child{min-width:0;flex:1}
+ .curriculum-aside{order:0}
+ .curriculum-aside .aside-box{padding:20px}
+ .curriculum-aside .aside-box h3{font-size:20px}
  .skill-card strong{font-size:14px}
  .skill-card p{font-size:12px;line-height:1.65}
  .skill-card-bottom{padding-top:7px}
