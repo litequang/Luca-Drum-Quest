@@ -190,6 +190,10 @@ function renderJournalFilters() {
 function renderJournal() {
   const filtered = currentJournalFilter === 'all' ? entries :
     entries.filter(entry => entry.kind === currentJournalFilter);
+  if (!filtered.length) {
+    $('#journal-grid').textContent = apiUnavailable ? 'Nhật ký tạm chưa khả dụng.' : (entries.length ? 'Chưa có bài trong nhóm này.' : 'Chưa có bài công khai.');
+    return;
+  }
   $('#journal-grid').innerHTML = filtered.map(entry => {
     const id = escapeHtml(entry.id);
     const video = youtubeMarkup(entry.youtubeUrl, !$('.view[data-view="journal"]').hidden);
