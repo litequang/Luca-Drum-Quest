@@ -35,10 +35,22 @@ export function youtubeVideoId(value) {
     return null;
   }
 }
-/** @param {string|null|undefined} value */
-export function youtubeMarkup(value) {
+/** Render a validated embed. Immediate mode is reserved for displayed journal entries.
+ * @param {string|null|undefined} value
+ * @param {boolean} [immediate=false]
+ */
+export function youtubeMarkup(value, immediate = false) {
   const id = youtubeVideoId(value);
   if (!id) return "";
+  if (immediate) {
+    return '<div class="youtube-player" data-youtube-video="' + id + '">' +
+      '<iframe src="https://www.youtube-nocookie.com/embed/' + id +
+      '?autoplay=0&amp;playsinline=1" title="Video nhật ký · YouTube" loading="lazy" ' +
+      'referrerpolicy="strict-origin-when-cross-origin" ' +
+      'allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen ' +
+      'sandbox="allow-scripts allow-same-origin allow-presentation" ' +
+      'style="display:block;width:100%;height:100%;aspect-ratio:16/9;border:0"></iframe></div>';
+  }
   return (
     '<div class="youtube-player" data-youtube-video="' +
     id +
