@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Khởi tạo Admin · Luca Drum Quest</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/admin/admin.css" />
+  </head>
+  <body>
+    <main class="login-shell">
+      <a href="/">← Luca Drum Quest</a>
+      <section class="admin-card">
+        <h1>Tạo Admin lần đầu</h1>
+        <p class="help">
+          Nhập khóa cài đặt từ cấu hình riêng của bạn. Tài khoản Admin dùng để
+          quản lý website; tài khoản database được cấu hình riêng trên host.
+        </p>
+        <p id="message" role="status" aria-live="polite"></p>
+        <form id="setup" class="admin-form">
+          <label
+            >Khóa cài đặt<input
+              name="setupToken"
+              type="password"
+              autocomplete="off"
+              required
+              minlength="64"
+              maxlength="64"
+              spellcheck="false" /></label
+          ><label
+            >Email Admin<input
+              name="email"
+              type="email"
+              autocomplete="username"
+              required
+              maxlength="254" /></label
+          ><label
+            >Mật khẩu Admin (ít nhất 14 ký tự)<input
+              name="password"
+              type="password"
+              autocomplete="new-password"
+              required
+              minlength="14"
+              maxlength="128" /></label
+          ><label
+            >Nhập lại mật khẩu<input
+              name="confirmPassword"
+              type="password"
+              autocomplete="new-password"
+              required
+              minlength="14"
+              maxlength="128" /></label
+          ><button class="primary">Khởi tạo tài khoản Admin</button>
+        </form>
+        <p class="help">
+          Sau khi thành công, trang cài đặt sẽ tự khóa. Bạn có thể xóa
+          SETUP_TOKEN khỏi cấu hình và đăng nhập bằng tài khoản vừa tạo.
+        </p>
+      </section>
+    </main>
+    <script type="module" src="/admin/setup.js"></script>
+  </body>
+</html>

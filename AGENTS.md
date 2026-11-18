@@ -1,5 +1,25 @@
 # AI / Codex instructions — Luca Drum Quest
 
+## Local pilot authorization — 2026-11-16 (CONFIRMED)
+
+The owner explicitly authorized Node 24/TypeScript/Fastify/MariaDB local backend and Admin Dashboard implementation, a dedicated branch, commit/push and PR. This supersedes historical B0-only limits for **local development**. No production deployment, payment processing or real child/supporter data is authorized. See [docs/LOCAL_PILOT_WINDOWS.md](docs/LOCAL_PILOT_WINDOWS.md), [docs/LOCAL_PILOT_ARCHITECTURE.md](docs/LOCAL_PILOT_ARCHITECTURE.md) and [docs/LOCAL_PILOT_REPORT.md](docs/LOCAL_PILOT_REPORT.md).
+
+- Preserve `index.html`, `styles.css`, navigation and the public visual design. New admin assets live in `admin/`; public `app.js` uses a live API adapter with no fictional fallback.
+- Serve only explicit public asset routes. Never expose the repository, `.env`, source, backup files or MEDIA_DIR through a static web server.
+- Tests require an explicitly configured disposable `_test` MariaDB database and recreate its application tables. Never run them on the pilot or production database.
+- Run `npm run typecheck`, `npm run build` and the relevant `npm test` checks after functional changes. Report actual exit codes and distinguish DOM tests from rendered/physical-device checks.
+- Generated images only during development. The owner specified **YouTube embeds for video** in the follow-up; never add video file uploads. Only accept direct HTTPS YouTube video links. Public journal cards and journal detail render a fixed-origin `youtube-nocookie` iframe immediately when visible, without autoplay, per owner request 2026-11-18; stop playback when leaving or closing. This connects to YouTube when the player loads. Admin preview/family/teacher keep click-to-load covers with no remote request before Play. Keep link disclosure within journal/practice permissions. Website sessions cannot protect a YouTube unlisted link once copied.
+- Invited TEACHER accounts now have explicit per-record grants for skills/practices. Never widen this to whole-season, financial, supporter or family-journal access. Revoke sessions and grants when access is removed; regrant starts without restored record grants.
+- Keep audit/reference checks inside transactions when extending JSON record contracts. Keep unknown budgets/progress null. Never create future seasons automatically or mark skills passed automatically.
+
+## First-run setup and host packaging — 2026-11-17
+
+Local host-compatibility fix: runtime passwords use Argon2id via pinned hash-wasm in isolated workers, preserving the original PHC parameters (m=65536,t=3,p=4,v=19), random 16-byte salts and 32-byte digest. Keep constant-time digest comparison and bounded work queue. Native argon2 is development-only for interoperability tests; never restore it to runtime imports to solve a host issue. The owner performs the hosting update; actual host recovery is not yet verified.
+
+Owner requested a PC-build/host-runtime workflow and first-admin account creation. `/setup` is enabled only by a private 256-bit SETUP_TOKEN; no key goes into a URL or audit log. A persistent installation_state marker and legacy-admin check permanently close initialization after success, including CLI creation. Setup may migrate/seed only the configured database after key validation; it never creates/drops a database or exposes general registration. Keep the Origin/rate/body checks and database locking.
+
+`npm run package:host` creates an ignored, secret-free release/ upload package; runtime dependencies must be installed for Linux on the host. app.cjs is a startup bridge, not proof of HawkHost/Passenger compatibility. Do not upload Windows node_modules or put application configuration/media under public_html. No actual hosting setup or deployment has been authorized/performed by this change. See [docs/HAWKHOST_SETUP.md](docs/HAWKHOST_SETUP.md).
+
 ## Đọc trước khi làm bất kỳ việc gì
 
 1. Đọc [PROJECT_MAP.md](PROJECT_MAP.md) để nắm trạng thái và các quyết định hiện hành.
@@ -32,8 +52,10 @@
 
 ## Engineering guardrails
 
-- **Frontend demo đã có trên main:** index.html, styles.css, app.js, data.js, do ChatGPT thiết kế trực tiếp. Codex không được tự đổi lại visual identity, layout, typography, CSS/mobile nav khi chỉ được giao backend. Xem docs/BACKEND_HANDOFF.md.
-- **Backend chưa triển khai.** Không tự quyết định stack, DB, nơi lưu video riêng tư, đăng nhập, kết nối thanh toán hoặc production deploy khi chủ dự án chưa duyệt.
+- **Frontend và backend pilot đã hợp nhất vào main:** index.html, styles.css, app.js, data.js, do ChatGPT thiết kế trực tiếp. Codex không được tự đổi lại visual identity, layout, typography, CSS/mobile nav khi chỉ được giao backend. Xem docs/BACKEND_HANDOFF.md.
+- **Local backend pilot đã được owner duyệt và triển khai** theo ghi chú ở đầu file. Stack local: Node 24/TypeScript/Fastify/MariaDB. Production hosting, video storage, payment integration và production deploy vẫn chưa được duyệt.
 - Khi triển khai: ưu tiên MVP nhỏ, mobile-first, dữ liệu có cấu trúc, đơn giản để gia đình cập nhật; không xây hệ thống thu tiền công khai phức tạp.
 - Mọi thay đổi nên có tóm tắt rõ: điều đã làm, điều chưa làm, rủi ro, cách kiểm tra thực tế.
 - Khi lập giáo trình, ghi rõ kỹ năng/tiêu chí PASS là dự thảo cần giáo viên xác nhận và điều chỉnh theo Luca.
+
+- Từ 18/11/2026, `main` là nhánh tích hợp chuẩn, giữ lịch sử nhánh pilot. Mọi bản sửa mới phải dựa trên main mới nhất; không quay về frontend demo cũ. Không mặc định merge đồng nghĩa với deploy.

@@ -1,10 +1,16 @@
+> **Bàn giao PC → hosting (17/11/2026):** [Hướng dẫn tiếng Việt](docs/HOSTING_BAN_GIAO_VI.md), [kết quả build Windows](docs/WINDOWS_BUILD_REPORT.md). Dùng `luca-host.zip` đã chuẩn bị ở PC; upload cấu hình riêng `.env.host-private` tách biệt và đổi tên `.env` trên host. Chưa triển khai hosting.
+
+> **AI phát triển tiếp:** đọc [AI_HANDOFF_VI.md](docs/AI_HANDOFF_VI.md) sau [PROJECT_MAP.md](PROJECT_MAP.md) và [AGENTS.md](AGENTS.md). Code chuẩn hiện nằm trên `main`, đã hợp nhất backend và các bản sửa frontend; các file cấu hình/SQL/ZIP riêng không có trong Git. Clone mới phải build gói runtime từ source.
+
+> **Local backend + Admin pilot (2026-11-16):** [Windows setup](docs/LOCAL_PILOT_WINDOWS.md) · [Architecture/API/security](docs/LOCAL_PILOT_ARCHITECTURE.md) · [Implementation report and device checklist](docs/LOCAL_PILOT_REPORT.md). Run the Fastify server, not a generic static file server. YouTube-only video embeds, scoped teacher feedback and private practice images are included. No production deployment; no payments or real child data. 
+
 # 🥁 Luca Drum Quest
 
 **Season 1 / Vòng 1: 24 tháng học trống bài bản để chơi nhạc thờ phượng Chúa (khởi đầu ở tuổi 4).**
 
 > Một dự án gia đình vui vẻ: ông bà, cô chú và người thân có thể đồng hành tài trợ thiết bị và học phí; bố mẹ theo dõi sự tiến bộ của Luca qua bài tập, video và những cột mốc âm nhạc.
 
-**Trạng thái:** Đã có **frontend demo tương tác**, chưa có backend, lưu trữ, tài khoản, thanh toán hoặc hosting production. Tài liệu khởi tạo ngày 16/11/2026.
+**Trạng thái:** Đã có backend/admin pilot Node 24/TypeScript/Fastify/MariaDB, tài khoản và phân quyền; giao diện công khai giữ nguyên. Đã sửa runtime Argon2id WASM và charset tiếng Việt, kiểm tra Windows 30 tests đạt. Owner tự thao tác hosting; agent chưa deploy và chưa xác nhận đầy đủ kết quả host. Chưa có xử lý thanh toán.
 
 ## 🧭 Bắt đầu ở đâu?
 
@@ -30,15 +36,15 @@
 
 ## Chưa chốt
 
-Công nghệ website, domain, thời điểm bắt đầu chính xác, mua bộ trống nào, danh sách bài nhạc, hình thức đóng góp, chính sách phân quyền chi tiết và giáo trình kỹ năng cuối cùng.
+Domain, cấu hình hosting thực tế, thời điểm bắt đầu chính xác, mua bộ trống nào, danh sách bài nhạc, hình thức đóng góp, chính sách phân quyền chi tiết và giáo trình kỹ năng cuối cùng. Stack pilot đã được duyệt: Node 24/TypeScript/Fastify/MariaDB.
 
-## Frontend demo hiện có
+## Chạy bản backend pilot
 
-- Mở qua local HTTP server (ES module không được đảm bảo chạy bằng `file://`): `python -m http.server 5173`, sau đó vào `http://localhost:5173`.
-- Không cần `npm install` hay build; giao diện dùng HTML/CSS/JavaScript ES modules và dữ liệu demo trong `data.js`.
+- Chạy qua backend Fastify theo [LOCAL_PILOT_WINDOWS.md](docs/LOCAL_PILOT_WINDOWS.md); cần Node 24, dependencies và MariaDB riêng. Build runtime bằng `npm run package:host`.
+- Không dùng `python -m http.server` hoặc static server phục vụ toàn bộ checkout vì có thể lộ cấu hình/ảnh riêng. Giao diện công khai dùng API cùng origin; `data.js` chỉ còn làm nguồn giáo trình dự thảo cho seed.
 - 4 khu vực: Hành trình, Giáo trình (8 chặng + Skill Cards), Nhật ký video minh họa và Quỹ Luca tính thử học phí **Vòng 1**.
 - `app.js`: điều hướng, bộ lọc, dialog chi tiết kỹ năng, máy tính học phí. `styles.css`: hệ thống giao diện responsive; `index.html`: bố cục.
-- **Chưa có video thật, khoản tài trợ thật, đăng nhập hay chức năng nhận tiền.** Các số liệu chỉ là giả định để lập ngân sách. Không thu thập dữ liệu trẻ trong repo công khai.
-- Codex làm phần API/backend sau theo [`docs/BACKEND_HANDOFF.md`](docs/BACKEND_HANDOFF.md); **giữ nguyên giao diện hiện có**, chỉ thay lớp dữ liệu và thêm luồng an toàn được duyệt.
+- Backend có đăng nhập, lời mời và ghi nhận thu chi thủ công; không xử lý thanh toán. Giáo trình seed là dự thảo, các ước tính ngân sách không phải khoản đóng góp hay thành tích thật. Không đưa dữ liệu trẻ/người tài trợ vào repo công khai.
+- Backend/admin pilot đã có theo [`docs/LOCAL_PILOT_REPORT.md`](docs/LOCAL_PILOT_REPORT.md); **giữ nguyên giao diện hiện có**. Tài liệu backend handoff còn phần lịch sử, cần ưu tiên quyết định mới nhất trong PROJECT_MAP.
 
 **Không xem các mốc kỹ năng theo tháng là cam kết phát triển của trẻ.** Niềm vui âm nhạc, an toàn và sự phù hợp lứa tuổi quan trọng hơn tiến độ cứng.

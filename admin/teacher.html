@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Giáo viên · Luca Drum Quest</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/admin/admin.css" />
+  </head>
+  <body>
+    <main class="admin-shell">
+      <header class="admin-top">
+        <h1>Luca Drum Quest · Giáo viên</h1>
+        <a href="/">Website</a><button id="logout">Đăng xuất</button>
+      </header>
+      <p class="help">
+        Chỉ những kỹ năng và buổi luyện được phụ huynh chia sẻ xuất hiện ở đây.
+        Trạng thái phải được chọn rõ ràng, không tự động PASS.
+      </p>
+      <div id="message" role="status" aria-live="polite"></div>
+      <section id="teacher-skills"></section>
+      <section id="teacher-practices"></section>
+    </main>
+    <script type="module" src="/admin/teacher.js"></script>
+  </body>
+</html>

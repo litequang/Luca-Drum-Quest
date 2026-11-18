@@ -1,12 +1,32 @@
 # PROJECT MAP — Luca Drum Quest
 
-**Ngày cập nhật:** 2026-11-16  
+**Ngày cập nhật:** 2026-11-17
+
 **Repository:** https://github.com/litequang/Luca-Drum-Quest  
-**Trạng thái:** FRONTEND DEMO trên `main` (HTML/CSS/JS modules); backend, lưu trữ, xác thực, tài trợ thật và deployment chưa có. Các trang frontend là prototype được chủ dự án yêu cầu làm trực tiếp, không phải sản phẩm production.
+**Trạng thái:** LOCAL BACKEND + ADMIN PILOT integrated into `main`; agent has not deployed to production. Node 24/TypeScript/Fastify/MariaDB, authenticated parent admin, audited manual finance, curriculum/lesson/practice/journal forms, invited family viewing and protected sanitized images. YouTube embeds, record-scoped teacher grants and private practice images are implemented. Historical pre-merge Windows checks: typecheck/build, **30 tests** and isolated compiled-runtime HTTP/Unicode/migration verification passed. Runtime uses Argon2id WASM; pool/content columns use utf8mb4. Owner has operated a real host and supplied incident logs/SQL; final host update/recovery, InnoDB/FK integrity, backup and real-device checks remain unverified. Original public UI is preserved; no real child/supporter data is seeded. Start continuation at [AI_HANDOFF_VI.md](docs/AI_HANDOFF_VI.md).
+
+**CONFIRMED C12 (2026-11-16):** Owner authorized local implementation beyond historical B0, plus branch/commit/push/PR. Production/media/payment restrictions remain. Current setup: [LOCAL_PILOT_WINDOWS.md](docs/LOCAL_PILOT_WINDOWS.md); design/API/security: [LOCAL_PILOT_ARCHITECTURE.md](docs/LOCAL_PILOT_ARCHITECTURE.md); validation and device checklist: [LOCAL_PILOT_REPORT.md](docs/LOCAL_PILOT_REPORT.md). Historical sections below retain earlier planning context and are superseded by C12 for the local pilot.
+
+
+**Follow-up (2026-11-16, owner CONFIRMED C13):** Continue the local pilot; video uses **YouTube embeds only**, not uploaded files. Implemented direct-link validation/canonicalization, click-to-load privacy-enhanced embeds in journal/practice evidence, explicit teacher invitations/grants/feedback and private practice images. See the updated handoff report for actual verification and platform privacy limits. `002_teacher_and_practice_media.sql` upgrades existing data without reseeding or changing credentials.
+
+**Follow-up (2026-11-17, owner CONFIRMED C14):** Owner clarified that PC builds will be uploaded to a hosting account with its own database/.env and requested first-admin browser setup. Implemented `/setup` with private SETUP_TOKEN, automatic schema/draft seed for a fresh configured DB and permanent first-init lock; `003_installation_state.sql` also protects existing CLI-created admins. `npm run package:host` prepares compiled runtime files and an app.cjs bridge without secrets/Windows modules. Actual HawkHost plan, Node 24 selector and Passenger compatibility remain unverified; nothing is deployed. Guide: [HAWKHOST_SETUP.md](docs/HAWKHOST_SETUP.md).
 
 > **Dành cho AI mới tiếp quản:** Đọc trang này trước. Không suy đoán rằng một đề xuất trong tài liệu đã được người dùng đồng ý triển khai.
 
+**Bàn giao phát triển tiếp (17/11/2026):** [AI_HANDOFF_VI.md](docs/AI_HANDOFF_VI.md) tổng hợp nhánh, code, lệnh kiểm tra/build, sự cố host, dữ liệu riêng và việc còn mở. Owner yêu cầu cập nhật các bản sửa lên GitHub; push nhánh không phải merge hay deploy. Đặc biệt: dump host dùng MyISAM và thiếu FK; patch SQL riêng mới chuyển engine, chưa xác nhận import và chưa bổ sung FK.
+
+**Follow-up (2026-11-17, owner CONFIRMED C15):** Chủ dự án yêu cầu lấy nhánh về `E:\CODE\Luca-Drum-Quest`, hoàn tất cài đặt/kiểm tra/build/đóng gói trên PC và chỉ bàn giao thao tác hosting. Không triển khai lên host trong nhiệm vụ này. Hướng dẫn tiếng Việt: [HOSTING_BAN_GIAO_VI.md](docs/HOSTING_BAN_GIAO_VI.md); bằng chứng kiểm tra Windows: [WINDOWS_BUILD_REPORT.md](docs/WINDOWS_BUILD_REPORT.md). Gói upload là `luca-host.zip`; cấu hình riêng `.env.host-private` bị Git bỏ qua và được upload riêng, không nằm trong ZIP.
+
 ## 1. Tóm tắt 30 giây
+
+**Owner SQL recovery (2026-11-17, IMPLEMENTED LOCAL / OWNER IMPORT PENDING):** Owner supplied a private SQL dump and requested ready-to-import correction. Private outputs in Downloads restore 124 known-source strings in 22 project/season/stage/skill rows; the recommended guarded UPDATE patch preserves credentials, IDs, progress and original audit entries, adds repair audits, and converts the supplied MyISAM tables to InnoDB for transactions. Actual disposable MariaDB import/reimport/newer-edit checks passed and temporary databases were removed. No private SQL was added to Git or release; no host import performed.
+
+**Unicode host follow-up (2026-11-17, IMPLEMENTED LOCAL / HOST VERIFICATION OPEN):** Public API returned HTTP 200 with UTF-8 headers but question marks already present in Vietnamese project text. Pool now explicitly requests utf8mb4; additive migration 004 converts human-readable content columns without changing foreign keys or credentials. Legacy migrations stay immutable. Lost characters require owner re-entry from known originals; no automatic reseed/content rewrite. Upgrade instructions at the top of HOSTING_BAN_GIAO_VI.md.
+
+**Current local compatibility patch (2026-11-17, IMPLEMENTED LOCAL / HOST VERIFICATION OPEN):** GCC Toolset 12–14 was not found at the checked host paths. Runtime Argon2id now uses `hash-wasm@4.13.0` in isolated workers, retaining v19/m65536/t3/p4, PHC encoding, 16-byte salt and 32-byte digest. Native argon2 moved to development-only interoperability tests. No auth algorithm/DB/UI change or password reset is required for app-generated hashes. Current host upgrade steps are at the top of HOSTING_BAN_GIAO_VI.md; old compiler workarounds below are incident history. Actual host recovery remains open.
+
+**Hosting incident history (2026-11-17, superseded by the WASM patch above):** `/setup` returned 503; native Argon2 required GLIBC_2.34 while sharp loaded. Source build then failed on an old C++ compiler and the checked GCC Toolset paths were unavailable. Do not repeat these historical rebuild steps for the current package. Startup diagnostics now log safe codes/field names. Later public API returned HTTP 200 with corrupted Vietnamese text; final recovery after both fixes is still unverified.
 
 Luca Drum Quest là website dự án gia đình (vui, ấm áp, có chút hài hước kiểu gọi vốn startup) theo dõi hành trình Luca, con trai 4 tuổi, **học trống bài bản để chơi nhạc thờ phượng Chúa**. **Dự án có thể gồm nhiều vòng nối tiếp nhau; Vòng 1 kéo dài trọn 24 tháng**. Huy động hỗ trợ mua trống + học phí chủ yếu từ ông bà/người thân, cập nhật video tập và tiến bộ cho những người được phép xem. Đồng thời tạo hệ thống học tập để bố mẹ không phó mặc toàn bộ cho thầy: có kỹ năng, tiền đề, bài tập ở nhà, đánh giá HOME READY và giáo viên xác nhận TEACHER PASS.
 
@@ -27,6 +47,10 @@ Luca Drum Quest là website dự án gia đình (vui, ấm áp, có chút hài h
 | C09 | Website frontend được yêu cầu **làm trực tiếp**, backend giao Codex triển khai sau |
 | C10 | **Mục tiêu cuối là chơi/đệm nhạc thờ phượng Chúa**; học bài bản, kỹ thuật chuẩn, 24 tháng có đánh giá; không hướng chứng chỉ/biểu diễn thương mại |
 | C11 | Giao diện đã được tác giả hóa trên `main`; Codex **không được tự thiết kế lại hoặc ghi đè UI**, chỉ nối API sau khi chốt backend |
+| C12 | Owner authorized Node/TypeScript/Fastify/MariaDB local backend + Admin pilot, branch/commit/push/PR; no production or payment processing |
+| C13 | Owner requested continued local work and selected YouTube embedding only for video; no server video file uploads |
+| C14 | Owner requested first-admin setup and PC-build/host-runtime packaging; actual hosting/deployment still requires validation and authorization |
+| C15 | Owner requested completing all PC preparation, checks, build and upload packaging locally; owner will perform the hosting steps using the Vietnamese handoff |
 
 ## 3. Đề xuất đang THẢO LUẬN (PROPOSED, chưa chốt)
 
@@ -55,11 +79,21 @@ Luca Drum Quest là website dự án gia đình (vui, ấm áp, có chút hài h
 | `index.html` | Bố cục 4 trang, minh họa bộ trống SVG và mobile nav |
 | `styles.css` | Design tokens, **responsive v0.3 phone/iPad (single breakpoint system)**, SVG bottom dock, reduced-motion |
 | `data.js` | Chỉ dữ liệu giả: 8 chặng, Skill Cards, ví dụ nhật ký |
-| `app.js` | JS render, lọc, dialog, mô phỏng chi phí; chưa có API |
+| `app.js` / `apiClient.js` | Existing render/navigation plus same-origin public API; no demo fallback |
 | `docs/BACKEND_HANDOFF.md` | Kế hoạch API, bảo mật, dữ liệu và ranh giới công việc Codex; dữ liệu phải hỗ trợ nhiều vòng |
-| `docs/FRONTEND_RESPONSIVE_2026_11_16.md` | Layout phone/iPad (thiết kế v0.2), checklist kiểm thử thiết bị thật |
+| `docs/FRONTEND_RESPONSIVE_2026_11_16.md` | Layout phone/iPad (v0.4 Giáo trình), checklist kiểm thử thiết bị thật |
 
-**Chạy frontend:** `python -m http.server 5173` ở root, vào `http://localhost:5173` (không mở `file://` vì ES modules). Chưa có bước production deploy.
+**Chạy local pilot:** Follow `docs/LOCAL_PILOT_WINDOWS.md`: migrate → seed → one-time admin:init → `npm run dev`; open `http://localhost:3000` and `/admin`. **Do not serve the checkout using a generic static server**, which could expose private local files. No production deployment.
+
+| New path | Responsibility |
+|---|---|
+| `server/` | REST API, Zod contracts, MariaDB access, sessions, initialization and cleanup |
+| `migrations/` | Initial schema, `002` teacher grants/media ownership, `003` durable installation marker |
+| `admin/` | Parent forms, role-aware login, invited-family journal and scoped teacher workspace |
+| `youtube.js` | Shared YouTube URL parser, immediate public journal embeds and click-to-load private/preview players; no arbitrary iframe HTML |
+| `.env.example`, `compose.yaml`, `package.json` | Secret-free environment template, optional local DB containers, run/test/package commands |
+| `scripts/`, `hosting/`, `tsconfig.build.json` | Secret-key generation, runtime upload packaging and cPanel startup bridge |
+| `tests/` | Real MariaDB integration/security tests plus JSDOM interaction tests |
 
 ## 5b. Tài liệu nền
 
@@ -91,3 +125,14 @@ Luca Drum Quest là website dự án gia đình (vui, ấm áp, có chút hài h
 Khi có quyết định mới: ghi ID, ngày, phân loại CONFIRMED/PROPOSED/OPEN; sửa file liên quan; ghi trong [decision log](docs/06_ROADMAP_AND_DECISIONS.md). Đừng âm thầm nâng đề xuất thành yêu cầu.
 
 **Source of truth:** lời xác nhận mới nhất của chủ dự án > bảng quyết định ở đây > các tài liệu đề xuất cũ.
+
+### 2026-11-18 — inline YouTube journal display
+- Nhật ký hiển thị khung video 16:9 trực tiếp trên bài khi có YouTube URL hợp lệ; bấm Play phát ngay tại chỗ, không mở tab YouTube hoặc phải mở chi tiết bài trước. Theo yêu cầu mới nhất, trang Nhật ký công khai và chi tiết bài hiển thị iframe YouTube trực tiếp khi mở, không cần nút tải trình phát riêng; không autoplay, lazy load. Các view Admin/family/teacher giữ click-to-load. Người xem kết nối YouTube khi trình phát được tải.
+- Admin có xem thử link YouTube ngay trong form thêm/chỉnh sửa nhật ký và buổi luyện, không cần lưu trước. Family/teacher dùng chung trình phát, giữ nguyên quyền hiện hành. Không cần migration, không thêm upload video hoặc thay đổi CSP.
+- Rời trang nhật ký hoặc đóng dialog dừng trình phát tương ứng. Video phải cho phép nhúng; chưa xác minh playback thực tế.
+
+- Hotfix hiển thị trực tiếp: `app.js`, `youtube.js` trên nhánh backend; CSS iframe 16:9 hiện có được giữ nguyên. Không sửa API/schema, không cần migration. Test assertions đã cập nhật; chưa chạy suite mới trên PC/host.
+
+## 2026-11-18 — Hợp nhất nhánh chính
+
+Owner yêu cầu dùng `main` làm nguồn chuẩn. Merge giữ toàn bộ backend/DB/admin và bản YouTube nhúng trực tiếp từ nhánh pilot; đồng thời lấy CSS, HTML và tương tác Giáo trình v0.4 từ main. Sửa collection selectors trong điều hướng và thao tác chọn chặng/lọc. Không thay đổi migration, dependency, database hoặc host. Kết quả test Windows trước merge là lịch sử; cần chạy lại trên checkout hợp nhất trước khi phát hành.
