@@ -1,7 +1,7 @@
-// Luca frontend 20261118-r2
+// Luca frontend 20261118-r3
 import { skillGroups } from './data.js';
 import { api } from './apiClient.js';
-import { youtubeMarkup, installYouTubeEmbeds, stopYouTubeEmbeds } from './youtube.js?v=20261118-r2';
+import { youtubeMarkup, installYouTubeEmbeds, stopYouTubeEmbeds } from './youtube.js?v=20261118-r3';
 installYouTubeEmbeds(document);
 let stages = [], skills = [], entries = [], publicProject = null, publicBudget = null;
 let apiUnavailable = false;
@@ -10,7 +10,9 @@ try {
   publicProject = project; publicBudget = budget;
   stages = catalogue.stages.map(s => ({...s, recordId:s.id, id:s.order}));
   const codes = new Map(catalogue.skills.map(s => [s.id,s.code]));
-  skills = catalogue.skills.map(s => ({...s,id:s.code,prerequisites:s.prerequisites.map(id=>codes.get(id)).join(', ')||'Không'}));
+  // MariaDB records have no inherent order. Sort visible skill codes naturally (A-02 before A-10).
+  skills = catalogue.skills.map(s => ({...s,id:s.code,prerequisites:s.prerequisites.map(id=>codes.get(id)).join(', ')||'Không'}))
+    .sort((a, b) => a.id.localeCompare(b.id, 'en', { numeric: true }));
   entries = journal.map(p => ({...p,caption:p.description,tag:p.tags.join(' · '),symbol:'♪',color:'peach'}));
 } catch { apiUnavailable = true; }
 // Live data has no demo fallback. Draft curriculum is separate from recorded progress.

@@ -1,4 +1,4 @@
-/* Luca frontend 20261118-r2 */
+/* Luca frontend 20261118-r3 */
 /* Luca Drum Quest — handcrafted, dependency-free presentation layer.
    Visual system: warm paper, deep ink, coral accents, generous whitespace.
    All demo data stays separate in data.js. */
@@ -571,3 +571,16 @@ input[type=range]{min-height:40px}
  .youtube-play-icon svg{width:22px;height:22px}
  .youtube-play-label{font-size:12px}
 }
+
+/* Curriculum phone containment: use a block formatting context instead of grid sizing. */
+@media (max-width:680px){
+ .view[data-view="learning"] .curriculum-layout{display:block;min-width:0;max-width:100%;width:calc(100% - 36px)}
+ .view[data-view="learning"] .curriculum-main{display:block;width:100%;min-width:0;max-width:100%}
+ .view[data-view="learning"] .stage-grid,.view[data-view="learning"] .skill-grid,.view[data-view="learning"] .skill-filters,.view[data-view="learning"] .stage-detail{width:100%;max-width:100%;min-width:0;margin-inline:0}
+ .view[data-view="learning"] .skill-filters{display:flex;flex-wrap:wrap;overflow:visible;white-space:normal}
+ .view[data-view="learning"] .skill-grid{display:grid;grid-template-columns:minmax(0,1fr)}
+ .view[data-view="learning"] .skill-card{width:100%;max-width:100%;min-width:0;min-height:0;color:var(--ink);white-space:normal;overflow-wrap:anywhere}
+ .view[data-view="learning"] .skill-card p,.view[data-view="learning"] .skill-card strong{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+ .view[data-view="learning"] .curriculum-aside{margin-top:24px;width:100%}
+}
+@media(max-width:390px){.view[data-view="learning"] .curriculum-layout{width:calc(100% - 30px)}}

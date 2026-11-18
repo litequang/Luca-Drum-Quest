@@ -71,3 +71,9 @@ Codex backend **không được tự ý thay đổi** thiết kế, CSS, hệ th
 - Bộ lọc kỹ năng tự xuống dòng, nút chạm 44px; Skill Cards một cột, nhãn và nội dung được phép xuống dòng. Khối phương pháp đặt sau giáo trình trên phone.
 - Cập nhật trạng thái chọn chặng và lọc trên DOM hiện có thay vì render lại các nút; không auto-scroll viewport khi chọn chặng (thay cho hành vi v0.3).
 - Kiểm tra Chromium bằng fixture tái hiện layout, không phải toàn bộ website: 10 widths 320/360/375/390/414/680/768/820/1024/1280px đều không tràn trang, filter và card nằm trong cột, rail cuộn đến chặng cuối trên phone. Chưa kiểm thử toàn site trên Safari hoặc thiết bị thật.
+
+
+## v0.5 — Thứ tự danh mục Giáo trình (18/11/2026, 20261118-r3)
+- Danh mục kỹ năng public sắp xếp theo mã tăng dần, với thứ tự số tự nhiên, trước khi lọc nhóm. Không đổi mã, dữ liệu DB, giáo trình hoặc thứ tự chặng. API MariaDB không đảm bảo thứ tự rows, frontend tự sắp xếp.
+- Giới hạn riêng layout Giáo trình trên phone bằng block, wrap bộ lọc và nội dung card; giữ dải chặng cuộn ngang. Cập nhật version cả 4 asset để tránh tải lẫn bản cache.
+- Test fixture đảo ngược thứ tự catalogue và assert danh mục toàn bộ/nhóm B. Chưa chạy full test hoặc browser thật sau cập nhật này.

@@ -55,7 +55,7 @@ async function bootPublic(fail = false) {
         },
         "/public/catalogue": {
           stages: stages.map((s: any) => ({ ...s, order: s.id })),
-          skills: skills.map((s: any) => ({
+          skills: [...skills].reverse().map((s: any) => ({
             ...s,
             code: s.id,
             prerequisites: [],
@@ -85,7 +85,7 @@ async function bootPublic(fail = false) {
           "const api=window.__api;",
         )
         .replace(
-          "import { youtubeMarkup, installYouTubeEmbeds, stopYouTubeEmbeds } from './youtube.js?v=20261118-r2';",
+          "import { youtubeMarkup, installYouTubeEmbeds, stopYouTubeEmbeds } from './youtube.js?v=20261118-r3';",
           "const youtubeMarkup=window.__youtubeMarkup,installYouTubeEmbeds=window.__installYouTubeEmbeds,stopYouTubeEmbeds=window.__stopYouTubeEmbeds;",
         ) +
       "})()",
@@ -117,7 +117,11 @@ test("public DOM interactions: stored copy, four routes, filters, dialogs and bu
           route,
         );
       }
+    const naturalCodes = (codes: string[]) => [...codes].sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
+    const displayedCodes = () => Array.from(d.querySelectorAll("[data-skill]"), el => el.getAttribute("data-skill")!);
+    assert.deepEqual(displayedCodes(), naturalCodes(skills.map((s: any) => s.id)));
     (d.querySelector('[data-skill-filter="B"]') as any).click();
+    assert.deepEqual(displayedCodes(), naturalCodes(skills.filter((s: any) => s.group === "B").map((s: any) => s.id)));
     assert.equal(
       d.querySelectorAll(".skill-card").length,
       skills.filter((s: any) => s.group === "B").length,
