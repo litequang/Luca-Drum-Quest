@@ -85,7 +85,7 @@ async function bootPublic(fail = false) {
           "const api=window.__api;",
         )
         .replace(
-          "import { youtubeMarkup, installYouTubeEmbeds, stopYouTubeEmbeds } from './youtube.js';",
+          "import { youtubeMarkup, installYouTubeEmbeds, stopYouTubeEmbeds } from './youtube.js?v=20261118-r2';",
           "const youtubeMarkup=window.__youtubeMarkup,installYouTubeEmbeds=window.__installYouTubeEmbeds,stopYouTubeEmbeds=window.__stopYouTubeEmbeds;",
         ) +
       "})()",

@@ -239,3 +239,7 @@ Backup trước. Upload gói build mới, giữ nguyên `.env`, ảnh riêng và
 ### Cập nhật frontend v0.4 + YouTube trực tiếp (18/11/2026)
 
 Với host đã chạy backend pilot tương thích, lấy `app.js`, `youtube.js`, `styles.css`, `index.html` từ main đã hợp nhất và ghi đè đúng Application root. Giữ nguyên `.env`, `dist/`, database, media riêng. Không cần migration/build cho riêng bốn file frontend này. Nếu đang cập nhật từ phiên bản backend cũ hơn hoặc cần bản triển khai toàn bộ, dùng quy trình package:host và các bước tương ứng ở trên. Không mở lại setup/seed.
+
+### Cache-busting frontend 20261118-r2
+
+Trang public gắn version cho styles.css, app.js và module youtube.js để tránh cache URL cũ. Bản cập nhật chỉ gồm bốn file frontend cùng thư mục Application root; không build/migrate/reset dữ liệu. Sau upload, kiểm tra response HTTP của chính website có dấu `20261118-r2` ở index.html, app.js, styles.css, youtube.js. Nếu thiếu, kiểm tra đúng Application root và purge cache tầng Cloudflare/LiteSpeed nếu dùng. Không suy đoán host đã nhận bản mới chỉ vì GitHub đã push.

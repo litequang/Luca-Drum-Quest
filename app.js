@@ -1,6 +1,7 @@
+// Luca frontend 20261118-r2
 import { skillGroups } from './data.js';
 import { api } from './apiClient.js';
-import { youtubeMarkup, installYouTubeEmbeds, stopYouTubeEmbeds } from './youtube.js';
+import { youtubeMarkup, installYouTubeEmbeds, stopYouTubeEmbeds } from './youtube.js?v=20261118-r2';
 installYouTubeEmbeds(document);
 let stages = [], skills = [], entries = [], publicProject = null, publicBudget = null;
 let apiUnavailable = false;
