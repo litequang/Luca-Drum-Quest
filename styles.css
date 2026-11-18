@@ -135,6 +135,7 @@ svg{max-width:100%}
 .small-section-head{display:flex;justify-content:space-between;align-items:baseline;gap:15px;margin-bottom:19px}
 .small-section-head h2{font-size:23px;font-weight:700;margin:0}
 .small-section-head span{font-size:10px;color:var(--muted);text-align:right}
+.stage-swipe-hint{display:none}
 .stage-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 .stage-card{background:#fdfbf6;border:1px solid var(--stroke);border-radius:16px;display:flex;flex-direction:column;gap:10px;min-height:165px;text-align:left;padding:17px;transition:all .2s}
 .stage-card:hover,.stage-card.is-active{border-color:#bc7759;background:#fff7ef;transform:translateY(-2px)}
@@ -441,6 +442,7 @@ input[type=range]{min-height:40px}
  .small-section-head{flex-wrap:wrap;align-items:flex-start;gap:3px;margin-bottom:13px}
  .small-section-head h2{font-size:19px;flex:1 1 100%;min-width:0}
  .small-section-head span{text-align:left;font-size:10px}
+ .stage-swipe-hint{display:inline}
  .stage-grid{
    display:flex;grid-template-columns:none;gap:10px;
    width:100%;min-width:0;max-width:100%;
