@@ -77,3 +77,9 @@ Codex backend **không được tự ý thay đổi** thiết kế, CSS, hệ th
 - Danh mục kỹ năng public sắp xếp theo mã tăng dần, với thứ tự số tự nhiên, trước khi lọc nhóm. Không đổi mã, dữ liệu DB, giáo trình hoặc thứ tự chặng. API MariaDB không đảm bảo thứ tự rows, frontend tự sắp xếp.
 - Giới hạn riêng layout Giáo trình trên phone bằng block, wrap bộ lọc và nội dung card; giữ dải chặng cuộn ngang. Cập nhật version cả 4 asset để tránh tải lẫn bản cache.
 - Test fixture đảo ngược thứ tự catalogue và assert danh mục toàn bộ/nhóm B. Chưa chạy full test hoặc browser thật sau cập nhật này.
+
+
+## v0.6 — Scroll chrome đồng bộ (20261118-r4)
+- Header và bottom dock dùng chung trạng thái: cuộn xuống ẩn, cuộn lên hiện, đứng yên giữ nguyên trạng thái; không timer auto-show. Đầu trang và chuyển tab hiện lại. Ngưỡng hướng 18/12px, clamp bounce iOS, transform không đổi layout, reduced motion.
+- Áp dụng public site; desktop chỉ có header, mobile/iPad có cả dock theo breakpoint hiện có. Giữ nguyên responsive, màu, safe area, API và DB. Keyboard focus khôi phục điều hướng.
+- Tham chiếu UX sivn.app theo yêu cầu owner; chưa xác minh trực tiếp animation của trang tham chiếu bằng trình duyệt. Test logic độc lập và thêm DOM regression; chưa kiểm thử thiết bị thật.

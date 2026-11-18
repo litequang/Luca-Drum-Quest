@@ -136,3 +136,6 @@ Khi có quyết định mới: ghi ID, ngày, phân loại CONFIRMED/PROPOSED/OP
 ## 2026-11-18 — Hợp nhất nhánh chính
 
 Owner yêu cầu dùng `main` làm nguồn chuẩn. Merge giữ toàn bộ backend/DB/admin và bản YouTube nhúng trực tiếp từ nhánh pilot; đồng thời lấy CSS, HTML và tương tác Giáo trình v0.4 từ main. Sửa collection selectors trong điều hướng và thao tác chọn chặng/lọc. Không thay đổi migration, dependency, database hoặc host. Kết quả test Windows trước merge là lịch sử; cần chạy lại trên checkout hợp nhất trước khi phát hành.
+
+### 2026-11-18 — Điều hướng cuộn đồng bộ
+Owner yêu cầu header và menu dưới ẩn/hiện theo hướng cuộn, tham chiếu sivn.app. Frontend 20261118-r4: ẩn khi xuống, hiện khi lên hoặc về đầu/chuyển trang, giữ trạng thái khi dừng; không thay API, backend hay DB.

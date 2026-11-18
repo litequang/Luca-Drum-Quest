@@ -1,4 +1,4 @@
-/* Luca frontend 20261118-r3 */
+/* Luca frontend 20261118-r4 */
 /* Luca Drum Quest — handcrafted, dependency-free presentation layer.
    Visual system: warm paper, deep ink, coral accents, generous whitespace.
    All demo data stays separate in data.js. */
@@ -584,3 +584,12 @@ input[type=range]{min-height:40px}
  .view[data-view="learning"] .curriculum-aside{margin-top:24px;width:100%}
 }
 @media(max-width:390px){.view[data-view="learning"] .curriculum-layout{width:calc(100% - 30px)}}
+
+/* Synchronized scroll chrome: same class, no timeout, no layout reflow. */
+.site-header{transition:transform 220ms cubic-bezier(.22,.61,.36,1)}
+.mobile-nav{transition:transform 220ms cubic-bezier(.22,.61,.36,1)}
+.site-shell.is-chrome-hidden .site-header{transform:translate3d(0,-110%,0);pointer-events:none}
+.site-shell.is-chrome-hidden .mobile-nav{transform:translate3d(-50%,calc(100% + 24px + env(safe-area-inset-bottom,0px)),0);pointer-events:none}
+@media(prefers-reduced-motion:reduce){
+ .site-header,.mobile-nav{transition:none!important}
+}

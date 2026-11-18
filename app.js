@@ -1,7 +1,7 @@
-// Luca frontend 20261118-r3
+// Luca frontend 20261118-r4
 import { skillGroups } from './data.js';
 import { api } from './apiClient.js';
-import { youtubeMarkup, installYouTubeEmbeds, stopYouTubeEmbeds } from './youtube.js?v=20261118-r3';
+import { youtubeMarkup, installYouTubeEmbeds, stopYouTubeEmbeds } from './youtube.js?v=20261118-r4';
 installYouTubeEmbeds(document);
 let stages = [], skills = [], entries = [], publicProject = null, publicBudget = null;
 let apiUnavailable = false;
@@ -25,6 +25,50 @@ const pages = new Set(['home', 'learning', 'journal', 'funding']);
 let currentStage = stages[0]?.id ?? 1;
 let currentGroup = 'all';
 let currentJournalFilter = 'all';
+
+// Shared scroll direction state for the sticky header and the mobile/tablet dock.
+// Transform only: keep layout dimensions fixed to avoid scroll feedback loops.
+const chromeHeader = $('.site-header');
+const chromeDock = $('.mobile-nav');
+const chromeShell = $('.site-shell');
+function chromeScrollY() {
+  const root = document.scrollingElement || document.documentElement;
+  const max = Math.max(0, root.scrollHeight - window.innerHeight);
+  return Math.max(0, Math.min(max, window.scrollY));
+}
+let chromeHidden = false;
+let chromeAnchor = chromeScrollY();
+function setChromeHidden(hidden, y = chromeScrollY()) {
+  chromeHidden = hidden;
+  chromeAnchor = y;
+  chromeShell.classList.toggle('is-chrome-hidden', hidden);
+}
+function resetScrollChrome() {
+  setChromeHidden(false);
+}
+function updateScrollChrome() {
+  const y = chromeScrollY();
+  // Keep the controls available at the top; clamp iOS rubber-band overscroll.
+  if (y <= 8) {
+    setChromeHidden(false, y);
+    return;
+  }
+  if (chromeHidden) {
+    chromeAnchor = Math.max(chromeAnchor, y);
+    if (chromeAnchor - y >= 12) setChromeHidden(false, y);
+  } else {
+    chromeAnchor = Math.min(chromeAnchor, y);
+    if (y >= Math.max(24, chromeHeader.offsetHeight) && y - chromeAnchor >= 18) {
+      setChromeHidden(true, y);
+    }
+  }
+}
+window.addEventListener('scroll', updateScrollChrome, {passive:true});
+// Keyboard users can always bring the controls back into view.
+for (const bar of [chromeHeader, chromeDock]) {
+  bar.addEventListener('focusin', resetScrollChrome);
+}
+window.addEventListener('pageshow', resetScrollChrome);
 
 function navigate(page, updateHash = true) {
   const next = pages.has(page) ? page : 'home';
@@ -51,7 +95,8 @@ function navigate(page, updateHash = true) {
   if (updateHash && window.location.hash !== '#' + next) {
     history.replaceState(null, '', '#' + next);
   }
-  window.scrollTo({top:0,behavior:'auto'});
+  window.scrollTo({top:0,behavior:'instant'});
+  resetScrollChrome();
   document.title = (next === 'home' ? 'Luca Drum Quest' :
     {learning:'Giáo trình',journal:'Nhật ký',funding:'Quỹ Luca'}[next] + ' · Luca Drum Quest');
 }

@@ -85,7 +85,7 @@ async function bootPublic(fail = false) {
           "const api=window.__api;",
         )
         .replace(
-          "import { youtubeMarkup, installYouTubeEmbeds, stopYouTubeEmbeds } from './youtube.js?v=20261118-r3';",
+          "import { youtubeMarkup, installYouTubeEmbeds, stopYouTubeEmbeds } from './youtube.js?v=20261118-r4';",
           "const youtubeMarkup=window.__youtubeMarkup,installYouTubeEmbeds=window.__installYouTubeEmbeds,stopYouTubeEmbeds=window.__stopYouTubeEmbeds;",
         ) +
       "})()",
@@ -425,4 +425,32 @@ test("first-admin form checks password confirmation, sends the setup key only in
   } finally {
     w.close();
   }
+});
+
+test("header and dock hide together on downward scroll and remain hidden until upward scroll", async () => {
+  const dom = await bootPublic(), w = dom.window, d = w.document;
+  try {
+    let y = 0;
+    Object.defineProperty(w, "scrollY", { configurable: true, get: () => y });
+    Object.defineProperty(d.documentElement, "scrollHeight", { configurable: true, value: 3000 });
+    Object.defineProperty(d.querySelector(".site-header"), "offsetHeight", { configurable: true, value: 64 });
+    const shell = d.querySelector(".site-shell")!;
+    const hidden = () => shell.classList.contains("is-chrome-hidden");
+    const scroll = (pos: number) => { y = pos; w.dispatchEvent(new w.Event("scroll")); };
+    scroll(4); assert.equal(hidden(), false);
+    scroll(100); assert.equal(hidden(), true);
+    scroll(100); assert.equal(hidden(), true);
+    scroll(140); assert.equal(hidden(), true);
+    scroll(136); assert.equal(hidden(), true);
+    scroll(120); assert.equal(hidden(), false);
+    scroll(120); assert.equal(hidden(), false);
+    scroll(160); assert.equal(hidden(), true);
+    scroll(-20); assert.equal(hidden(), false);
+    scroll(100); assert.equal(hidden(), true);
+    (d.querySelector('.mobile-nav [data-route="learning"]') as HTMLButtonElement).click();
+    assert.equal(hidden(), false);
+    scroll(150); assert.equal(hidden(), true);
+    d.querySelector(".site-header")!.dispatchEvent(new w.Event("focusin"));
+    assert.equal(hidden(), false);
+  } finally { dom.window.close(); }
 });
