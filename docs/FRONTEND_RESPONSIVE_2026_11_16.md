@@ -64,3 +64,10 @@ Codex backend **không được tự ý thay đổi** thiết kế, CSS, hệ th
 6. Xoay màn hình điện thoại và iPad; không có nội dung bị dock che hay nút chạm quá sát mép.
 
 **Giới hạn:** chưa có ảnh chụp hoặc báo cáo từ thiết bị thật; nếu còn lỗi theo model máy, cần ảnh + kích thước màn hình để sửa chính xác.
+
+## v0.4 — Giáo trình mobile (18/11/2026)
+
+- Đặt min-width:0 cho các grid items và minmax(0,1fr) cho cột đơn; giới hạn stage rail vào chiều rộng vùng nội dung, bỏ margin âm. Giữ vuốt ngang và hiện gợi ý trên phone.
+- Bộ lọc kỹ năng tự xuống dòng, nút chạm 44px; Skill Cards một cột, nhãn và nội dung được phép xuống dòng. Khối phương pháp đặt sau giáo trình trên phone.
+- Cập nhật trạng thái chọn chặng và lọc trên DOM hiện có thay vì render lại các nút; không auto-scroll viewport khi chọn chặng (thay cho hành vi v0.3).
+- Kiểm tra Chromium bằng fixture tái hiện layout, không phải toàn bộ website: 10 widths 320/360/375/390/414/680/768/820/1024/1280px đều không tràn trang, filter và card nằm trong cột, rail cuộn đến chặng cuối trên phone. Chưa kiểm thử toàn site trên Safari hoặc thiết bị thật.
