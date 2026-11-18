@@ -64,7 +64,11 @@ function renderStages() {
       '<small>' + escapeHtml(stage.period) + '</small>' +
     '</button>'
   ).join('');
+  renderStageDetail();
+}
+function renderStageDetail() {
   const stage = stages.find(s => s.id === currentStage);
+  if (!stage) return;
   $('#stage-detail').innerHTML =
     '<div><span class="aside-kicker">CHẶNG 0' + stage.id + ' · ' + escapeHtml(stage.period) +
     '</span><h3>' + escapeHtml(stage.title) + '</h3><p>' + escapeHtml(stage.goal) + '</p></div>' +
@@ -77,19 +81,14 @@ $('#stage-grid').addEventListener('click', event => {
   const card = event.target.closest('[data-stage]');
   if (!card) return;
   const grid = $('#stage-grid');
-  const previousScroll = grid.scrollLeft;
   currentStage = Number(card.dataset.stage);
-  renderStages();
-  // On phones the 8 stages are a horizontally scrollable rail.
-  // Preserve its position when the selected card list is re-rendered.
-  grid.scrollLeft = previousScroll;
-  if (window.matchMedia('(max-width: 680px)').matches) {
-    const detail = $('#stage-detail');
-    detail.scrollIntoView({
-      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-      block: 'nearest'
-    });
-  }
+  // Keep the same rail DOM and focus; avoid rebuilding it or jumping the viewport.
+  $('[data-stage]', grid).forEach(item => {
+    const active = Number(item.dataset.stage) === currentStage;
+    item.classList.toggle('is-active', active);
+    item.setAttribute('aria-pressed', String(active));
+  });
+  renderStageDetail();
 });
 
 function renderSkillFilters() {
@@ -118,7 +117,11 @@ $('#skill-filters').addEventListener('click', event => {
   const button = event.target.closest('[data-skill-filter]');
   if (!button) return;
   currentGroup = button.dataset.skillFilter;
-  renderSkillFilters();
+  $('[data-skill-filter]', $('#skill-filters')).forEach(item => {
+    const active = item.dataset.skillFilter === currentGroup;
+    item.classList.toggle('is-active', active);
+    item.setAttribute('aria-pressed', String(active));
+  });
   renderSkills();
 });
 $('#skill-grid').addEventListener('click', event => {
