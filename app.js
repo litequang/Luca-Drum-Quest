@@ -31,7 +31,8 @@ function navigate(page, updateHash = true) {
     view.hidden = !active;
     view.classList.toggle('is-visible', active);
   });
-  $$('[data-route]').forEach(control => {
+  if (next === 'journal') renderJournal();
+  $('[data-route]').forEach(control => {
     const active = control.dataset.route === next;
     control.classList.toggle('is-active', active);
     // Both desktop and bottom touch navigation expose the selected page.
@@ -168,7 +169,10 @@ $$('[data-dialog-close]').forEach(button => button.addEventListener('click', () 
 dialog.addEventListener('click', event => {
   if (event.target === dialog) dialog.close();
 });
-dialog.addEventListener('close', () => stopYouTubeEmbeds($('#dialog-body')));
+dialog.addEventListener('close', () => {
+  stopYouTubeEmbeds($('#dialog-body'));
+  if (!$('.view[data-view="journal"]').hidden) renderJournal();
+});
 
 function renderJournalFilters() {
   const filters = [{id:'all',label:'Tất cả'},{id:'Video luyện tập',label:'Video'},{id:'Bài học',label:'Bài học'},{id:'Cột mốc',label:'Cột mốc'}];
@@ -184,7 +188,7 @@ function renderJournal() {
     entries.filter(entry => entry.kind === currentJournalFilter);
   $('#journal-grid').innerHTML = filtered.map(entry => {
     const id = escapeHtml(entry.id);
-    const video = youtubeMarkup(entry.youtubeUrl);
+    const video = youtubeMarkup(entry.youtubeUrl, !$('.view[data-view="journal"]').hidden);
     const content = '<small>' + escapeHtml(entry.tag) + '</small><span class="journal-title">' +
       escapeHtml(entry.title) + '</span><span class="journal-caption">' + escapeHtml(entry.caption) +
       '</span><span class="journal-date">' + escapeHtml(entry.date) + '</span>';
@@ -212,8 +216,9 @@ $('#journal-grid').addEventListener('click', async event => {
   stopYouTubeEmbeds($('#journal-grid'));
   let media = [];
   try { media = await api('/journal/' + entry.id + '/media'); } catch { /* Post may have been unpublished. */ }
+  if ($('.view[data-view="journal"]').hidden) return;
   showDialog('<span class="aside-kicker">NHẬT KÝ · ' + escapeHtml(entry.date) + '</span>' +
-    '<h2 id="dialog-title">' + escapeHtml(entry.title) + '</h2><p>' + escapeHtml(entry.caption) + '</p>' + youtubeMarkup(entry.youtubeUrl) +
+    '<h2 id="dialog-title">' + escapeHtml(entry.title) + '</h2><p>' + escapeHtml(entry.caption) + '</p>' + youtubeMarkup(entry.youtubeUrl, true) +
     media.map(m => '<img src="/api/v1/media/' + escapeHtml(m.id) + '" alt="Ảnh đính kèm" style="max-width:100%">').join(''));
 
 });
